@@ -23,7 +23,7 @@ jobs:
 
       # Publish the site
       - name: Publish
-        run: dotnet publish {YourSolution}.sln -c:Release -o:publish -p:GHPages=true
+        run: dotnet publish Sentience.sln -c:Release -o:publish -p:GHPages=true
 
       # Deploy the site
       - name: Deploy
