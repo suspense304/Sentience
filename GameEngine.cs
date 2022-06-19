@@ -6,6 +6,7 @@ namespace Sentience
 {
     public class GameEngine
     {
+        // Update for GitHub Pages
         private ChatBot ChatBot { get; set; } = new ChatBot();
         private NeuralNetwork NeuralNetwork { get; set; } = new NeuralNetwork();
         private MachineLearning MachineLearning { get; set; } = new MachineLearning();
