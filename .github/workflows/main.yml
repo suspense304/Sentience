@@ -1,25 +1,34 @@
-name: gh-pages
+# This is ".github/workflows/gh-pages.yml" file.
+# This is an EXAMPLE of "GitHub Actions Workflow file".
 
-on: [push]
+name: github pages
+
+on:
+  push:
+    branches:
+      - master
 
 jobs:
-  build:
-
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.202
-    - name: Publish with dotnet
-      run: dotnet publish --configuration Release --output build
-    - name: Deploy to Github Pages
-      uses: JamesIves/github-pages-deploy-action@releases/v3
-      with:
-        ACCESS_TOKEN: $
-        BASE_BRANCH: development # The branch the action should deploy from.
-        BRANCH: master # The branch the action should deploy to.
-        FOLDER: build/wwwroot # The folder the action should deploy.
-        SINGLE_COMMIT: true
+      # Checkout the code
+      - uses: actions/checkout@v2
+
+      # Install .NET Core SDK
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.202
+
+      # Publish the site
+      - name: Publish
+        run: dotnet publish Sentience.sln -c:Release -o:publish -p:GHPages=true
+
+      # Deploy the site
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: publish/wwwroot
+          force_orphan: true
