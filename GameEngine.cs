@@ -15,7 +15,7 @@ namespace Sentience
         private float _money = 0;
         private int _moneyPerSecond = 0;
 
-        private float _baseGameSpeed = 1000f;
+        private float _baseGameSpeed = 500f;
         private float _baseXPGain = 12f;
         private float _gameSpeed = 1f;
         private float _globalMultiplier = 1f;
