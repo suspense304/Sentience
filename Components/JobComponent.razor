@@ -1,0 +1,74 @@
+﻿@using System.Timers
+@using Sentience.Models.Jobs
+
+@inject GameEngine _engine
+
+@if (Job != null)
+{
+    <tr class="@((Job.Active) ? "job-active" : "job-inactive")">
+        <td @onclick="Select">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: @((Job.CurrentXP / Job.NextLevel) * 100)%; transition: all @((_engine.GetGameSpeed()/1000).ToString("0.00"))s linear;">
+                      
+                </div>
+                <div class="progress-text">@Job.Name</div> 
+            </div>
+            </td>
+        <td>@Job.Level</td>
+        <td>$@Job.Income</td>
+        <td>@(_engine.GetJobXPGain())</td>
+        <td>@Job.XPRemaining(Job.CurrentXP)</td>
+    </tr>
+}
+
+
+@code {
+    [Parameter] public EventCallback<Job> OnJobTick { get; set; }
+
+    [Parameter] public Job Job { get; set; }
+
+    bool isActive;
+
+    Timer IncomeTimer;
+
+    private Timer CreateNewTimer()
+    {
+        float gameSpeed = _engine.GetGameSpeed();
+        Timer newTimer = new Timer(gameSpeed);
+        newTimer.Elapsed += new ElapsedEventHandler(OnTick);
+        newTimer.Enabled = true;
+        newTimer.AutoReset = false;
+        return new Timer(gameSpeed);
+    }
+
+    protected async void OnTick(object source, ElapsedEventArgs e)
+    {
+        if (Job.Active)
+        {
+            IncomeTimer.Stop();
+            IncomeTimer.Dispose();
+            IncomeTimer = CreateNewTimer();
+            Job.CurrentXP += _engine.GetJobXPGain();
+
+            if (Job.CurrentXP >= Job.NextLevel)
+            {
+                Job.LevelUp(_engine);
+            }
+            await OnJobTick.InvokeAsync(Job);
+        }
+        else
+        {
+            IncomeTimer.Stop();
+            IncomeTimer.Dispose();
+        }
+    }
+
+    public void Select()
+    {
+        if (!Job.Active)
+        {
+            IncomeTimer = CreateNewTimer();
+            _engine.SetActiveJob(Job);
+        }
+    }
+}

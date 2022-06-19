@@ -1,0 +1,122 @@
+﻿@page "/"
+@using Sentience.Models.Jobs
+@using Sentience.Models.Research
+
+@inject GameEngine _engine
+
+<PageTitle>Index</PageTitle>
+<div class="container">
+    <div class="menu-block">
+        <div>
+            <h1>Sentience</h1>
+        </div>
+        <div style="float:right">
+            <input class="btn btn-primary" type="button" @onclick="() => SetSpeed(1)" value="Speed 1" />
+            <input class="btn btn-primary" type="button" @onclick="() => SetSpeed(2)" value="Speed 2" />
+            <input class="btn btn-primary" type="button" @onclick="() => SetSpeed(3)" value="Speed 3" />
+            <input class="btn btn-primary" type="button" @onclick="() => SetSpeed(4)" value="Speed 4" />
+        </div>
+    </div>
+    <br />
+    <div class="row">
+
+        <div class="col-sm-12 col-md-4">
+            <div class=sidebar>
+                <h3>Computing Data</h3>
+                <span>Global Multiplier: x@_engine.GetGlobalMultiplier()</span>
+                <span>Job XP: x@_engine.GetJobXpModifier()</span>
+                <span>Processing Speed: x@((1000 / _engine.GetGameSpeed()).ToString("0.00"))</span>
+                <hr />
+                <h3>Financial Data</h3>
+                <span>Money: $@_engine.GetMoney().ToString("0.00")</span>
+                <span>Income: Coming Soon</span>
+                <span>Expenses: Coming Soon</span>
+            </div>
+        </div>
+
+        <div class="col-sm-12 col-md-8">
+            <div class="menu-block">
+                <div>
+                    <span class="menu-btn @((JobsVisible) ? "menu-btn-active" : "")" @onclick="JobsView">Jobs</span>
+                    <span class="menu-btn @((ResearchVisible) ? "menu-btn-active" : "")" @onclick="StudyView">Research</span>
+                </div>
+            </div>
+            @if (JobsVisible)
+            {
+                <div class="content-area">
+                    <table class="jobs-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Level</th>
+                                <th>Income</th>
+                                <th>XP</th>
+                                <th>NextLevel</th>
+                            </tr>
+                        </thead>
+                        @foreach (Job job in _engine.JobsList)
+                        {
+                            if (job.Unlocked)
+                            {
+                                <JobComponent Job="@job" OnJobTick="UpdateJob" />
+                            }
+                        }
+                    </table>
+                </div>
+            }
+            @if (ResearchVisible)
+            {
+                <div class="content-area">
+                    <table class="research-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Level</th>
+                                <th>Modifier</th>
+                                <th>XP</th>
+                                <th>NextLevel</th>
+                            </tr>
+                        </thead>
+                        @foreach (Research research in _engine.ResearchList)
+                        {
+                            if (research.Unlocked)
+                            {
+                                <ResearchComponent Research="@research" OnResearchTick="UpdateResearch" />
+                            }
+                        }
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+@code {
+    bool JobsVisible { get; set; } = true;
+    bool ResearchVisible { get; set; } = false;
+
+    void SetSpeed(int value)
+    {
+        _engine.SetGameSpeed(value);
+    }
+
+    void UpdateJob(Job job)
+    {
+        _engine.SetMoney(job.Income);
+    }
+
+    void UpdateResearch()
+    {
+        //_engine.GetJobXpModifier();
+    }
+
+    void JobsView()
+    {
+        ResearchVisible = false;
+        JobsVisible = true;
+    }
+    void StudyView()
+    {
+        JobsVisible = false;
+        ResearchVisible = true;
+    }
+}

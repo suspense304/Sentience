@@ -1,0 +1,140 @@
+﻿body {
+    padding: 25px;
+    background-color: #191919;
+    color: #fff;
+}
+
+.jobs-table {
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    text-align: center;
+}
+    .jobs-table thead tr {
+        background-color: #002a6d;
+        color: #fff;
+        text-align: center;
+    }
+
+    .jobs-table th, 
+    .jobs-table td {
+        padding: 12px 15px;
+    }
+
+    .jobs-table td{
+        font-size: 1.1em;
+        width: 100px;
+    }
+
+.job-active {
+    background-color: #052251;
+}
+    .job-active td {
+        color: #fff;
+    }
+.job-inactive {
+    background-color: #232222;
+}
+
+.research-table {
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    text-align: center;
+}
+
+    .research-table thead tr {
+        background-color: #8f0000;
+        color: #fff;
+        text-align: center;
+    }
+
+    .research-table th,
+    .research-table td {
+        padding: 12px 15px;
+    }
+
+    .research-table td {
+        font-size: 1.1em;
+        width: 100px;
+    }
+
+.research-active {
+    background-color: #531414;
+}
+
+    .research-active td {
+        color: #fff;
+    }
+.research-inactive {
+    background-color: #232222;
+}
+
+.menu-block {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-bottom: 3px double #706f6fbf;
+    padding-bottom: 10px;
+}
+
+.menu-items{
+    flex: auto;
+}
+
+.menu-game-speed {
+    align-items: flex-end; 
+    justify-content: flex-end;
+}
+
+.menu-btn {
+    padding: 10px;
+    cursor: pointer;
+}
+    .menu-btn:hover {
+        background-color: #232222;
+    }
+    .menu-btn-active {
+        background-color: #706f6fbf;
+    }
+
+.content-area {
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #232222;
+}
+
+.sidebar {
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #232222;
+    display: flex;
+    flex-direction: column;
+}
+
+/*PROGRESS BARS*/
+.progress-bar {
+    position: relative;
+    cursor: pointer;
+    width: 200px;
+    border: 1px black solid;
+}
+
+.progress-text {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    padding: 5px;
+    color: #fff;
+}
+
+.progress-fill {
+    height: 30px;
+    background-color: #9caa1d;
+}

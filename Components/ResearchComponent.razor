@@ -1,0 +1,76 @@
+@using System.Timers
+@using Sentience.Models.Research
+
+@inject GameEngine _engine
+
+@if (Research != null)
+{
+    <tr class="@((Research.Active) ? "research-active" : "research-inactive")">
+        <td @onclick="Select">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: @((Research.CurrentXP / Research.NextLevel) * 100)%; transition: all @((_engine.GetGameSpeed()/1000).ToString("0.00"))s linear;">
+                      
+                </div>
+                <div class="progress-text">@Research.Name</div> 
+            </div>
+            </td>
+        <td>@Research.Level</td>
+        <td style="width: 250px;">x@_engine.GetResearchModifier(@Research) @Research.Modifier.GetDisplayName()</td>
+        <td>@(_engine.GetResearchXPGain())</td>
+        <td>@Research.XPRemaining(Research.CurrentXP)</td>
+    </tr>
+}
+
+
+@code {
+    [Parameter] public EventCallback OnResearchTick { get; set; }
+
+    [Parameter] public Research Research { get; set; }
+
+    bool isActive;
+    float nextResearchLevel;
+
+    Timer ResearchTimer;
+
+    private Timer CreateNewTimer()
+    {
+        float gameSpeed = _engine.GetGameSpeed();
+        Timer newTimer = new Timer(gameSpeed);
+        newTimer.Elapsed += new ElapsedEventHandler(OnTick);
+        newTimer.Enabled = true;
+        newTimer.AutoReset = false;
+        return new Timer(gameSpeed);
+    }
+
+    protected async void OnTick(object source, ElapsedEventArgs e)
+    {
+        if (Research.Active)
+        {
+            ResearchTimer.Stop();
+            ResearchTimer.Dispose();
+            ResearchTimer = CreateNewTimer();
+
+            Research.CurrentXP += _engine.GetResearchXPGain();
+
+            if (Research.CurrentXP >= Research.NextLevel)
+            {
+                Research.LevelUp(_engine);
+            }
+            await OnResearchTick.InvokeAsync(Research);
+        }
+        else
+        {
+            ResearchTimer.Stop();
+            ResearchTimer.Dispose();
+        }
+    }
+
+    public void Select()
+    {
+        if (!Research.Active)
+        {
+            ResearchTimer = CreateNewTimer();
+            _engine.SetActiveResearch(Research);
+        }
+    }
+}
