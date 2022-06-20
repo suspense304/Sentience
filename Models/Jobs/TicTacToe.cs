@@ -12,8 +12,8 @@ namespace Sentience.Models.Jobs
             Active = false;
             Unlocked = false;
             BaseIncome = .51f;
-            BaseXP = 380;
-            NextLevel = 380;
+            BaseXP = 1382;
+            NextLevel = 1382;
         }
 
         public TicTacToe()
@@ -22,8 +22,8 @@ namespace Sentience.Models.Jobs
             Active = false;
             Unlocked = false;
             BaseIncome = .51f;
-            BaseXP = 380;
-            NextLevel = 380;
+            BaseXP = 1382;
+            NextLevel = 1382;
         }
 
         public bool CanUnlock(Job job)

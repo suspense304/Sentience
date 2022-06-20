@@ -8,8 +8,8 @@
             Active = false;
             Unlocked = false;
             BaseIncome = 1.73f;
-            BaseXP = 1080;
-            NextLevel = 1080;
+            BaseXP = 7649;
+            NextLevel = 7649;
         }
 
         public RedditScraper()
@@ -18,8 +18,8 @@
             Active = false;
             Unlocked = false;
             BaseIncome = 1.73f;
-            BaseXP = 1080;
-            NextLevel = 1080;
+            BaseXP = 7649;
+            NextLevel = 7649;
         }
         public bool CanUnlock(Job job)
         {
