@@ -1,0 +1,55 @@
+@using System.Timers
+@using Sentience.Models.Upgrades
+
+@inject GameEngine _engine
+
+@if (Upgrade != null)
+{
+    <tr class="@((Upgrade.Active) ? "upgrade-active" : "upgrade-inactive")">
+        <td @onclick="Select">@Upgrade.Name</td>
+        <td>x @_engine.GetUpgradeModifier(@Upgrade) @Upgrade.Modifier.GetDisplayName()</td>
+        <td>$@Upgrade.Expense</td>
+    </tr>
+}
+
+
+@code {
+    [Parameter] public EventCallback OnUpgradeTick { get; set; }
+    [Parameter] public Upgrades Upgrade { get; set; }
+
+    bool isActive;
+    float nextResearchLevel;
+
+    Timer UpgradeTimer;
+
+    private Timer CreateNewTimer()
+    {
+        float gameSpeed = _engine.GetGameSpeed();
+        Timer newTimer = new Timer(gameSpeed);
+        newTimer.Elapsed += new ElapsedEventHandler(OnTick);
+        newTimer.Enabled = true;
+        newTimer.AutoReset = true;
+        return new Timer(gameSpeed);
+    }
+
+    protected async void OnTick(object source, ElapsedEventArgs e)
+    {
+        if(_engine.GetMoney() <= 0)
+        {
+            Upgrade.Active = false;
+            UpgradeTimer.Stop();
+            UpgradeTimer.Dispose();
+            _engine.ResetMoney();
+            _engine.SetExpenses();
+        }
+        await OnUpgradeTick.InvokeAsync();
+    }
+
+
+    public void Select()
+    {
+        _engine.ToggleActiveUpgrade(Upgrade);
+        _engine.SetExpenses();
+        UpgradeTimer = CreateNewTimer();
+    }
+}

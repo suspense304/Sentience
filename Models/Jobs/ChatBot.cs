@@ -12,8 +12,6 @@ namespace Sentience.Models.Jobs
             Active = false;
             Unlocked = true;
             BaseIncome = 0.10f;
-            BaseXP = 120;
-            NextLevel = 120;
         }
 
         public ChatBot()
@@ -22,8 +20,6 @@ namespace Sentience.Models.Jobs
             Active = false;
             Unlocked = true;
             BaseIncome = 0.10f;
-            BaseXP = 120;
-            NextLevel = 120;
         }
     }
 }

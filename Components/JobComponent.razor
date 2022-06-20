@@ -24,11 +24,9 @@
 
 @code {
     [Parameter] public EventCallback<Job> OnJobTick { get; set; }
-
     [Parameter] public Job Job { get; set; }
 
     bool isActive;
-
     Timer IncomeTimer;
 
     private Timer CreateNewTimer()
@@ -54,6 +52,9 @@
             {
                 Job.LevelUp(_engine);
             }
+            Job.UpdateIncome(_engine);
+            _engine.SetDailyIncome(Job.Income);
+            _engine.UnlockUpgrades();
             await OnJobTick.InvokeAsync(Job);
         }
         else
@@ -68,6 +69,7 @@
         if (!Job.Active)
         {
             IncomeTimer = CreateNewTimer();
+            _engine.SetDailyIncome(Job.Income);
             _engine.SetActiveJob(Job);
         }
     }

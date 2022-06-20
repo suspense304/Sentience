@@ -8,10 +8,10 @@ namespace Sentience.Models.Jobs
         public bool Active;
         public bool Unlocked;
         public float BaseIncome { get; set; }
-        public int BaseXP { get; set; }
+        public int BaseXP { get; set; } = 120;
+        public int NextLevel { get; set; } = 120;
         public float CurrentXP { get; set; } = 0;
         public float Income { get; set; } = 0;
-        public int NextLevel { get; set; }
         public int Level { get; set; } = 0;
         public float Multiplier { get; set; } = 1f;
         public int BaseCost { get; set; }
@@ -33,10 +33,10 @@ namespace Sentience.Models.Jobs
             Level++;
             NextLevel = GetNextUpdateAmount(NextLevel, engine);
             Income = UpdateIncome(engine);
+            engine.SetDailyIncome(Income);
             CurrentXP = 0;
             engine.UnlockJobs();
         }
-
         public int GetNextUpdateAmount(int lastValue, GameEngine engine)
         {
             return (int)(Math.Floor(BaseXP * Math.Pow(engine.GetUpgradeMultiplier(), Level)));

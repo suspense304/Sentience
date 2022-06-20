@@ -32,7 +32,6 @@
             NextLevel = GetNextUpdateAmount(NextLevel, engine);
             CurrentXP = 0;
             UpdateModifier(engine);
-
             engine.UnlockResearch();
             engine.SetGlobalMulitplier();
         }

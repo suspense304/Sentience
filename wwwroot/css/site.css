@@ -76,6 +76,44 @@
     background-color: #232222;
 }
 
+.upgrade-table {
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    text-align: center;
+}
+
+    .upgrade-table thead tr {
+        background-color: #04920c;
+        color: #fff;
+        text-align: center;
+    }
+
+    .upgrade-table th,
+    .upgrade-table td {
+        padding: 12px 15px;
+    }
+
+    .upgrade-table td {
+        font-size: 1.1em;
+        width: 100px;
+    }
+
+.upgrade-active {
+    background-color: #035508;
+}
+
+    .upgrade-active td {
+        color: #fff;
+    }
+
+.upgrade-inactive {
+    background-color: #232222;
+}
+
 .menu-block {
     display: flex;
     flex-direction: row;

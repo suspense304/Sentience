@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using Sentience.Models.Jobs
 @using Sentience.Models.Research
+@using Sentience.Models.Upgrades
 
 @inject GameEngine _engine
 
@@ -25,12 +26,12 @@
                 <h3>Computing Data</h3>
                 <span>Global Multiplier: x@_engine.GetGlobalMultiplier()</span>
                 <span>Job XP: x@_engine.GetJobXpModifier()</span>
-                <span>Processing Speed: x@((1000 / _engine.GetGameSpeed()).ToString("0.00"))</span>
+                <span>Processing Speed: x@((500 / _engine.GetGameSpeed()).ToString("0.00"))</span>
                 <hr />
                 <h3>Financial Data</h3>
                 <span>Money: $@_engine.GetMoney().ToString("0.00")</span>
-                <span>Income: Coming Soon</span>
-                <span>Expenses: Coming Soon</span>
+                <span>Income: $@_engine.GetIncome().ToString("0.00")</span>
+                <span>Expenses: $@_engine.GetExpenses().ToString("0.00")</span>
             </div>
         </div>
 
@@ -39,6 +40,7 @@
                 <div>
                     <span class="menu-btn @((JobsVisible) ? "menu-btn-active" : "")" @onclick="JobsView">Jobs</span>
                     <span class="menu-btn @((ResearchVisible) ? "menu-btn-active" : "")" @onclick="StudyView">Research</span>
+                    <span class="menu-btn @((UpgradeVisible) ? "menu-btn-active" : "")" @onclick="UpgradeView">Upgrades</span>
                 </div>
             </div>
             @if (JobsVisible)
@@ -87,12 +89,34 @@
                     </table>
                 </div>
             }
+            @if (UpgradeVisible)
+            {
+                <div class="content-area">
+                    <table class="upgrade-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Modifier</th>
+                                <th>Expense</th>
+                            </tr>
+                        </thead>
+                        @foreach (Upgrades upgrade in _engine.UpgradeList)
+                        {
+                            if (upgrade.Unlocked)
+                            {
+                                <UpgradeComponent Upgrade="@upgrade" OnUpgradeTick="UpdateUpgrade"/>
+                            }
+                        }
+                    </table>
+                </div>
+            }
         </div>
     </div>
 </div>
 @code {
     bool JobsVisible { get; set; } = true;
     bool ResearchVisible { get; set; } = false;
+    bool UpgradeVisible { get; set; } = false;
 
     void SetSpeed(int value)
     {
@@ -101,7 +125,7 @@
 
     void UpdateJob(Job job)
     {
-        _engine.SetMoney(job.Income);
+        _engine.SetMoney();
     }
 
     void UpdateResearch()
@@ -109,14 +133,27 @@
         //_engine.GetJobXpModifier();
     }
 
+    void UpdateUpgrade()
+    {
+
+    }
+
     void JobsView()
     {
-        ResearchVisible = false;
         JobsVisible = true;
+        ResearchVisible = false;
+        UpgradeVisible = false;
     }
     void StudyView()
     {
-        JobsVisible = false;
         ResearchVisible = true;
+        JobsVisible = false;
+        UpgradeVisible = false;
+    }
+    void UpgradeView()
+    {
+        UpgradeVisible = true;
+        JobsVisible = false;
+        ResearchVisible = false;
     }
 }
