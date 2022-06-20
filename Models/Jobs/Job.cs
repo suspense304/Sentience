@@ -9,6 +9,7 @@ namespace Sentience.Models.Jobs
         public bool Unlocked;
         public float BaseIncome { get; set; }
         public int BaseXP { get; set; }
+        public bool GenerateIncome { get; set; } = false;
         public int NextLevel { get; set; }
         public float CurrentXP { get; set; } = 0;
         public float Income { get; set; } = 0;

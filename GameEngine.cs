@@ -66,6 +66,32 @@ namespace Sentience
         //}
 
         #endregion
+
+        #region FUNCTIONS
+        public string FormatNumber(float value)
+        {
+            Dictionary<long, string> dict = new Dictionary<long, string>
+            {
+                {1000000000000000000, "Q"},
+                {1000000000000000, "q"},
+                {1000000000000, "t"},
+                {1000000000, "b"},
+                {1000000, "m"},
+                {1000, "k"}
+            };
+            string formattedValue = value.ToString();
+            foreach (long n in dict.Keys.OrderBy(k => k))
+            {
+                if (value < n)
+                {
+                    continue;
+                }
+                double newValue = Math.Round(value / (double)n, 2);
+                formattedValue = String.Format("{0}{1}", newValue, dict[n]);
+            }
+            return formattedValue;
+        }
+        #endregion
         public GameEngine()
         {
             CreateJobs();
@@ -174,6 +200,7 @@ namespace Sentience
         public void SetDailyIncome(float value)
         {
             _dailyIncome = value - _expenses;
+            _dailyIncome = (float)Math.Ceiling(_dailyIncome * 100) / 100;
         }
         public void SetGlobalMulitplier()
         {
@@ -186,6 +213,7 @@ namespace Sentience
                 }
             }
             _globalMultiplier = newXp;
+            _globalMultiplier = (float)Math.Ceiling(_globalMultiplier * 100) / 100;
         }
         public void SetExpenses()
         {
@@ -198,6 +226,7 @@ namespace Sentience
                 }
             }
             _expenses = newExpenses;
+            _expenses = (float)Math.Ceiling(_expenses * 100) / 100;
         }
         public void SetGameSpeed(int value)
         {
@@ -206,6 +235,7 @@ namespace Sentience
         public void SetMoney()
         {
             _money += GetIncome();
+            _money = (float)Math.Ceiling(_money * 100) / 100;
         }
         public void SetUpgradeMultiplier(float value)
         {

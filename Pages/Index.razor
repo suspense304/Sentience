@@ -24,14 +24,30 @@
         <div class="col-sm-12 col-md-4">
             <div class=sidebar>
                 <h3>Computing Data</h3>
-                <span>Global Multiplier: x@_engine.GetGlobalMultiplier()</span>
-                <span>Job XP: x@_engine.GetJobXpModifier()</span>
-                <span>Processing Speed: x@((500 / _engine.GetGameSpeed()).ToString("0.00"))</span>
+                <div class="sidebar-section">
+                    <span class="label-text">Global Multiplier: </span><span class="global-multiplier">x@_engine.FormatNumber(@_engine.GetGlobalMultiplier())</span><br />
+                    <span class="label-text">Job XP: </span><span class="job-xp">x@_engine.FormatNumber(@_engine.GetJobXpModifier())</span><br />
+                    <span class="label-text">Processing Speed: </span><span class="processing-speed">x@_engine.FormatNumber(((500 / _engine.GetGameSpeed())))</span>
+                </div>
                 <hr />
                 <h3>Financial Data</h3>
-                <span>Money: $@_engine.GetMoney().ToString("0.00")</span>
-                <span>Income: $@_engine.GetIncome().ToString("0.00")</span>
-                <span>Expenses: $@_engine.GetExpenses().ToString("0.00")</span>
+                <div class="sidebar-section">
+                    <span class="label-text">Money: </span><span class="money">$@_engine.FormatNumber(@_engine.GetMoney())</span><br />
+                    <span class="label-text">Net: </span><span class="income">$@_engine.FormatNumber(@_engine.GetIncome())</span><br />
+                    <span class="label-text">Income: </span><span class="daily-income">$@_engine.FormatNumber(@activeJob.Income)</span><br />
+                    <span class="label-text">Expenses: </span><span class="expenses">$@_engine.FormatNumber(@_engine.GetExpenses())</span>
+                </div>
+                <hr />
+                @if (activeJob != null)
+                {
+                    <span class="active-resource">Active Job</span>
+                    <JobComponent Job="@activeJob" OnJobTick="UpdateJob" GenerateIncome="false" />
+                }
+                @if (activeResearch != null)
+                {
+                    <span class="active-resource">Active Research</span>
+                    <ResearchComponent Research="@activeResearch" OnResearchTick="UpdateResearch" GenerateXP="false" />
+                }
             </div>
         </div>
 
@@ -60,7 +76,7 @@
                         {
                             if (job.Unlocked)
                             {
-                                <JobComponent Job="@job" OnJobTick="UpdateJob" />
+                                <JobComponent Job="@job" OnClick="SetActiveJob" OnJobTick="UpdateJob" GenerateIncome="true" />
                             }
                         }
                     </table>
@@ -83,7 +99,7 @@
                         {
                             if (research.Unlocked)
                             {
-                                <ResearchComponent Research="@research" OnResearchTick="UpdateResearch" />
+                                <ResearchComponent Research="@research" OnClick="SetActiveResearch" OnResearchTick="UpdateResearch" GenerateXP="true" />
                             }
                         }
                     </table>
@@ -104,7 +120,7 @@
                         {
                             if (upgrade.Unlocked)
                             {
-                                <UpgradeComponent Upgrade="@upgrade" OnUpgradeTick="UpdateUpgrade"/>
+                                <UpgradeComponent Upgrade="@upgrade" OnUpgradeTick="UpdateUpgrade" />
                             }
                         }
                     </table>
@@ -118,14 +134,30 @@
     bool ResearchVisible { get; set; } = false;
     bool UpgradeVisible { get; set; } = false;
 
+    public Job activeJob { get; set; }
+    public Research activeResearch { get; set; }
+
     void SetSpeed(int value)
     {
         _engine.SetGameSpeed(value);
     }
 
+    void SetActiveJob(Job job)
+    {
+        activeJob = job;
+    }
+
+    void SetActiveResearch(Research research)
+    {
+        activeResearch = research;
+    }
+
     void UpdateJob(Job job)
     {
-        _engine.SetMoney();
+        if (job.GenerateIncome)
+        {
+            _engine.SetMoney();
+        }
     }
 
     void UpdateResearch()

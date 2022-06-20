@@ -9,6 +9,7 @@
     margin: 20px 0;
     font-size: 0.9em;
     font-family: sans-serif;
+    width: 100%;
     min-width: 400px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     text-align: center;
@@ -44,6 +45,7 @@
     margin: 20px 0;
     font-size: 0.9em;
     font-family: sans-serif;
+    width: 100%;
     min-width: 400px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     text-align: center;
@@ -81,6 +83,7 @@
     margin: 20px 0;
     font-size: 0.9em;
     font-family: sans-serif;
+    width: 100%;
     min-width: 400px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     text-align: center;
@@ -156,6 +159,10 @@
     flex-direction: column;
 }
 
+.sidebar-section{
+    display: inline-block;
+}
+
 /*PROGRESS BARS*/
 .progress-bar {
     position: relative;
@@ -170,9 +177,52 @@
     bottom: 0px;
     padding: 5px;
     color: #fff;
+    text-shadow: 1px 1px 2px #151414;
 }
 
 .progress-fill {
     height: 30px;
-    background-color: #9caa1d;
+    background-color: #d9af25;
+}
+
+.active-resource {
+    font-size: 0.85em;
+    padding: 5px;
+    color: #706f6f;
+}
+
+.label-text {
+    display: inline-block;
+    font-size: 1.05em;
+    color: #706f6f;
+    width: 150px;
+}
+
+.global-multiplier {
+    font-size: 1.05em;
+    color: #00eef6;
+}
+
+.job-xp {
+    font-size: 1.05em;
+    color: #fcff00;
+}
+
+.processing-speed {
+    font-size: 1.05em;
+    color: #419f2a;
+}
+
+.money {
+    font-size: 1.05em;
+    color: #419f2a;
+}
+
+.income {
+    font-size: 1.05em;
+    color: #00eef6;
+}
+
+.expenses {
+    color: #e80d0d;
 }

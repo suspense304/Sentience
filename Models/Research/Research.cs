@@ -7,6 +7,7 @@
         public int BaseXP { get; set; } = 80;
         public int NextLevel { get; set; } = 80;
         public float CurrentXP { get; set; } = 0;
+        public bool GenerateXP { get; set; } = true;
         public int Level { get; set; } = 0;
         public float Multiplier { get; set; } = 1f;
         public string Name { get; set; }

@@ -5,27 +5,44 @@
 
 @if (Research != null)
 {
-    <tr class="@((Research.Active) ? "research-active" : "research-inactive")">
+    @if (GenerateXP)
+    {
+        <tr class="@((Research.Active) ? "research-active" : "research-inactive")">
+            <td @onclick="Select">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: @((Research.CurrentXP / Research.NextLevel) * 100)%; transition: all @_engine.FormatNumber(((_engine.GetGameSpeed()/1000)))s linear;">
+                    </div>
+                    <div class="progress-text">@Research.Name</div>
+                </div>
+            </td>
+            <td>@Research.Level</td>
+            <td style="width: 250px;">x@_engine.GetResearchModifier(@Research) @Research.Modifier.GetDisplayName()</td>
+            <td>@_engine.FormatNumber((_engine.GetResearchXPGain()))</td>
+            <td>@_engine.FormatNumber(Research.XPRemaining(Research.CurrentXP))</td>
+        </tr>
+    }
+    else
+    {
         <td @onclick="Select">
             <div class="progress-bar">
                 <div class="progress-fill" style="width: @((Research.CurrentXP / Research.NextLevel) * 100)%; transition: all @((_engine.GetGameSpeed()/1000).ToString("0.00"))s linear;">
-                      
                 </div>
-                <div class="progress-text">@Research.Name</div> 
+                <div class="progress-text">@Research.Name</div>
             </div>
-            </td>
-        <td>@Research.Level</td>
-        <td style="width: 250px;">x@_engine.GetResearchModifier(@Research) @Research.Modifier.GetDisplayName()</td>
-        <td>@(_engine.GetResearchXPGain())</td>
-        <td>@Research.XPRemaining(Research.CurrentXP)</td>
-    </tr>
+        </td>
+    }
+
 }
 
 
 @code {
     [Parameter] public EventCallback OnResearchTick { get; set; }
 
+    [Parameter] public EventCallback<Research> OnClick { get; set; }
+
     [Parameter] public Research Research { get; set; }
+
+    [Parameter] public bool GenerateXP { get; set; }
 
     bool isActive;
     float nextResearchLevel;
@@ -52,10 +69,14 @@
 
             Research.CurrentXP += _engine.GetResearchXPGain();
 
-            if (Research.CurrentXP >= Research.NextLevel)
+            if (Research.GenerateXP)
             {
-                Research.LevelUp(_engine);
+                if (Research.CurrentXP >= Research.NextLevel)
+                {
+                    Research.LevelUp(_engine);
+                }
             }
+
             await OnResearchTick.InvokeAsync(Research);
         }
         else
@@ -65,12 +86,13 @@
         }
     }
 
-    public void Select()
+    public async void Select()
     {
         if (!Research.Active)
         {
             ResearchTimer = CreateNewTimer();
             _engine.SetActiveResearch(Research);
+            await OnClick.InvokeAsync(Research);
         }
     }
 }
