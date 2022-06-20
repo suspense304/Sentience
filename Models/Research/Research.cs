@@ -4,12 +4,11 @@
     {
         public bool Active;
         public bool Unlocked;
-        public int BaseXP { get; set; } = 240;
-        public int NextLevel { get; set; } = 240;
+        public int BaseXP { get; set; } = 80;
+        public int NextLevel { get; set; } = 80;
         public float CurrentXP { get; set; } = 0;
         public int Level { get; set; } = 0;
         public float Multiplier { get; set; } = 1f;
-        public int BaseCost { get; set; }
         public string Name { get; set; }
         public Modifiers Modifier { get; set; }
         public float ModifierValue { get; set; } = 0f;

@@ -4,22 +4,22 @@ using Timer = System.Timers.Timer;
 
 namespace Sentience.Models.Research
 {
-    public class MachineLearning : Research
+    public class IfStatement : Research
     {
-        public MachineLearning(GameEngine engine)
+        public IfStatement(GameEngine engine)
         {
-            Name = "Machine Learning";
+            Name = "If Statements";
             Active = false;
             Unlocked = false;
-            Modifier = Modifiers.JobXP;
+            Modifier = Modifiers.GlobalXP;
         }
 
-        public MachineLearning()
+        public IfStatement()
         {
-            Name = "Machine Learning";
+            Name = "If Statements";
             Active = false;
             Unlocked = false;
-            Modifier = Modifiers.JobXP;
+            Modifier = Modifiers.GlobalXP;
         }
 
         public bool CanUnlock(Research research)

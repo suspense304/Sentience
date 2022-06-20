@@ -1,34 +1,35 @@
 ﻿namespace Sentience.Models.Upgrades
 {
-    public class CheapVM : Upgrades
+    public class CheapProcessor : Upgrades
     {
-        public CheapVM(GameEngine engine)
+        public CheapProcessor(GameEngine engine)
         {
-            Name = "Cheap VM";
+            Name = "Cheap Processor";
             Active = false;
             Expense = 0.50f;
             Unlocked = false;
-            Modifier = Modifiers.JobXP;
-            Multiplier = 2f;
+            Modifier = Modifiers.ResearchSpeed;
+            Multiplier = 4f;
         }
 
-        public CheapVM()
+        public CheapProcessor()
         {
-            Name = "Cheap VM";
+            Name = "Cheap Processor";
             Active = false;
             Expense = 0.50f;
             Unlocked = false;
-            Modifier = Modifiers.JobXP;
-            Multiplier = 2f;
+            Modifier = Modifiers.ResearchSpeed;
+            Multiplier = 4f;
         }
 
         public bool CanUnlock(GameEngine engine)
         {
             if (!Unlocked)
             {
-                return (engine.GetMoney() > 25) ? true : false;
+                return (engine.GetMoney() > 100) ? true : false;
             }
             return true;
         }
     }
 }
+

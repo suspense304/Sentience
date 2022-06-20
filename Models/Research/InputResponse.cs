@@ -4,22 +4,22 @@ using Timer = System.Timers.Timer;
 
 namespace Sentience.Models.Research
 {
-    public class ProcessingPower : Research
+    public class InputResponse : Research
     {
-        public ProcessingPower(GameEngine engine)
+        public InputResponse(GameEngine engine)
         {
-            Name = "Processing Power";
+            Name = "Input Response";
             Active = false;
             Unlocked = true;
-            Modifier = Modifiers.GlobalXP;
+            Modifier = Modifiers.JobXP;
         }
 
-        public ProcessingPower()
+        public InputResponse()
         {
-            Name = "Processing Power";
+            Name = "Input Response";
             Active = false;
             Unlocked = true;
-            Modifier = Modifiers.GlobalXP;
+            Modifier = Modifiers.JobXP;
         }
     }
 }

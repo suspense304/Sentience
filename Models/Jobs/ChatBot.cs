@@ -11,7 +11,9 @@ namespace Sentience.Models.Jobs
             Name = "Chat Bot";
             Active = false;
             Unlocked = true;
-            BaseIncome = 0.10f;
+            BaseIncome = 0.04f;
+            BaseXP = 120;
+            NextLevel = 120;
         }
 
         public ChatBot()
@@ -19,7 +21,9 @@ namespace Sentience.Models.Jobs
             Name = "Chat Bot";
             Active = false;
             Unlocked = true;
-            BaseIncome = 0.10f;
+            BaseIncome = 0.04f;
+            BaseXP = 120;
+            NextLevel = 120;
         }
     }
 }

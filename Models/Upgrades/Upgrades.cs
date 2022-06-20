@@ -10,7 +10,6 @@
         public Modifiers Modifier { get; set; }
         public string Name { get; set; } = "";
 
-
         public Upgrades Create()
         {
             return new Upgrades();
