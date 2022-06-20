@@ -45,6 +45,18 @@
     bool isActive;
     Timer IncomeTimer;
 
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Job = _engine.JobsList.Where(w => w.Active == true).First();
+            IncomeTimer = CreateNewTimer();
+            _engine.SetDailyIncome(Job.Income);
+            _engine.SetActiveJob(Job);
+            await OnClick.InvokeAsync(Job);
+        }
+    }
+
     private Timer CreateNewTimer()
     {
         float gameSpeed = _engine.GetGameSpeed();

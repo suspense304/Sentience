@@ -10,6 +10,7 @@
             BaseIncome = 1.73f;
             BaseXP = 7649;
             NextLevel = 7649;
+            JobType = JobTypes.Basics;
         }
 
         public RedditScraper()
@@ -20,6 +21,7 @@
             BaseIncome = 1.73f;
             BaseXP = 7649;
             NextLevel = 7649;
+            JobType = JobTypes.Basics;
         }
         public bool CanUnlock(Job job)
         {

@@ -1,6 +1,6 @@
 ﻿namespace Sentience.Models.Upgrades
 {
-    public class CheapProcessor : Upgrades
+    public class CheapProcessor : Upgrade
     {
         public CheapProcessor(GameEngine engine)
         {

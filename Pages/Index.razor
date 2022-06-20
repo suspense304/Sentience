@@ -23,23 +23,23 @@
 
         <div class="col-sm-12 col-md-4">
             <div class=sidebar>
-                <h3>Computing Data</h3>
-                <div class="sidebar-section">
-                    <span class="label-text">Global Multiplier: </span><span class="global-multiplier">x@_engine.FormatNumber(@_engine.GetGlobalMultiplier())</span><br />
-                    <span class="label-text">Job XP: </span><span class="job-xp">x@_engine.FormatNumber(@_engine.GetJobXpModifier())</span><br />
-                    <span class="label-text">Processing Speed: </span><span class="processing-speed">x@_engine.FormatNumber(((500 / _engine.GetGameSpeed())))</span>
-                </div>
-                <hr />
-                <h3>Financial Data</h3>
-                <div class="sidebar-section">
-                    <span class="label-text">Money: </span><span class="money">$@_engine.FormatNumber(@_engine.GetMoney())</span><br />
-                    <span class="label-text">Net: </span><span class="income">$@_engine.FormatNumber(@_engine.GetIncome())</span><br />
-                    <span class="label-text">Income: </span><span class="daily-income">$@_engine.FormatNumber(@activeJob.Income)</span><br />
-                    <span class="label-text">Expenses: </span><span class="expenses">$@_engine.FormatNumber(@_engine.GetExpenses())</span>
-                </div>
-                <hr />
                 @if (activeJob != null)
                 {
+                    <h3>Computing Data</h3>
+                    <div class="sidebar-section">
+                        <span class="label-text">Global Multiplier: </span><span class="global-multiplier">x@_engine.FormatNumber(@_engine.GetGlobalMultiplier())</span><br />
+                        <span class="label-text">Job XP: </span><span class="job-xp">x@_engine.FormatNumber(@_engine.GetJobXpModifier())</span><br />
+                        <span class="label-text">Processing Speed: </span><span class="processing-speed">x@_engine.FormatNumber(((500 / _engine.GetGameSpeed())))</span>
+                    </div>
+                    <hr />
+                    <h3>Financial Data</h3>
+                    <div class="sidebar-section">
+                        <span class="label-text">Money: </span><span class="money">$@_engine.FormatNumber(@_engine.GetMoney())</span><br />
+                        <span class="label-text">Net: </span><span class="income">$@_engine.FormatNumber(@_engine.GetIncome())</span><br />
+                        <span class="label-text">Income: </span><span class="daily-income">$@_engine.FormatNumber(@activeJob.Income)</span><br />
+                        <span class="label-text">Expenses: </span><span class="expenses">$@_engine.FormatNumber(@_engine.GetExpenses())</span>
+                    </div>
+                    <hr />
                     <span class="active-resource">Active Job</span>
                     <JobComponent Job="@activeJob" OnJobTick="UpdateJob" GenerateIncome="false" />
                 }
@@ -59,28 +59,46 @@
                     <span class="menu-btn @((UpgradeVisible) ? "menu-btn-active" : "")" @onclick="UpgradeView">Upgrades</span>
                 </div>
             </div>
+
             @if (JobsVisible)
             {
-                <div class="content-area">
-                    <table class="jobs-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Level</th>
-                                <th>Income</th>
-                                <th>XP</th>
-                                <th>NextLevel</th>
-                            </tr>
-                        </thead>
-                        @foreach (Job job in _engine.JobsList)
-                        {
-                            if (job.Unlocked)
+                @foreach (JobTypes type in (JobTypes[])Enum.GetValues(typeof(JobTypes)))
+                {
+                    List<Job> jobs = _engine.JobsList.Where(w => w.Unlocked == true && w.JobType == type).ToList();
+                    @if (jobs.Count > 0)
+                    {
+                        <div class="content-area">
+                            <table class="jobs-table">
+                                <thead class="@type.ToString()">
+                                    <tr>
+                                        <th>@type.GetDisplayName()</th>
+                                        <th>Level</th>
+                                        <th>Income</th>
+                                        <th>XP</th>
+                                        <th>NextLevel</th>
+                                    </tr>
+                                </thead>
+                                @foreach (Job job in jobs)
+                                {
+                                    if (job.Unlocked)
+                                    {
+                                        <JobComponent Job="@job" OnClick="SetActiveJob" OnJobTick="UpdateJob" GenerateIncome="true" />
+                                    }
+
+                                }
+                            </table>
+                            @if (activeJob != null)
                             {
-                                <JobComponent Job="@job" OnClick="SetActiveJob" OnJobTick="UpdateJob" GenerateIncome="true" />
+                                <div class="next-upgrade">
+                                    @if (_engine.GetNextJobUpgrade() != null)
+                                    {
+                                        <span>@_engine.GetNextJobUpgrade().GetUpgradeMessage(_engine)</span>
+                                    }
+                                </div>
                             }
-                        }
-                    </table>
-                </div>
+                        </div>
+                    }
+                }
             }
             @if (ResearchVisible)
             {
@@ -95,7 +113,7 @@
                                 <th>NextLevel</th>
                             </tr>
                         </thead>
-                        @foreach (Research research in _engine.ResearchList)
+                        @foreach (ResearchProject research in _engine.ResearchList)
                         {
                             if (research.Unlocked)
                             {
@@ -103,6 +121,15 @@
                             }
                         }
                     </table>
+                    @if (activeResearch != null)
+                    {
+                        <div class="next-upgrade">
+                            @if (_engine.GetNextResearchUpgrade() != null)
+                            {
+                                <span>@_engine.GetNextResearchUpgrade().GetUpgradeMessage(_engine)</span>
+                            }
+                        </div>
+                    }
                 </div>
             }
             @if (UpgradeVisible)
@@ -116,7 +143,7 @@
                                 <th>Expense</th>
                             </tr>
                         </thead>
-                        @foreach (Upgrades upgrade in _engine.UpgradeList)
+                        @foreach (Upgrade upgrade in _engine.UpgradeList)
                         {
                             if (upgrade.Unlocked)
                             {
@@ -135,7 +162,7 @@
     bool UpgradeVisible { get; set; } = false;
 
     public Job activeJob { get; set; }
-    public Research activeResearch { get; set; }
+    public ResearchProject activeResearch { get; set; }
 
     void SetSpeed(int value)
     {
@@ -147,7 +174,7 @@
         activeJob = job;
     }
 
-    void SetActiveResearch(Research research)
+    void SetActiveResearch(ResearchProject research)
     {
         activeResearch = research;
     }

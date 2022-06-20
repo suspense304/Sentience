@@ -4,7 +4,7 @@ using Timer = System.Timers.Timer;
 
 namespace Sentience.Models.Research
 {
-    public class IfStatement : Research
+    public class IfStatement : ResearchProject
     {
         public IfStatement(GameEngine engine)
         {
@@ -22,7 +22,7 @@ namespace Sentience.Models.Research
             Modifier = Modifiers.GlobalXP;
         }
 
-        public bool CanUnlock(Research research)
+        public bool CanUnlock(ResearchProject research)
         {
             return (research.Level > 9) ? true : false;
         }

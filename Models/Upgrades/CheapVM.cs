@@ -1,6 +1,6 @@
 ﻿namespace Sentience.Models.Upgrades
 {
-    public class CheapVM : Upgrades
+    public class CheapVM : Upgrade
     {
         public CheapVM(GameEngine engine)
         {

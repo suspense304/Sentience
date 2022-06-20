@@ -1,6 +1,6 @@
 ﻿namespace Sentience.Models.Upgrades
 {
-    public class Upgrades
+    public class Upgrade
     {
         public bool Active;
         public bool Unlocked;
@@ -10,9 +10,9 @@
         public Modifiers Modifier { get; set; }
         public string Name { get; set; } = "";
 
-        public Upgrades Create()
+        public Upgrade Create()
         {
-            return new Upgrades();
+            return new Upgrade();
         }
 
         public void PurchasedUpgrade()

@@ -15,8 +15,6 @@
     text-align: center;
 }
     .jobs-table thead tr {
-        background-color: #002a6d;
-        color: #fff;
         text-align: center;
     }
 
@@ -53,8 +51,6 @@
 
     .research-table thead tr {
         background-color: #8f0000;
-        color: #fff;
-        text-align: center;
     }
 
     .research-table th,
@@ -91,8 +87,6 @@
 
     .upgrade-table thead tr {
         background-color: #04920c;
-        color: #fff;
-        text-align: center;
     }
 
     .upgrade-table th,
@@ -115,6 +109,14 @@
 
 .upgrade-inactive {
     background-color: #232222;
+}
+
+.next-upgrade {
+    height: 24px;
+    padding-left: 20px;
+    font-size: 1.05em;
+    font-size: 1.05em;
+    color: #706f6f;
 }
 
 .menu-block {
@@ -225,4 +227,13 @@
 
 .expenses {
     color: #e80d0d;
+}
+
+
+/*JOB TYPE STYLING*/
+.Basics tr{
+    background-color: #419f2a;
+    color: #fff;
+    font-size: 1.08em;
+    margin-bottom: 5px;
 }

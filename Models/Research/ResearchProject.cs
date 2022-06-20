@@ -1,6 +1,6 @@
 ﻿namespace Sentience.Models.Research
 {
-    public class Research
+    public abstract class ResearchProject
     {
         public bool Active;
         public bool Unlocked;
@@ -15,10 +15,10 @@
         public float ModifierValue { get; set; } = 0f;
         public float ModifierIncrementValue { get; set; } = .01f;
 
-        public Research Create()
-        {
-            return new Research();
-        }
+        //public ResearchProject Create()
+        //{
+        //    return new ResearchProject();
+        //}
 
         public float XPRemaining(float current)
         {
@@ -51,6 +51,10 @@
         public int GetNextUpdateAmount(int lastValue, GameEngine engine)
         {
             return (int)(Math.Floor(BaseXP * Math.Pow(engine.GetUpgradeMultiplier(), Level)));
+        }
+        public virtual string GetUpgradeMessage(GameEngine engine)
+        {
+            return "";
         }
     }
     

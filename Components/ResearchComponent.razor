@@ -38,9 +38,9 @@
 @code {
     [Parameter] public EventCallback OnResearchTick { get; set; }
 
-    [Parameter] public EventCallback<Research> OnClick { get; set; }
+    [Parameter] public EventCallback<ResearchProject> OnClick { get; set; }
 
-    [Parameter] public Research Research { get; set; }
+    [Parameter] public ResearchProject Research { get; set; }
 
     [Parameter] public bool GenerateXP { get; set; }
 
@@ -48,6 +48,18 @@
     float nextResearchLevel;
 
     Timer ResearchTimer;
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Research = _engine.ResearchList.Where(w => w.Active == true).First();
+            ResearchTimer = CreateNewTimer();
+            _engine.SetActiveResearch(Research);
+            await OnClick.InvokeAsync(Research);
+        }
+
+    }
 
     private Timer CreateNewTimer()
     {

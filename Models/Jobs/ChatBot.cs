@@ -9,21 +9,32 @@ namespace Sentience.Models.Jobs
         public ChatBot(GameEngine engine)
         {
             Name = "Chat Bot";
-            Active = false;
+            Active = true;
             Unlocked = true;
             BaseIncome = 0.04f;
             BaseXP = 120;
             NextLevel = 120;
+            JobType = JobTypes.Basics;
         }
 
         public ChatBot()
         {
             Name = "Chat Bot";
-            Active = false;
+            Active = true;
             Unlocked = true;
             BaseIncome = 0.04f;
             BaseXP = 120;
             NextLevel = 120;
+            JobType = JobTypes.Basics;
+        }
+
+        private string GetCustomUpgradeMessage(GameEngine engine)
+        {
+            return "Chat Bot Level: " + Level + "/10";
+        }
+        public override string GetUpgradeMessage(GameEngine engine)
+        {
+            return GetCustomUpgradeMessage(engine);
         }
     }
 }

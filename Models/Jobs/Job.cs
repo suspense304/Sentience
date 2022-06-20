@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Sentience.Models.Research;
+using Sentience.Models.Upgrades;
 using System.Timers;
 
 namespace Sentience.Models.Jobs
 {
-    public class Job
+    public abstract class Job
     {
         public bool Active;
         public bool Unlocked;
@@ -14,25 +16,24 @@ namespace Sentience.Models.Jobs
         public float CurrentXP { get; set; } = 0;
         public float Income { get; set; } = 0;
         public int Level { get; set; } = 0;
-        public float Multiplier { get; set; } = 1f;
         public int BaseCost { get; set; }
         public string Name { get; set; }
+        public JobTypes JobType { get; set; }
 
-        public Job Create() 
-        {
-            return new Job();
-        }
-
+        //public Job Create() 
+        //{
+        //    return new Job();
+        //}
         public float XPRemaining(float current)
         {
             int value = (int)(NextLevel - current);
             return (value <= 0) ? 0 : value;
         }
-
         public void LevelUp(GameEngine engine)
         {
             Level++;
             NextLevel = GetNextUpdateAmount(NextLevel, engine);
+            engine.SetIncomeMultiplier(this);
             Income = UpdateIncome(engine);
             engine.SetDailyIncome(Income);
             CurrentXP = 0;
@@ -42,7 +43,6 @@ namespace Sentience.Models.Jobs
         {
             return (int)(Math.Floor(BaseXP * Math.Pow(engine.GetUpgradeMultiplier(), Level)));
         }
-
         public float UpdateIncome(GameEngine engine)
         {
             float newIncome = Income * engine.GetIncomeMultiplier();
@@ -55,6 +55,10 @@ namespace Sentience.Models.Jobs
             {
                 return newIncome;
             }
+        }
+        public virtual string GetUpgradeMessage(GameEngine engine)
+        {
+            return "";
         }
     }
 }
