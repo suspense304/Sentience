@@ -29,7 +29,7 @@
     }
 
 .job-active {
-    background-color: #052251;
+    background-color: #383838ff;
 }
     .job-active td {
         color: #fff;
@@ -50,7 +50,7 @@
 }
 
     .research-table thead tr {
-        background-color: #8f0000;
+        text-align: center;
     }
 
     .research-table th,
@@ -64,7 +64,7 @@
     }
 
 .research-active {
-    background-color: #531414;
+    background-color: #383838ff;
 }
 
     .research-active td {
@@ -86,6 +86,7 @@
 }
 
     .upgrade-table thead tr {
+        text-align: center;
         background-color: #04920c;
     }
 
@@ -231,8 +232,19 @@
 
 
 /*JOB TYPE STYLING*/
-.Basics tr{
+.Basics tr,
+.Fundamentals tr,
+.Scrapyard tr
+{
     background-color: #419f2a;
+    color: #fff;
+    font-size: 1.08em;
+    margin-bottom: 5px;
+}
+
+.Amatuer tr,
+.Novice tr{
+    background-color: #780b85;
     color: #fff;
     font-size: 1.08em;
     margin-bottom: 5px;

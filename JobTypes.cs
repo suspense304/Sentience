@@ -6,8 +6,8 @@ namespace Sentience
     {
         [Display(Name = "The Basics")]
         Basics,
-        [Display(Name = "Amatuer")]
-        Amatuer,
+        [Display(Name = "Beginner")]
+        Beginner,
         [Display(Name = "Novice")]
         Novice,
         [Display(Name = "Expert")]

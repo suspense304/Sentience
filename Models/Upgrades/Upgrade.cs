@@ -1,23 +1,17 @@
 ﻿namespace Sentience.Models.Upgrades
 {
-    public class Upgrade
+    public abstract class Upgrade
     {
         public bool Active;
         public bool Unlocked;
-        public bool Purchased;
         public float Multiplier { get; set; }
         public float Expense { get; set; }
         public Modifiers Modifier { get; set; }
         public string Name { get; set; } = "";
-
-        public Upgrade Create()
+        public UpgradeTypes UpgradeType { get; set; }
+        public virtual string UpgradeMessage(GameEngine engine)
         {
-            return new Upgrade();
-        }
-
-        public void PurchasedUpgrade()
-        {
-            Purchased = true;
+            return "";
         }
     }
     

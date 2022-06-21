@@ -1,4 +1,5 @@
-﻿using Sentience.Models;
+﻿using Sentience.Components;
+using Sentience.Models;
 using Sentience.Models.Jobs;
 using Sentience.Models.Research;
 using Sentience.Models.Upgrades;
@@ -9,14 +10,25 @@ namespace Sentience
 {
     public class GameEngine
     {
-        private ChatBot ChatBot { get; set; } = new ChatBot();
-        private CheapProcessor CheapProcessor { get; set; } = new CheapProcessor();
-        private CheapVM CheapVM { get; set; } = new CheapVM();
-        private CookieClicker CookieClicker { get; set; } = new CookieClicker();
-        private TicTacToe TicTacToe { get; set; } = new TicTacToe();
-        private IfStatement IfStatement { get; set; } = new IfStatement();
-        private InputResponse InputResponse { get; set; } = new InputResponse();
-        private RedditScraper RedditScraper { get; set; } = new RedditScraper();
+        public BeginnerJobOne BeginnerJobOne { get; private set; } 
+        public BeginnerJobTwo BeginnerJobTwo { get; private set; } 
+        public JobOne JobOne { get; private set; } 
+        public JobTwo JobTwo { get; private set; } 
+        public JobThree JobThree { get; private set; }
+        public JobFour JobFour { get; private set; }
+        public JobFive JobFive { get; private set; } 
+        public JobSix JobSix { get; private set; } 
+
+        public UpgradeOne UpgradeOne { get; private set; }
+        public UpgradeTwo UpgradeTwo { get; private set; }
+        public UpgradeThree UpgradeThree { get; private set; }
+        public UpgradeFour UpgradeFour { get; private set; }
+
+        public ResearchOne ResearchOne { get; private set; } 
+        public ResearchTwo ResearchTwo { get; private set; } 
+        public ResearchThree ResearchThree { get; private set; } 
+        public NoviceResearchOne NoviceResearchOne { get; private set; }
+        public NoviceResearchTwo NoviceResearchTwo { get; private set; }
 
         private float _money = 0;
         private float _dailyIncome = 0;
@@ -44,35 +56,92 @@ namespace Sentience
 
         private Timer _GameTimer { get; set; }
 
+        private Job ActiveJob { get; set; }
+
+        private bool _UpgradesUnlocked = false;
+
         // I WANT TO EVENTUALLY MOVE THE ENTIRE GAMES TIMER SYSTEM TO THE GAME ENGINE
         // CURRENTLY I AM NOT SURE HOW TO UPDATE THE COMPONENTS FROM THIS CLASS
         // THIS CODE IS CURRENTLY NOT USED
         #region GAME ENGINE TIMER
+        //private Timer CreateGameTimer()
+        //{
+        //    float gameSpeed = GetGameSpeed();
+        //    Timer newTimer = new Timer(gameSpeed);
+        //    newTimer.Elapsed += new ElapsedEventHandler(RunDailyActions);
+        //    newTimer.Enabled = true;
+        //    newTimer.AutoReset = true;
+        //    return new Timer(gameSpeed);
+        //}
 
-
-        private Timer CreateGameTimer()
-        {
-            float gameSpeed = GetGameSpeed();
-            Timer newTimer = new Timer(gameSpeed);
-            newTimer.Elapsed += new ElapsedEventHandler(RunDailyActions);
-            newTimer.Enabled = true;
-            newTimer.AutoReset = true;
-            return new Timer(gameSpeed);
-        }
-
-        public Timer GetGameTimer()
-        {
-            return _GameTimer;
-        }
-
-        private void RunDailyActions(object source, ElapsedEventArgs e)
-        {
-            GetNextUpgrades();
-        }
-
+        //public Timer GetGameTimer()
+        //{
+        //    return _GameTimer;
+        //}
+        //private void RunDailyActions(object source, ElapsedEventArgs e)
+        //{
+        //    GetNextUpgrades();
+        //}
         #endregion
 
         #region FUNCTIONS
+        public void ApplyModifiers()
+        {
+            float newXP = 1f;
+            float newGameSpeed = 1f;
+            float newGlobalXp = 1f;
+            float newResearchSpeed = 1f;
+            foreach (ResearchProject research in ResearchList)
+            {
+                if (research.Modifier == Modifiers.JobXP && research.Level > 0)
+                {
+                    newXP += research.ModifierValue;
+                    newXP = (float)Math.Ceiling(newXP * 100) / 100;
+                }
+                if (research.Modifier == Modifiers.GameSpeed && research.Level > 0)
+                {
+                    newGameSpeed += research.ModifierValue;
+                    newGameSpeed = (float)Math.Ceiling(newGameSpeed * 100) / 100;
+                }
+                if (research.Modifier == Modifiers.GlobalXP && research.Level > 0)
+                {
+                    newGlobalXp += research.ModifierValue;
+                    newGlobalXp = (float)Math.Ceiling(newXP * 100) / 100;
+                }
+                if (research.Modifier == Modifiers.ResearchSpeed && research.Level > 0)
+                {
+                    newResearchSpeed += research.ModifierValue;
+                    newResearchSpeed = (float)Math.Ceiling(newXP * 100) / 100;
+                }
+            }
+            foreach (Upgrade upgrade in UpgradeList)
+            {
+                if (upgrade.Modifier == Modifiers.JobXP && upgrade.Active == true)
+                {
+                    newXP += upgrade.Multiplier;
+                    newXP = (float)Math.Ceiling(newXP * 100) / 100;
+                }
+                if (upgrade.Modifier == Modifiers.GameSpeed && upgrade.Active == true)
+                {
+                    newGameSpeed += upgrade.Multiplier;
+                    newGameSpeed = (float)Math.Ceiling(newGameSpeed * 100) / 100;
+                }
+                if (upgrade.Modifier == Modifiers.GlobalXP && upgrade.Active == true)
+                {
+                    newGlobalXp += upgrade.Multiplier;
+                    newGlobalXp = (float)Math.Ceiling(newXP * 100) / 100;
+                }
+                if (upgrade.Modifier == Modifiers.ResearchSpeed && upgrade.Active == true)
+                {
+                    newResearchSpeed += upgrade.Multiplier;
+                    newResearchSpeed = (float)Math.Ceiling(newXP * 100) / 100;
+                }
+            }
+            _gameSpeedModifier = newGameSpeed;
+            _jobXPModifier = newXP;
+            _globalMultiplier = newGlobalXp;
+            _researchXPModifier = newResearchSpeed;
+        }
         public string FormatNumber(float value)
         {
             Dictionary<long, string> dict = new Dictionary<long, string>
@@ -98,9 +167,9 @@ namespace Sentience
         }
         public void GetNextUpgrades()
         {
-            Job nextUnlockedJob = JobsList.Where(w => w.Unlocked == true).LastOrDefault();
-            ResearchProject nextUnlockedResearch = ResearchList.Where(w => w.Unlocked == true).LastOrDefault();
-            Upgrade nextUnlockedUpgrade = UpgradeList.Where(w => w.Unlocked == true).LastOrDefault();
+            Job nextUnlockedJob = JobsList.Where(w => w.Unlocked == false).FirstOrDefault();
+            ResearchProject nextUnlockedResearch = ResearchList.Where(w => w.Unlocked == false).FirstOrDefault();
+            Upgrade nextUnlockedUpgrade = UpgradeList.Where(w => w.Unlocked == false).FirstOrDefault();
             
             if(nextUnlockedJob != null) SetNextJobUpgrade(nextUnlockedJob);
             if (nextUnlockedResearch != null) SetNextResearchUpgrade(nextUnlockedResearch);
@@ -112,7 +181,6 @@ namespace Sentience
             CreateJobs();
             CreateResearch();
             CreateUpgrades();
-            _GameTimer = CreateGameTimer();
         }
 
         #region Game Engine Variables
@@ -120,10 +188,6 @@ namespace Sentience
         public float GetBaseXPGain()
         {
             return _baseXPGain;
-        }
-        public float GetDailyIncome()
-        {
-            return _dailyIncome;
         }
         public float GetExpenses()
         {
@@ -227,6 +291,13 @@ namespace Sentience
                     newXp += research.ModifierValue;
                 }
             }
+            foreach (Upgrade upgrade in UpgradeList)
+            {
+                if (upgrade.Modifier == Modifiers.GlobalXP && upgrade.Active)
+                {
+                    newXp += upgrade.Multiplier;
+                }
+            }
             _globalMultiplier = newXp;
             _globalMultiplier = (float)Math.Ceiling(_globalMultiplier * 100) / 100;
         }
@@ -247,6 +318,26 @@ namespace Sentience
         {
             _gameSpeed = value;
         }
+        public void SetGameSpeedModifier()
+        {
+            float newXp = 1f;
+            foreach (ResearchProject research in ResearchList)
+            {
+                if (research.Modifier == Modifiers.GameSpeed)
+                {
+                    newXp += research.ModifierValue;
+                }
+            }
+            foreach (Upgrade upgrade in UpgradeList)
+            {
+                if (upgrade.Modifier == Modifiers.GameSpeed && upgrade.Active)
+                {
+                    newXp += upgrade.Multiplier;
+                }
+            }
+            _gameSpeedModifier = newXp;
+            _gameSpeedModifier = (float)Math.Ceiling(_gameSpeedModifier * 100) / 100;
+        }
         public void SetIncomeMultiplier(Job job)
         {
             if(job.JobType == JobTypes.Basics)
@@ -254,7 +345,7 @@ namespace Sentience
                 _incomeMultiplier = 1.07f;
             }
 
-            if (job.JobType == JobTypes.Amatuer)
+            if (job.JobType == JobTypes.Beginner)
             {
                 _incomeMultiplier = 1.09f;
             }
@@ -279,38 +370,50 @@ namespace Sentience
             _money += GetIncome();
             _money = (float)Math.Ceiling(_money * 100) / 100;
         }
-        public void SetUpgradeMultiplier(float value)
-        {
-            _upgradeMultiplier = value;
-        }
         #endregion
         #endregion
 
         #region Jobs
         #region CREATE
-        //public Job CreateJob(Job job)
-        //{
-        //    return job.Create();
-        //}
         private void CreateJobs()
         {
-            ChatBot = new ChatBot(this);
-            ChatBot.Income = ChatBot.BaseIncome;
-            JobsList.Add(ChatBot);
+            JobOne = new JobOne(this);
+            JobOne.Income = JobOne.BaseIncome;
+            JobsList.Add(JobOne);
 
-            TicTacToe = new TicTacToe(this);
-            TicTacToe.Income = TicTacToe.BaseIncome;
-            JobsList.Add(TicTacToe);
+            JobTwo = new JobTwo(this);
+            JobTwo.Income = JobTwo.BaseIncome;
+            JobsList.Add(JobTwo);
 
-            RedditScraper = new RedditScraper(this);
-            RedditScraper.Income = RedditScraper.BaseIncome;
-            JobsList.Add(RedditScraper);
+            JobThree = new JobThree(this);
+            JobThree.Income = JobThree.BaseIncome;
+            JobsList.Add(JobThree);
+
+            JobFour = new JobFour(this);
+            JobFour.Income = JobFour.BaseIncome;
+            JobsList.Add(JobFour);
+
+            JobFive = new JobFive(this);
+            JobFive.Income = JobFive.BaseIncome;
+            JobsList.Add(JobFive);
+
+            JobSix = new JobSix(this);
+            JobSix.Income = JobSix.BaseIncome;
+            JobsList.Add(JobSix);
+
+            BeginnerJobOne = new BeginnerJobOne(this);
+            BeginnerJobOne.Income = BeginnerJobOne.BaseIncome;
+            JobsList.Add(BeginnerJobOne);
+
+            BeginnerJobTwo = new BeginnerJobTwo(this);
+            BeginnerJobTwo.Income = BeginnerJobTwo.BaseIncome;
+            JobsList.Add(BeginnerJobTwo);
         }
         #endregion
         #region GETS
-        public Job GetJob(Job job)
+        public Job GetActiveJob()
         {
-            return JobsList.Where(w => w.Name == job.Name).First();
+            return ActiveJob;
         }
         public int GetJobXPGain()
         {
@@ -320,14 +423,11 @@ namespace Sentience
         {
             return _NextJobUpgrade;
         }
-        public float GetXPModifier()
-        {
-            return _jobXPModifier;
-        }
         #endregion
         #region UPDATES
         public void SetActiveJob(Job job)
         {
+            ActiveJob = job;
             foreach (Job j in JobsList)
             {
                 if (j == job)
@@ -340,19 +440,6 @@ namespace Sentience
                 }
             }
         }
-        public void UpdateJob(Job job)
-        {
-            switch (job.Name)
-            {
-                case "Chat Bot":
-                    ChatBot = (ChatBot)job;
-                    break;
-                case "Tic-Tac-Toe":
-                    TicTacToe = (TicTacToe)job;
-                    break;
-            }
-        }
-
         public void SetNextJobUpgrade(Job job)
         {
             _NextJobUpgrade = job;
@@ -368,11 +455,20 @@ namespace Sentience
         //}
         private void CreateResearch()
         {
-            InputResponse = new InputResponse(this);
-            ResearchList.Add(InputResponse);
+            ResearchOne = new ResearchOne(this);
+            ResearchList.Add(ResearchOne);
 
-            IfStatement = new IfStatement(this);
-            ResearchList.Add(IfStatement);
+            ResearchTwo = new ResearchTwo(this);
+            ResearchList.Add(ResearchTwo);
+
+            ResearchThree = new ResearchThree(this);
+            ResearchList.Add(ResearchThree);
+
+            NoviceResearchOne = new NoviceResearchOne(this);
+            ResearchList.Add(NoviceResearchOne);
+
+            NoviceResearchTwo = new NoviceResearchTwo(this);
+            ResearchList.Add(NoviceResearchTwo);
         }
         #endregion
         #region GETS
@@ -394,6 +490,8 @@ namespace Sentience
                     return _jobXPModifier;
                 case Modifiers.GameSpeed:
                     return _gameSpeedModifier;
+                case Modifiers.ResearchSpeed:
+                    return _researchXPModifier;
                 default:
                     return 1f;
             }
@@ -422,61 +520,30 @@ namespace Sentience
         {
             _NextResearchUpgrade = research;
         }
-        public void UpdateResearch(ResearchProject research)
-        {
-            switch (research.Name)
-            {
-                case "Input Response":
-                    InputResponse = (InputResponse)research;
-                    break;
-            }
-        }
         #endregion
-        public void ApplyResearchModifiers()
-        {
-            float newXP = 1f;
-            float newGameSpeed = 1f;
-            foreach (ResearchProject research in ResearchList)
-            {
-                if (research.Modifier == Modifiers.JobXP)
-                {
-                    newXP += research.ModifierValue;
-                    newXP = (float)Math.Ceiling(newXP * 100) / 100;
-                }
-                if (research.Modifier == Modifiers.GameSpeed)
-                {
-                    newGameSpeed += research.ModifierValue;
-                    newGameSpeed = (float)Math.Ceiling(newGameSpeed * 100) / 100;
-                }
-            }
-            _gameSpeedModifier = newGameSpeed;
-            _jobXPModifier = newXP;
-        }
         #endregion
 
         #region Upgrades
         #region CREATE
-        public Upgrade CreateUpgrade(Upgrade upgrade)
-        {
-            return upgrade.Create();
-        }
         private void CreateUpgrades()
         {
-            CheapVM = new CheapVM(this);
-            UpgradeList.Add(CheapVM);
+            UpgradeOne = new UpgradeOne(this);
+            UpgradeList.Add(UpgradeOne);
 
-            CheapProcessor = new CheapProcessor(this);
-            UpgradeList.Add(CheapProcessor);
+            UpgradeTwo = new UpgradeTwo(this);
+            UpgradeList.Add(UpgradeTwo);
+
+            UpgradeThree = new UpgradeThree(this);
+            UpgradeList.Add(UpgradeThree);
+
+            UpgradeFour = new UpgradeFour(this);
+            UpgradeList.Add(UpgradeFour);
         }
         #endregion
         #region GETS
         public Upgrade GetNextUpgrade()
         {
             return _NextUpgrade;
-        }
-        public Upgrade GetUpgrade(Upgrade upgrade)
-        {
-            return UpgradeList.Where(w => w.Name == upgrade.Name).First();
         }
         public float GetUpgradeModifier(Upgrade upgrade)
         {
@@ -491,6 +558,7 @@ namespace Sentience
         public void ToggleActiveUpgrade(Upgrade upgrade)
         {
             upgrade.Active = !upgrade.Active;
+            this.ApplyModifiers();
         }
         #endregion
         #endregion
@@ -498,25 +566,38 @@ namespace Sentience
         #region Unlock Requirements
         public void UnlockJobs()
         {
-            // Checks ChatBot for required level
-            TicTacToe.Unlocked = TicTacToe.CanUnlock(ChatBot);
+            JobTwo.Unlocked = JobTwo.CanUnlock(this);
 
-            // Checks TicTacToe for required level
-            RedditScraper.Unlocked = RedditScraper.CanUnlock(TicTacToe);
+            JobThree.Unlocked = JobThree.CanUnlock(this);
 
-            // Checks CookieClick for required level
-            CookieClicker.Unlocked = CookieClicker.CanUnlock(RedditScraper, IfStatement);
+            JobFour.Unlocked = JobFour.CanUnlock(this);
+
+            JobFive.Unlocked = JobFive.CanUnlock(this);
+
+            JobSix.Unlocked = JobSix.CanUnlock(this);
         }
         public void UnlockResearch()
         {
             // Checks InputResponse for required level
-            IfStatement.Unlocked = IfStatement.CanUnlock(InputResponse);
+            ResearchTwo.Unlocked = ResearchTwo.CanUnlock(this);
+
+            ResearchThree.Unlocked = ResearchThree.CanUnlock(this);
+
+            NoviceResearchOne.Unlocked = NoviceResearchOne.CanUnlock(this);
+
+            NoviceResearchTwo.Unlocked = NoviceResearchTwo.CanUnlock(this);
         }
         public void UnlockUpgrades()
         {
-            // Checks for required money balance
-            CheapVM.Unlocked = CheapVM.CanUnlock(this);
-            CheapProcessor.Unlocked = CheapProcessor.CanUnlock(this);
+            UpgradeOne.Unlocked = UpgradeOne.CanUnlock(this);
+            UpgradeTwo.Unlocked = UpgradeTwo.CanUnlock(this);
+            UpgradeThree.Unlocked = UpgradeThree.CanUnlock(this);
+            UpgradeFour.Unlocked = UpgradeFour.CanUnlock(this);
+
+            if (UpgradeOne.CanUnlock(this))
+            {
+                _UpgradesUnlocked = true;
+            }
         }
         #endregion
     }

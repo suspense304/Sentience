@@ -14,18 +14,12 @@
         public Modifiers Modifier { get; set; }
         public float ModifierValue { get; set; } = 0f;
         public float ModifierIncrementValue { get; set; } = .01f;
-
-        //public ResearchProject Create()
-        //{
-        //    return new ResearchProject();
-        //}
-
+        public ResearchTypes ResearchType { get; set; }
         public float XPRemaining(float current)
         {
             int value = (int)(NextLevel - current);
             return (value <= 0) ? 0 : value;
         }
-
         public void LevelUp(GameEngine engine)
         {
             Level++;
@@ -40,7 +34,7 @@
         {
             ModifierValue += ModifierIncrementValue;
             ModifierValue = (float)Math.Ceiling(ModifierValue * 100) / 100;
-            engine.ApplyResearchModifiers();
+            engine.ApplyModifiers();
         }
 
         public float UpdateXP(GameEngine engine)
@@ -52,7 +46,8 @@
         {
             return (int)(Math.Floor(BaseXP * Math.Pow(engine.GetUpgradeMultiplier(), Level)));
         }
-        public virtual string GetUpgradeMessage(GameEngine engine)
+
+        public virtual string UpgradeMessage(GameEngine engine)
         {
             return "";
         }

@@ -2,6 +2,7 @@
 @using Sentience.Models.Jobs
 @using Sentience.Models.Research
 @using Sentience.Models.Upgrades
+@using System.Timers
 
 @inject GameEngine _engine
 
@@ -56,7 +57,12 @@
                 <div>
                     <span class="menu-btn @((JobsVisible) ? "menu-btn-active" : "")" @onclick="JobsView">Jobs</span>
                     <span class="menu-btn @((ResearchVisible) ? "menu-btn-active" : "")" @onclick="StudyView">Research</span>
-                    <span class="menu-btn @((UpgradeVisible) ? "menu-btn-active" : "")" @onclick="UpgradeView">Upgrades</span>
+
+                    @if(_engine.UpgradeOne.CanUnlock(_engine))
+                    {
+                        <span class="menu-btn @((UpgradeVisible) ? "menu-btn-active" : "")" @onclick="UpgradeView">Upgrades</span>
+                    }
+       
                 </div>
             </div>
 
@@ -87,71 +93,88 @@
 
                                 }
                             </table>
-                            @if (activeJob != null)
-                            {
-                                <div class="next-upgrade">
-                                    @if (_engine.GetNextJobUpgrade() != null)
-                                    {
-                                        <span>@_engine.GetNextJobUpgrade().GetUpgradeMessage(_engine)</span>
-                                    }
-                                </div>
-                            }
+
+                            <div class="next-upgrade">
+                                @if (_engine.GetNextJobUpgrade() != null)
+                                {
+                                    <span>@_engine.GetNextJobUpgrade().UpgradeMessage(_engine)</span>
+                                }
+                            </div>
                         </div>
                     }
                 }
             }
             @if (ResearchVisible)
             {
-                <div class="content-area">
-                    <table class="research-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Level</th>
-                                <th>Modifier</th>
-                                <th>XP</th>
-                                <th>NextLevel</th>
-                            </tr>
-                        </thead>
-                        @foreach (ResearchProject research in _engine.ResearchList)
-                        {
-                            if (research.Unlocked)
-                            {
-                                <ResearchComponent Research="@research" OnClick="SetActiveResearch" OnResearchTick="UpdateResearch" GenerateXP="true" />
-                            }
-                        }
-                    </table>
-                    @if (activeResearch != null)
+                @foreach (ResearchTypes type in (ResearchTypes[])Enum.GetValues(typeof(ResearchTypes)))
+                {
+                    List<ResearchProject> researchProjects = _engine.ResearchList.Where(w => w.Unlocked == true && w.ResearchType == type).ToList();
+                    @if (researchProjects.Count > 0)
                     {
-                        <div class="next-upgrade">
-                            @if (_engine.GetNextResearchUpgrade() != null)
-                            {
-                                <span>@_engine.GetNextResearchUpgrade().GetUpgradeMessage(_engine)</span>
-                            }
+                        <div class="content-area">
+                            <table class="research-table">
+                                <thead class="@type.ToString()">
+                                    <tr>
+                                        <th>@type.GetDisplayName()</th>
+                                        <th>Level</th>
+                                        <th>Income</th>
+                                        <th>XP</th>
+                                        <th>NextLevel</th>
+                                    </tr>
+                                </thead>
+                                @foreach (ResearchProject researchProject in researchProjects)
+                                {
+                                    if (researchProject.Unlocked)
+                                    {
+                                        <ResearchComponent Research="@researchProject" OnClick="SetActiveResearch" OnResearchTick="UpdateResearch" GenerateXP="true" />
+                                    }
+                                }
+                            </table>
+
+                            <div class="next-upgrade">
+                                @if (_engine.GetNextResearchUpgrade() != null)
+                                {
+                                    <span>@_engine.GetNextResearchUpgrade().UpgradeMessage(_engine)</span>
+                                }
+                            </div>
                         </div>
                     }
-                </div>
+                }
             }
             @if (UpgradeVisible)
             {
-                <div class="content-area">
-                    <table class="upgrade-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Modifier</th>
-                                <th>Expense</th>
-                            </tr>
-                        </thead>
-                        @foreach (Upgrade upgrade in _engine.UpgradeList)
-                        {
-                            if (upgrade.Unlocked)
-                            {
-                                <UpgradeComponent Upgrade="@upgrade" OnUpgradeTick="UpdateUpgrade" />
-                            }
-                        }
-                    </table>
-                </div>
+                @foreach (UpgradeTypes type in (UpgradeTypes[])Enum.GetValues(typeof(UpgradeTypes)))
+                {
+                    List<Upgrade> upgrades = _engine.UpgradeList.Where(w => w.Unlocked == true && w.UpgradeType == type).ToList();
+                    @if (upgrades.Count > 0)
+                    {
+                        <div class="content-area">
+                            <table class="upgrade-table">
+                                <thead class="@type.ToString()">
+                                    <tr>
+                                        <th>@type.GetDisplayName()</th>
+                                        <th>Modifier</th>
+                                        <th>Expense</th>
+                                    </tr>
+                                </thead>
+                                @foreach (Upgrade upgrade in _engine.UpgradeList)
+                                {
+                                    if (upgrade.Unlocked)
+                                    {
+                                        <UpgradeComponent Upgrade="@upgrade" OnUpgradeTick="UpdateUpgrade" />
+                                    }
+                                }
+                            </table>
+
+                            <div class="next-upgrade">
+                                @if (_engine.GetNextUpgrade() != null)
+                                {
+                                    <span>@_engine.GetNextUpgrade().UpgradeMessage(_engine)</span>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
             }
         </div>
     </div>
@@ -163,6 +186,7 @@
 
     public Job activeJob { get; set; }
     public ResearchProject activeResearch { get; set; }
+    public Upgrade activeUpgrade { get; set; }
 
     void SetSpeed(int value)
     {
@@ -172,6 +196,7 @@
     void SetActiveJob(Job job)
     {
         activeJob = job;
+        _engine.SetActiveJob(job);
     }
 
     void SetActiveResearch(ResearchProject research)
@@ -189,7 +214,7 @@
 
     void UpdateResearch()
     {
-        //_engine.GetJobXpModifier();
+
     }
 
     void UpdateUpgrade()

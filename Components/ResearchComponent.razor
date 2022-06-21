@@ -9,11 +9,23 @@
     {
         <tr class="@((Research.Active) ? "research-active" : "research-inactive")">
             <td @onclick="Select">
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: @((Research.CurrentXP / Research.NextLevel) * 100)%; transition: all @_engine.FormatNumber(((_engine.GetGameSpeed()/1000)))s linear;">
+                @if (GenerateXP)
+                {
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: @((Research.CurrentXP / Research.NextLevel) * 100)%; transition: all @_engine.FormatNumber(((_engine.GetGameSpeed()/1000)))s linear;">
+                        </div>
+                        <div class="progress-text">@Research.Name</div>
                     </div>
-                    <div class="progress-text">@Research.Name</div>
-                </div>
+                }
+                else
+                {
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: @((Research.CurrentXP / Research.NextLevel) * 100)%; transition: all @_engine.FormatNumber(((_engine.GetGameSpeed()/1000)))s linear;">
+                        </div>
+                        <div class="progress-text">@Research.Name</div>
+                    </div>
+                }
+
             </td>
             <td>@Research.Level</td>
             <td style="width: 250px;">x@_engine.GetResearchModifier(@Research) @Research.Modifier.GetDisplayName()</td>
@@ -25,13 +37,12 @@
     {
         <td @onclick="Select">
             <div class="progress-bar">
-                <div class="progress-fill" style="width: @((Research.CurrentXP / Research.NextLevel) * 100)%; transition: all @((_engine.GetGameSpeed()/1000).ToString("0.00"))s linear;">
+                <div class="progress-fill" style="width: @((Research.CurrentXP / Research.NextLevel) * 100)%; transition: all @((_engine.GetGameSpeed()/1000))s linear;">
                 </div>
                 <div class="progress-text">@Research.Name</div>
             </div>
         </td>
     }
-
 }
 
 
@@ -44,22 +55,7 @@
 
     [Parameter] public bool GenerateXP { get; set; }
 
-    bool isActive;
-    float nextResearchLevel;
-
     Timer ResearchTimer;
-
-    protected override async void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-        {
-            Research = _engine.ResearchList.Where(w => w.Active == true).First();
-            ResearchTimer = CreateNewTimer();
-            _engine.SetActiveResearch(Research);
-            await OnClick.InvokeAsync(Research);
-        }
-
-    }
 
     private Timer CreateNewTimer()
     {
@@ -73,22 +69,21 @@
 
     protected async void OnTick(object source, ElapsedEventArgs e)
     {
+
         if (Research.Active)
         {
             ResearchTimer.Stop();
             ResearchTimer.Dispose();
             ResearchTimer = CreateNewTimer();
-
-            Research.CurrentXP += _engine.GetResearchXPGain();
-
             if (Research.GenerateXP)
             {
+                int amount = _engine.GetResearchXPGain();
+                Research.CurrentXP += amount;
                 if (Research.CurrentXP >= Research.NextLevel)
                 {
                     Research.LevelUp(_engine);
                 }
             }
-
             await OnResearchTick.InvokeAsync(Research);
         }
         else
@@ -104,6 +99,7 @@
         {
             ResearchTimer = CreateNewTimer();
             _engine.SetActiveResearch(Research);
+            _engine.GetNextUpgrades();
             await OnClick.InvokeAsync(Research);
         }
     }

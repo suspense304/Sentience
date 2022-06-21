@@ -42,22 +42,9 @@
     [Parameter] public Job Job { get; set; }
     [Parameter] public bool GenerateIncome { get; set; }
 
-    bool isActive;
     Timer IncomeTimer;
 
-    protected override async void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-        {
-            Job = _engine.JobsList.Where(w => w.Active == true).First();
-            IncomeTimer = CreateNewTimer();
-            _engine.SetDailyIncome(Job.Income);
-            _engine.SetActiveJob(Job);
-            await OnClick.InvokeAsync(Job);
-        }
-    }
-
-    private Timer CreateNewTimer()
+    public Timer CreateNewTimer()
     {
         float gameSpeed = _engine.GetGameSpeed();
         Timer newTimer = new Timer(gameSpeed);
@@ -74,7 +61,13 @@
             IncomeTimer.Stop();
             IncomeTimer.Dispose();
             IncomeTimer = CreateNewTimer();
-            Job.CurrentXP += _engine.GetJobXPGain();
+
+            int amount = _engine.GetJobXPGain();
+
+            if(GenerateIncome)
+            {
+                Job.CurrentXP += amount;
+            }
             if (Job.CurrentXP >= Job.NextLevel)
             {
                 Job.LevelUp(_engine);
@@ -101,6 +94,7 @@
             IncomeTimer = CreateNewTimer();
             _engine.SetDailyIncome(Job.Income);
             _engine.SetActiveJob(Job);
+            _engine.GetNextUpgrades();
             await OnClick.InvokeAsync(Job);
         }
     }

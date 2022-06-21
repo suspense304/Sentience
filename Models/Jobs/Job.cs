@@ -56,7 +56,7 @@ namespace Sentience.Models.Jobs
                 return newIncome;
             }
         }
-        public virtual string GetUpgradeMessage(GameEngine engine)
+        public virtual string UpgradeMessage(GameEngine engine)
         {
             return "";
         }

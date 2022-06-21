@@ -17,9 +17,6 @@
     [Parameter] public EventCallback OnUpgradeTick { get; set; }
     [Parameter] public Upgrade Upgrade { get; set; }
 
-    bool isActive;
-    float nextResearchLevel;
-
     Timer UpgradeTimer;
 
     private Timer CreateNewTimer()
@@ -50,6 +47,7 @@
     {
         _engine.ToggleActiveUpgrade(Upgrade);
         _engine.SetExpenses();
+        _engine.GetNextUpgrades();
         UpgradeTimer = CreateNewTimer();
     }
 }
