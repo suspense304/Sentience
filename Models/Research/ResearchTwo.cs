@@ -15,15 +15,6 @@ namespace Sentience.Models.Research
             ResearchType = ResearchTypes.Fundamentals;
         }
 
-        public ResearchTwo()
-        {
-            Name = "If Statements";
-            Active = false;
-            Unlocked = false;
-            Modifier = Modifiers.GlobalXP;
-            ResearchType = ResearchTypes.Fundamentals;
-        }
-
         public bool CanUnlock(GameEngine engine)
         {
             return (engine.ResearchOne.Level > 9) ? true : false;

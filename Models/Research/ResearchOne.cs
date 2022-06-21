@@ -9,16 +9,7 @@ namespace Sentience.Models.Research
         public ResearchOne(GameEngine engine)
         {
             Name = "Input Response";
-            Active = false;
-            Unlocked = true;
-            Modifier = Modifiers.JobXP;
-            ResearchType = ResearchTypes.Fundamentals;
-        }
-
-        public ResearchOne()
-        {
-            Name = "Input Response";
-            Active = false;
+            Active = true;
             Unlocked = true;
             Modifier = Modifiers.JobXP;
             ResearchType = ResearchTypes.Fundamentals;

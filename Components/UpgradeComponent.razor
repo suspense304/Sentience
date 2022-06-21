@@ -14,40 +14,23 @@
 
 
 @code {
-    [Parameter] public EventCallback OnUpgradeTick { get; set; }
     [Parameter] public Upgrade Upgrade { get; set; }
 
-    Timer UpgradeTimer;
+    UpgradeEventArgs upgradeEvent;
 
-    private Timer CreateNewTimer()
+    protected override async Task OnInitializedAsync()
     {
-        float gameSpeed = _engine.GetGameSpeed();
-        Timer newTimer = new Timer(gameSpeed);
-        newTimer.Elapsed += new ElapsedEventHandler(OnTick);
-        newTimer.Enabled = true;
-        newTimer.AutoReset = true;
-        return new Timer(gameSpeed);
-    }
-
-    protected async void OnTick(object source, ElapsedEventArgs e)
-    {
-        if(_engine.GetMoney() <= 0)
+        UpgradeUpdated += (o, args) =>
         {
-            Upgrade.Active = false;
-            UpgradeTimer.Stop();
-            UpgradeTimer.Dispose();
-            _engine.ResetMoney();
-            _engine.SetExpenses();
-        }
-        await OnUpgradeTick.InvokeAsync();
+            upgradeEvent = args;
+            StateHasChanged();
+        };
     }
-
 
     public void Select()
     {
         _engine.ToggleActiveUpgrade(Upgrade);
         _engine.SetExpenses();
         _engine.GetNextUpgrades();
-        UpgradeTimer = CreateNewTimer();
     }
 }

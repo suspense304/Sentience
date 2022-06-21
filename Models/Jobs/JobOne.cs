@@ -9,7 +9,7 @@ namespace Sentience.Models.Jobs
         public JobOne(GameEngine engine)
         {
             Name = "Hello World";
-            Active = false;
+            Active = true;
             Unlocked = true;
             BaseIncome = 0.04f;
             BaseXP = 120;

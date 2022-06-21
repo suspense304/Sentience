@@ -1,9 +1,8 @@
-﻿@page "/"
+﻿@page "/Old"
 @using Sentience.Models.Jobs
 @using Sentience.Models.Research
 @using Sentience.Models.Upgrades
 @using System.Timers
-@using Components
 
 @inject GameEngine _engine
 
@@ -25,7 +24,7 @@
 
         <div class="col-sm-12 col-md-4">
             <div class=sidebar>
-                @if (_engine.GetActiveJob() != null)
+                @if (activeJob != null)
                 {
                     <h3>Computing Data</h3>
                     <div class="sidebar-section">
@@ -43,12 +42,12 @@
                     </div>
                     <hr />
                     <span class="active-resource">Active Job</span>
-                    <JobComponent Job="@activeJob" SideBar="true" />
+                    <Old-JobComponent Job="@activeJob" OnJobTick="UpdateJob" GenerateIncome="false" />
                 }
-                @if (_engine.GetActiveResearch() != null)
+                @if (activeResearch != null)
                 {
                     <span class="active-resource">Active Research</span>
-                    <ResearchComponent Research="@activeResearch" SideBar="true" />
+                    <Old-ResearchComponent Research="@activeResearch" OnResearchTick="UpdateResearch" GenerateXP="false" />
                 }
             </div>
         </div>
@@ -59,11 +58,11 @@
                     <span class="menu-btn @((JobsVisible) ? "menu-btn-active" : "")" @onclick="JobsView">Jobs</span>
                     <span class="menu-btn @((ResearchVisible) ? "menu-btn-active" : "")" @onclick="StudyView">Research</span>
 
-                    @if (_engine.UpgradeOne.CanUnlock(_engine))
+                    @if(_engine.UpgradeOne.CanUnlock(_engine))
                     {
                         <span class="menu-btn @((UpgradeVisible) ? "menu-btn-active" : "")" @onclick="UpgradeView">Upgrades</span>
                     }
-
+       
                 </div>
             </div>
 
@@ -89,15 +88,16 @@
                                 {
                                     if (job.Unlocked)
                                     {
-                                        <JobComponent Job="@job" OnClick="SetActiveJob" />
+                                        <Old-JobComponent Job="@job" OnClick="SetActiveJob" OnJobTick="UpdateJob" GenerateIncome="true" />
                                     }
+
                                 }
                             </table>
 
                             <div class="next-upgrade">
-                                @if (_engine._NextJobUpgrade != null)
+                                @if (_engine.GetNextJobUpgrade() != null)
                                 {
-                                    <span>@_engine._NextJobUpgrade.UpgradeMessage(_engine)</span>
+                                    <span>@_engine.GetNextJobUpgrade().UpgradeMessage(_engine)</span>
                                 }
                             </div>
                         </div>
@@ -126,7 +126,7 @@
                                 {
                                     if (researchProject.Unlocked)
                                     {
-                                        <ResearchComponent Research="@researchProject" OnClick="SetActiveResearch" />
+                                        <Old-ResearchComponent Research="@researchProject" OnClick="SetActiveResearch" OnResearchTick="UpdateResearch" GenerateXP="true" />
                                     }
                                 }
                             </table>
@@ -161,7 +161,7 @@
                                 {
                                     if (upgrade.Unlocked)
                                     {
-                                        <UpgradeComponent Upgrade="@upgrade" />
+                                        <Old-UpgradeComponent Upgrade="@upgrade" OnUpgradeTick="UpdateUpgrade" />
                                     }
                                 }
                             </table>
@@ -188,31 +188,6 @@
     public ResearchProject activeResearch { get; set; }
     public Upgrade activeUpgrade { get; set; }
 
-    JobEventArgs jobEvent;
-    ResearchEventArgs researchEvent;
-    UpgradeEventArgs upgradeEvent;
-
-    protected override void OnInitialized()
-    {
-        activeJob = _engine.GetActiveJob();
-        activeResearch = _engine.GetActiveResearch();
-        JobUpdated += (o, args) =>
-        {
-            jobEvent = args;
-            StateHasChanged();
-        };
-        ResearchUpdated += (o, args) =>
-        {
-            researchEvent = args;
-            StateHasChanged();
-        };
-        UpgradeUpdated += (o, args) =>
-        {
-            upgradeEvent = args;
-            StateHasChanged();
-        };
-    }
-
     void SetSpeed(int value)
     {
         _engine.SetGameSpeed(value);
@@ -227,7 +202,24 @@
     void SetActiveResearch(ResearchProject research)
     {
         activeResearch = research;
-        _engine.SetActiveResearch(research);
+    }
+
+    void UpdateJob(Job job)
+    {
+        if (job.GenerateIncome)
+        {
+            _engine.SetMoney();
+        }
+    }
+
+    void UpdateResearch()
+    {
+
+    }
+
+    void UpdateUpgrade()
+    {
+
     }
 
     void JobsView()

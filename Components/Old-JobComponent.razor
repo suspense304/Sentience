@@ -1,0 +1,101 @@
+﻿@using System.Timers
+@using Sentience.Models.Jobs
+
+@inject GameEngine _engine
+
+@if (Job != null)
+{
+
+    @if (GenerateIncome)
+    {
+        <tr class="@((Job.Active) ? "job-active" : "job-inactive")">
+            <td @onclick="Select">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: @((Job.CurrentXP / Job.NextLevel) * 100)%; transition: all @_engine.FormatNumber(((_engine.GetGameSpeed()/1000)))s linear;">
+                    </div>
+                    <div class="progress-text">@Job.Name</div>
+                </div>
+            </td>
+            <td>@Job.Level</td>
+            <td>$@Job.Income</td>
+            <td>@_engine.FormatNumber((_engine.GetJobXPGain()))</td>
+            <td>@_engine.FormatNumber(Job.XPRemaining(Job.CurrentXP))</td>
+        </tr>
+    }
+    else
+    {
+        <td @onclick="Select">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: @((Job.CurrentXP / Job.NextLevel) * 100)%; transition: all @_engine.FormatNumber(((_engine.GetGameSpeed()/1000)))s linear;">
+                </div>
+                <div class="progress-text">@Job.Name</div>
+            </div>
+        </td>
+    }
+
+}
+
+
+@code {
+    [Parameter] public EventCallback<Job> OnJobTick { get; set; }
+    [Parameter] public EventCallback<Job> OnClick { get; set; }
+    [Parameter] public Job Job { get; set; }
+    [Parameter] public bool GenerateIncome { get; set; }
+
+    Timer IncomeTimer;
+
+    public Timer CreateNewTimer()
+    {
+        float gameSpeed = _engine.GetGameSpeed();
+        Timer newTimer = new Timer(gameSpeed);
+        newTimer.Elapsed += new ElapsedEventHandler(OnTick);
+        newTimer.Enabled = true;
+        newTimer.AutoReset = false;
+        return new Timer(gameSpeed);
+    }
+
+    protected async void OnTick(object source, ElapsedEventArgs e)
+    {
+        if (Job.Active)
+        {
+            IncomeTimer.Stop();
+            IncomeTimer.Dispose();
+            IncomeTimer = CreateNewTimer();
+
+            int amount = _engine.GetJobXPGain();
+
+            if(GenerateIncome)
+            {
+                Job.CurrentXP += amount;
+            }
+            if (Job.CurrentXP >= Job.NextLevel)
+            {
+                Job.LevelUp(_engine);
+            }
+
+            Job.UpdateIncome(_engine);
+            Job.GenerateIncome = GenerateIncome;
+
+            _engine.SetDailyIncome(Job.Income);
+            _engine.UnlockUpgrades();
+            await OnJobTick.InvokeAsync(Job);
+        }
+        else
+        {
+            IncomeTimer.Stop();
+            IncomeTimer.Dispose();
+        }
+    }
+
+    public async void Select()
+    {
+        if (!Job.Active)
+        {
+            IncomeTimer = CreateNewTimer();
+            _engine.SetDailyIncome(Job.Income);
+            _engine.SetActiveJob(Job);
+            _engine.GetNextUpgrades();
+            await OnClick.InvokeAsync(Job);
+        }
+    }
+}

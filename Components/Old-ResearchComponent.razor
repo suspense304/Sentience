@@ -1,0 +1,106 @@
+@using System.Timers
+@using Sentience.Models.Research
+
+@inject GameEngine _engine
+
+@if (Research != null)
+{
+    @if (GenerateXP)
+    {
+        <tr class="@((Research.Active) ? "research-active" : "research-inactive")">
+            <td @onclick="Select">
+                @if (GenerateXP)
+                {
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: @((Research.CurrentXP / Research.NextLevel) * 100)%; transition: all @_engine.FormatNumber(((_engine.GetGameSpeed()/1000)))s linear;">
+                        </div>
+                        <div class="progress-text">@Research.Name</div>
+                    </div>
+                }
+                else
+                {
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: @((Research.CurrentXP / Research.NextLevel) * 100)%; transition: all @_engine.FormatNumber(((_engine.GetGameSpeed()/1000)))s linear;">
+                        </div>
+                        <div class="progress-text">@Research.Name</div>
+                    </div>
+                }
+
+            </td>
+            <td>@Research.Level</td>
+            <td style="width: 250px;">x@_engine.GetResearchModifier(@Research) @Research.Modifier.GetDisplayName()</td>
+            <td>@_engine.FormatNumber((_engine.GetResearchXPGain()))</td>
+            <td>@_engine.FormatNumber(Research.XPRemaining(Research.CurrentXP))</td>
+        </tr>
+    }
+    else
+    {
+        <td @onclick="Select">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: @((Research.CurrentXP / Research.NextLevel) * 100)%; transition: all @((_engine.GetGameSpeed()/1000))s linear;">
+                </div>
+                <div class="progress-text">@Research.Name</div>
+            </div>
+        </td>
+    }
+}
+
+
+@code {
+    [Parameter] public EventCallback OnResearchTick { get; set; }
+
+    [Parameter] public EventCallback<ResearchProject> OnClick { get; set; }
+
+    [Parameter] public ResearchProject Research { get; set; }
+
+    [Parameter] public bool GenerateXP { get; set; }
+
+    Timer ResearchTimer;
+
+    private Timer CreateNewTimer()
+    {
+        float gameSpeed = _engine.GetGameSpeed();
+        Timer newTimer = new Timer(gameSpeed);
+        newTimer.Elapsed += new ElapsedEventHandler(OnTick);
+        newTimer.Enabled = true;
+        newTimer.AutoReset = false;
+        return new Timer(gameSpeed);
+    }
+
+    protected async void OnTick(object source, ElapsedEventArgs e)
+    {
+
+        if (Research.Active)
+        {
+            ResearchTimer.Stop();
+            ResearchTimer.Dispose();
+            ResearchTimer = CreateNewTimer();
+            if (Research.GenerateXP)
+            {
+                int amount = _engine.GetResearchXPGain();
+                Research.CurrentXP += amount;
+                if (Research.CurrentXP >= Research.NextLevel)
+                {
+                    Research.LevelUp(_engine);
+                }
+            }
+            await OnResearchTick.InvokeAsync(Research);
+        }
+        else
+        {
+            ResearchTimer.Stop();
+            ResearchTimer.Dispose();
+        }
+    }
+
+    public async void Select()
+    {
+        if (!Research.Active)
+        {
+            ResearchTimer = CreateNewTimer();
+            _engine.SetActiveResearch(Research);
+            _engine.GetNextUpgrades();
+            await OnClick.InvokeAsync(Research);
+        }
+    }
+}

@@ -8,25 +8,24 @@ using Timer = System.Timers.Timer;
 
 namespace Sentience
 {
-    public class GameEngine
+    public class GameEngine: EventBase
     {
-        public BeginnerJobOne BeginnerJobOne { get; private set; } 
-        public BeginnerJobTwo BeginnerJobTwo { get; private set; } 
-        public JobOne JobOne { get; private set; } 
-        public JobTwo JobTwo { get; private set; } 
+        #region Declarations
+        public BeginnerJobOne BeginnerJobOne { get; private set; }
+        public BeginnerJobTwo BeginnerJobTwo { get; private set; }
+        public JobOne JobOne { get; private set; }
+        public JobTwo JobTwo { get; private set; }
         public JobThree JobThree { get; private set; }
         public JobFour JobFour { get; private set; }
-        public JobFive JobFive { get; private set; } 
-        public JobSix JobSix { get; private set; } 
-
+        public JobFive JobFive { get; private set; }
+        public JobSix JobSix { get; private set; }
         public UpgradeOne UpgradeOne { get; private set; }
         public UpgradeTwo UpgradeTwo { get; private set; }
         public UpgradeThree UpgradeThree { get; private set; }
         public UpgradeFour UpgradeFour { get; private set; }
-
-        public ResearchOne ResearchOne { get; private set; } 
-        public ResearchTwo ResearchTwo { get; private set; } 
-        public ResearchThree ResearchThree { get; private set; } 
+        public ResearchOne ResearchOne { get; private set; }
+        public ResearchTwo ResearchTwo { get; private set; }
+        public ResearchThree ResearchThree { get; private set; }
         public NoviceResearchOne NoviceResearchOne { get; private set; }
         public NoviceResearchTwo NoviceResearchTwo { get; private set; }
 
@@ -50,38 +49,56 @@ namespace Sentience
         public List<ResearchProject> ResearchList = new List<ResearchProject>();
         public List<Upgrade> UpgradeList = new List<Upgrade>();
 
-        private Job _NextJobUpgrade;
-        private ResearchProject _NextResearchUpgrade;
-        private Upgrade _NextUpgrade;
-
+        public Job _NextJobUpgrade { get; private set; }
+        public ResearchProject _NextResearchUpgrade { get; private set; }
+        public Upgrade _NextUpgrade { get; private set; }
         private Timer _GameTimer { get; set; }
-
         private Job ActiveJob { get; set; }
-
+        private ResearchProject ActiveResearch { get; set; }
         private bool _UpgradesUnlocked = false;
+        #endregion
 
-        // I WANT TO EVENTUALLY MOVE THE ENTIRE GAMES TIMER SYSTEM TO THE GAME ENGINE
-        // CURRENTLY I AM NOT SURE HOW TO UPDATE THE COMPONENTS FROM THIS CLASS
-        // THIS CODE IS CURRENTLY NOT USED
         #region GAME ENGINE TIMER
-        //private Timer CreateGameTimer()
-        //{
-        //    float gameSpeed = GetGameSpeed();
-        //    Timer newTimer = new Timer(gameSpeed);
-        //    newTimer.Elapsed += new ElapsedEventHandler(RunDailyActions);
-        //    newTimer.Enabled = true;
-        //    newTimer.AutoReset = true;
-        //    return new Timer(gameSpeed);
-        //}
+        private Timer CreateGameTimer()
+        {
+            float gameSpeed = GetGameSpeed();
+            Timer newTimer = new Timer(gameSpeed);
+            newTimer.Elapsed += new ElapsedEventHandler(RunDailyActions);
+            newTimer.Enabled = true;
+            newTimer.AutoReset = false;
+            return new Timer(gameSpeed);
+        }
+        public Timer GetGameTimer()
+        {
+            return _GameTimer;
+        }
+        private void RunDailyActions(object source, ElapsedEventArgs e)
+        {
+            Console.WriteLine(JobOne.Level);
 
-        //public Timer GetGameTimer()
-        //{
-        //    return _GameTimer;
-        //}
-        //private void RunDailyActions(object source, ElapsedEventArgs e)
-        //{
-        //    GetNextUpgrades();
-        //}
+            GetNextJobUpgrade();
+            GetNextUpgrades();
+
+            UpdateJobData();
+            UpdateResearchData();
+
+            UnlockJobs();
+            UnlockResearch();
+            UnlockUpgrades();
+
+
+            _GameTimer.Stop();
+            _GameTimer.Dispose();
+            _GameTimer = CreateGameTimer();
+        }
+        public GameEngine()
+        {
+            CreateJobs();
+            CreateResearch();
+            CreateUpgrades();
+            GetStartingActives();
+            _GameTimer = CreateGameTimer();
+        }
         #endregion
 
         #region FUNCTIONS
@@ -170,18 +187,41 @@ namespace Sentience
             Job nextUnlockedJob = JobsList.Where(w => w.Unlocked == false).FirstOrDefault();
             ResearchProject nextUnlockedResearch = ResearchList.Where(w => w.Unlocked == false).FirstOrDefault();
             Upgrade nextUnlockedUpgrade = UpgradeList.Where(w => w.Unlocked == false).FirstOrDefault();
-            
-            if(nextUnlockedJob != null) SetNextJobUpgrade(nextUnlockedJob);
+
+            if (nextUnlockedJob != null) SetNextJobUpgrade(nextUnlockedJob);
             if (nextUnlockedResearch != null) SetNextResearchUpgrade(nextUnlockedResearch);
             if (nextUnlockedUpgrade != null) SetNextUpgrade(nextUnlockedUpgrade);
         }
-        #endregion
-        public GameEngine()
+        public void GetStartingActives()
         {
-            CreateJobs();
-            CreateResearch();
-            CreateUpgrades();
+            ActiveJob = JobsList.Where(w => w.Active).FirstOrDefault();
+            ActiveResearch = ResearchList.Where(w => w.Active).FirstOrDefault();
         }
+        private void UpdateJobData()
+        {
+            if (ActiveJob != null)
+            {
+                ActiveJob.CurrentXP += GetJobXPGain();
+                if (ActiveJob.CurrentXP >= ActiveJob.NextLevel)
+                {
+                    ActiveJob.LevelUp(this);
+                }
+                ActiveJob.UpdateIncome(this);
+                SetDailyIncome(ActiveJob.Income);
+                SetMoney();
+            }
+            TriggerJobUpdate("Job Updated");
+        }
+        private void UpdateResearchData()
+        {
+            ActiveResearch.CurrentXP += GetResearchXPGain();
+            if (ActiveResearch.CurrentXP >= ActiveResearch.NextLevel)
+            {
+                ActiveResearch.LevelUp(this);
+            }
+            TriggerResearchUpdate("Research Updated");
+        }
+        #endregion
 
         #region Game Engine Variables
         #region GETS
@@ -201,7 +241,7 @@ namespace Sentience
         {
             // GETS TOTAL LEVELS AND RETURNS THE PERCENTAGE FOR THE MODIFIER TO ADD TO XP GAIN
             int levels = 0;
-            foreach(Job job in JobsList)
+            foreach (Job job in JobsList)
             {
                 levels += job.Level;
             }
@@ -228,7 +268,7 @@ namespace Sentience
             float newXp = 1f;
             foreach (ResearchProject research in ResearchList)
             {
-                if (research.Modifier == Modifiers.JobXP)
+                if (research.Modifier == Modifiers.JobXP && research.Level > 0)
                 {
                     newXp += research.ModifierValue;
                 }
@@ -252,7 +292,7 @@ namespace Sentience
             float newXp = 1f;
             foreach (ResearchProject research in ResearchList)
             {
-                if (research.Modifier == Modifiers.ResearchSpeed)
+                if (research.Modifier == Modifiers.ResearchSpeed && research.Level > 0)
                 {
                     newXp += research.ModifierValue;
                 }
@@ -286,7 +326,7 @@ namespace Sentience
             float newXp = 1f;
             foreach (ResearchProject research in ResearchList)
             {
-                if (research.Modifier == Modifiers.GlobalXP)
+                if (research.Modifier == Modifiers.GlobalXP && research.Level > 0)
                 {
                     newXp += research.ModifierValue;
                 }
@@ -340,7 +380,7 @@ namespace Sentience
         }
         public void SetIncomeMultiplier(Job job)
         {
-            if(job.JobType == JobTypes.Basics)
+            if (job.JobType == JobTypes.Basics)
             {
                 _incomeMultiplier = 1.07f;
             }
@@ -421,6 +461,7 @@ namespace Sentience
         }
         public Job GetNextJobUpgrade()
         {
+            TriggerJobUpdate("Job Updated");
             return _NextJobUpgrade;
         }
         #endregion
@@ -472,6 +513,10 @@ namespace Sentience
         }
         #endregion
         #region GETS
+        public ResearchProject GetActiveResearch()
+        {
+            return ActiveResearch;
+        }
         public ResearchProject GetNextResearchUpgrade()
         {
             return _NextResearchUpgrade;
@@ -504,6 +549,7 @@ namespace Sentience
         #region UPDATES
         public void SetActiveResearch(ResearchProject research)
         {
+            ActiveResearch = research;
             foreach (ResearchProject j in ResearchList)
             {
                 if (j == research)

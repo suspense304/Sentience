@@ -10,16 +10,6 @@
             Modifier = Modifiers.ResearchSpeed;
             ResearchType = ResearchTypes.Fundamentals;
         }
-
-        public ResearchThree()
-        {
-            Name = "For Loops";
-            Active = true;
-            Unlocked = false;
-            Modifier = Modifiers.ResearchSpeed;
-            ResearchType = ResearchTypes.Fundamentals;
-        }
-
         public bool CanUnlock(GameEngine engine)
         {
             return (engine.ResearchTwo.Level > 19) ? true : false;

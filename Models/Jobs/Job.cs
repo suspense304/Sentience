@@ -19,11 +19,6 @@ namespace Sentience.Models.Jobs
         public int BaseCost { get; set; }
         public string Name { get; set; }
         public JobTypes JobType { get; set; }
-
-        //public Job Create() 
-        //{
-        //    return new Job();
-        //}
         public float XPRemaining(float current)
         {
             int value = (int)(NextLevel - current);
