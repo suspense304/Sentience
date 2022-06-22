@@ -6,7 +6,7 @@
         {
             Name = "Cheap VM";
             Active = false;
-            Expense = 0.54f;
+            Expense = 0.37f;
             Unlocked = false;
             Modifier = Modifiers.JobXP;
             Multiplier = 2f;

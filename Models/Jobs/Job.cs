@@ -28,7 +28,7 @@ namespace Sentience.Models.Jobs
         {
             Level++;
             NextLevel = GetNextUpdateAmount(NextLevel, engine);
-            engine.SetIncomeMultiplier(this);
+            engine.GetIncomeMultiplier();
             Income = UpdateIncome(engine);
             engine.SetDailyIncome(Income);
             CurrentXP = 0;

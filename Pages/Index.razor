@@ -14,10 +14,10 @@
             <img src="/logo.png" /><span style="font-size: 2em; letter-spacing: 1.04em; font-weight: 800; position: absolute; bottom: 0;">Sentience</span>
         </div>
         <div style="float:right">
-            <input class="btn btn-primary" type="button" @onclick="() => SetSpeed(1)" value="Speed 1" />
-            <input class="btn btn-primary" type="button" @onclick="() => SetSpeed(2)" value="Speed 2" />
-            <input class="btn btn-primary" type="button" @onclick="() => SetSpeed(3)" value="Speed 3" />
-            <input class="btn btn-primary" type="button" @onclick="() => SetSpeed(4)" value="Speed 4" />
+            <input class="btn" style="background-color: #1808a5; color: white;" type="button" @onclick="() => SetSpeed(1)" value="Speed 1" />
+            <input class="btn" style="background-color: #1808a5; color: white;" type="button" @onclick="() => SetSpeed(2)" value="Speed 2" />
+            <input class="btn" style="background-color: #1808a5; color: white;" type="button" @onclick="() => SetSpeed(3)" value="Speed 3" />
+            <input class="btn" style="background-color: #1808a5; color: white;" type="button" @onclick="() => SetSpeed(4)" value="Speed 4" />
         </div>
     </div>
     <br />
@@ -42,7 +42,7 @@
                     <hr />
                     <h3>Financial Data</h3>
                     <div class="sidebar-section">
-                        <span class="label-text">Money: </span><span class="money">$@_engine.FormatNumber(@_engine.GetMoney())</span><br />
+                        <span class="label-text">Money: </span><span class="money">$@_engine.FormatNumber(@_engine.GetMoney())</span><br /><br />
                         <span class="label-text">Net: </span><span class="income">$@_engine.FormatNumber(@_engine.GetIncome())</span><br />
                         <span class="label-text">Income: </span><span class="daily-income">$@_engine.FormatNumber(@activeJob.Income)</span><br />
                         <span class="label-text">Expenses: </span><span class="expenses">$@_engine.FormatNumber(@_engine.GetExpenses())</span>

@@ -56,8 +56,8 @@ namespace Sentience
         private float _baseXPGain = 12f;
         private float _gameSpeed = 1f;
         private float _globalMultiplier = 1f;
-        private float _incomeMultiplier = 1.05f;
-        private float _upgradeMultiplier = 1.07f;
+        private float _incomeMultiplier = 1.04f;
+        private float _upgradeMultiplier = 1.12f;
 
         private float _gameSpeedModifier = 1f;
         private float _globalLevelModifier = 0.1f;
@@ -118,6 +118,7 @@ namespace Sentience
         private void RunDailyActions(object source, ElapsedEventArgs e)
         {
             UpdateDate();
+            CheckBankruptcy();
 
             GetNextJobUpgrade();
             GetNextUpgrades();
@@ -133,8 +134,6 @@ namespace Sentience
             _GameTimer.Stop();
             _GameTimer.Dispose();
             _GameTimer = CreateGameTimer();
-
-            Console.WriteLine(FormatNumber(GetResearchXPGain()));
         }
         public GameEngine()
         {
@@ -205,6 +204,19 @@ namespace Sentience
             _jobXPModifier = newXP;
             _globalMultiplier = newGlobalXp;
             _researchXPModifier = newResearchSpeed;
+        }
+        public void CheckBankruptcy()
+        {
+            if(_money <= 0)
+            {
+                foreach(Upgrade upgrade in UpgradeList)
+                {
+                    upgrade.Active = false;
+                }
+                SetExpenses();
+                _money = 0;
+                TriggerUpgradeUpdate("Upgrades Updated");
+            }
         }
         public void CreatePages()
         {
@@ -465,33 +477,6 @@ namespace Sentience
             }
             _gameSpeedModifier = newXp;
             _gameSpeedModifier = (float)Math.Ceiling(_gameSpeedModifier * 100) / 100;
-        }
-        public void SetIncomeMultiplier(Job job)
-        {
-            if (job.JobType == JobTypes.Basics)
-            {
-                _incomeMultiplier = 1.07f;
-            }
-
-            if (job.JobType == JobTypes.Beginner)
-            {
-                _incomeMultiplier = 1.09f;
-            }
-
-            if (job.JobType == JobTypes.Novice)
-            {
-                _incomeMultiplier = 1.11f;
-            }
-
-            if (job.JobType == JobTypes.Expert)
-            {
-                _incomeMultiplier = 1.13f;
-            }
-
-            if (job.JobType == JobTypes.Sentient)
-            {
-                _incomeMultiplier = 1.15f;
-            }
         }
         public void SetMoney()
         {
