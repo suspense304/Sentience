@@ -9,9 +9,9 @@ namespace Sentience.Models.Jobs
             Name = "Tic-Tac-Toe";
             Active = false;
             Unlocked = false;
-            BaseIncome = 94.58f;
-            BaseXP = 1147345;
-            NextLevel = 1147345;
+            BaseIncome = 24.28f;
+            BaseXP = 61135;
+            NextLevel = 61135;
             JobType = JobTypes.Basics;
         }
         public bool CanUnlock(GameEngine engine)

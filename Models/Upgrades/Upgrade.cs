@@ -9,6 +9,10 @@
         public Modifiers Modifier { get; set; }
         public string Name { get; set; } = "";
         public UpgradeTypes UpgradeType { get; set; }
+        public string GetModifierAmount(GameEngine engine)
+        {
+            return "x" + engine.FormatNumber(Multiplier);
+        }
         public virtual string UpgradeMessage(GameEngine engine)
         {
             return "";

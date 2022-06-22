@@ -36,4 +36,8 @@
     <None Include="Components\Old-JobComponent.razor" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\NewFolder\" />
+  </ItemGroup>
+
 </Project>

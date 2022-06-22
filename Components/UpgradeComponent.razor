@@ -7,7 +7,7 @@
 {
     <tr class="@((Upgrade.Active) ? "upgrade-active" : "upgrade-inactive")">
         <td @onclick="Select" style="cursor: pointer;">@Upgrade.Name</td>
-        <td>x@_engine.GetUpgradeModifier(@Upgrade) @Upgrade.Modifier.GetDisplayName()</td>
+        <td>@Upgrade.GetModifierAmount(_engine) @Upgrade.Modifier.GetDisplayName()</td>
         <td>$@Upgrade.Expense</td>
     </tr>
 }

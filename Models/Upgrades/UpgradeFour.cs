@@ -6,7 +6,7 @@
         {
             Name = "Dusty Motherboard";
             Active = false;
-            Expense = 1f;
+            Expense = 5f;
             Unlocked = false;
             Modifier = Modifiers.GlobalXP;
             Multiplier = 4f;
@@ -17,7 +17,7 @@
         {
             if (!Unlocked)
             {
-                if (engine.GetMoney() > 5000)
+                if (engine.GetMoney() >= 5000)
                 {
                     Unlocked = true;
                     engine.GetNextUpgrades();
@@ -32,7 +32,7 @@
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return "Money: " + engine.FormatNumber(engine.GetMoney()) + "/5000";
+            return $"Money: " + engine.FormatNumber(engine.GetMoney()) + "/5000";
         }
     }
 }

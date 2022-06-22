@@ -6,7 +6,7 @@
         {
             Name = "90s GPU";
             Active = false;
-            Expense = .74f;
+            Expense = 1.35f;
             Unlocked = false;
             Modifier = Modifiers.GameSpeed;
             Multiplier = 0.25f;
@@ -17,7 +17,7 @@
         {
             if (!Unlocked)
             {
-                if (engine.GetMoney() > 1000)
+                if (engine.GetMoney() >= 500)
                 {
                     Unlocked = true;
                     engine.GetNextUpgrades();
@@ -32,7 +32,7 @@
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return "Money: " + engine.FormatNumber(engine.GetMoney()) + "/1000";
+            return $"Money: " + engine.FormatNumber(engine.GetMoney()) + "/500";
         }
     }
 }

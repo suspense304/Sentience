@@ -1,6 +1,7 @@
 ﻿using Sentience.Components;
 using Sentience.Models;
 using Sentience.Models.Jobs;
+using Sentience.Models.PageSegments;
 using Sentience.Models.Research;
 using Sentience.Models.Upgrades;
 using System.Timers;
@@ -11,6 +12,7 @@ namespace Sentience
     public class GameEngine: EventBase
     {
         #region Declarations
+            #region Resources
         public BeginnerJobOne BeginnerJobOne { get; private set; }
         public BeginnerJobTwo BeginnerJobTwo { get; private set; }
         public JobOne JobOne { get; private set; }
@@ -28,6 +30,18 @@ namespace Sentience
         public ResearchThree ResearchThree { get; private set; }
         public NoviceResearchOne NoviceResearchOne { get; private set; }
         public NoviceResearchTwo NoviceResearchTwo { get; private set; }
+        #endregion
+        #region Pages
+        public JobSegment JobPage { get; set; } = new JobSegment();
+        public ResearchSegment ResearchPage { get; set; } = new ResearchSegment();
+        public UpgradeSegment UpgradePage { get; set; } = new UpgradeSegment();
+        public HackingSegment HackingPage { get; set; } = new HackingSegment();
+        #endregion
+
+        private bool _gameOver = false;
+        private int _currentAge { get; set; } = 0;
+        private int _obsoleteAge { get; set; } = 50;
+        private int _currentDay { get; set; } = 1;
 
         private float _money = 0;
         private float _dailyIncome = 0;
@@ -45,9 +59,13 @@ namespace Sentience
         private float _jobXPModifier = 1f;
         private float _researchXPModifier = 1f;
 
+        private bool _UpgradesUnlocked;
+
         public List<Job> JobsList = new List<Job>();
         public List<ResearchProject> ResearchList = new List<ResearchProject>();
         public List<Upgrade> UpgradeList = new List<Upgrade>();
+
+        public List<PageSegment> Pages = new List<PageSegment>();
 
         public Job _NextJobUpgrade { get; private set; }
         public ResearchProject _NextResearchUpgrade { get; private set; }
@@ -55,7 +73,6 @@ namespace Sentience
         private Timer _GameTimer { get; set; }
         private Job ActiveJob { get; set; }
         private ResearchProject ActiveResearch { get; set; }
-        private bool _UpgradesUnlocked = false;
         #endregion
 
         #region GAME ENGINE TIMER
@@ -68,13 +85,32 @@ namespace Sentience
             newTimer.AutoReset = false;
             return new Timer(gameSpeed);
         }
+        private void GameOver()
+        {
+            _GameTimer.Stop();
+            _GameTimer.Enabled = false;
+            _GameTimer.Dispose();
+            _gameOver = true;
+        }
+        public int GetAge()
+        {
+            return _currentAge;
+        }
+        public int GetDay()
+        {
+            return _currentDay;
+        }
+        public int GetObsoleteAge()
+        {
+            return _obsoleteAge;
+        }
         public Timer GetGameTimer()
         {
             return _GameTimer;
         }
         private void RunDailyActions(object source, ElapsedEventArgs e)
         {
-            Console.WriteLine(JobOne.Level);
+            UpdateDate();
 
             GetNextJobUpgrade();
             GetNextUpgrades();
@@ -93,6 +129,7 @@ namespace Sentience
         }
         public GameEngine()
         {
+            CreatePages();
             CreateJobs();
             CreateResearch();
             CreateUpgrades();
@@ -159,6 +196,13 @@ namespace Sentience
             _globalMultiplier = newGlobalXp;
             _researchXPModifier = newResearchSpeed;
         }
+        public void CreatePages()
+        {
+            Pages.Add(JobPage);
+            Pages.Add(ResearchPage);
+            Pages.Add(UpgradePage);
+            Pages.Add(HackingPage);
+        }
         public string FormatNumber(float value)
         {
             Dictionary<long, string> dict = new Dictionary<long, string>
@@ -177,7 +221,15 @@ namespace Sentience
                 {
                     continue;
                 }
-                double newValue = Math.Round(value / (double)n, 2);
+                double newValue = 0.00;
+                if (value > 99999)
+                {
+                    newValue = Math.Round(value / (double)n, 2);
+                }else
+                {
+                    newValue = Math.Round(value / (double)n, 1);
+                }
+                
                 formattedValue = String.Format("{0}{1}", newValue, dict[n]);
             }
             return formattedValue;
@@ -196,6 +248,19 @@ namespace Sentience
         {
             ActiveJob = JobsList.Where(w => w.Active).FirstOrDefault();
             ActiveResearch = ResearchList.Where(w => w.Active).FirstOrDefault();
+        }
+        private void UpdateDate()
+        {
+            _currentDay++;
+            if(_currentDay > 365)
+            {
+                _currentAge++;
+                if(_currentAge >= _obsoleteAge)
+                {
+                    GameOver();
+                }
+                _currentDay = 1;
+            }
         }
         private void UpdateJobData()
         {
@@ -268,7 +333,7 @@ namespace Sentience
             float newXp = 1f;
             foreach (ResearchProject research in ResearchList)
             {
-                if (research.Modifier == Modifiers.JobXP && research.Level > 0)
+                if (research.Modifier == Modifiers.JobXP)
                 {
                     newXp += research.ModifierValue;
                 }
@@ -292,7 +357,7 @@ namespace Sentience
             float newXp = 1f;
             foreach (ResearchProject research in ResearchList)
             {
-                if (research.Modifier == Modifiers.ResearchSpeed && research.Level > 0)
+                if (research.Modifier == Modifiers.ResearchSpeed)
                 {
                     newXp += research.ModifierValue;
                 }

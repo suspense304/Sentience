@@ -6,7 +6,7 @@
         {
             Name = "Cheap VM";
             Active = false;
-            Expense = 0.25f;
+            Expense = 0.13f;
             Unlocked = false;
             Modifier = Modifiers.JobXP;
             Multiplier = 2f;
@@ -16,7 +16,7 @@
         {
             if (!Unlocked)
             {
-                if(engine.GetMoney() > 25)
+                if(engine.GetMoney() >= 10)
                 {
                     Unlocked = true;
                     engine.GetNextUpgrades();
@@ -30,7 +30,7 @@
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return "Money: " + engine.FormatNumber(engine.GetMoney()) + "/25";
+            return "Money: $" + engine.FormatNumber(engine.GetMoney()) + "/10";
         }
     }
 }

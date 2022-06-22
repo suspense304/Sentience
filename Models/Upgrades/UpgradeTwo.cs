@@ -6,7 +6,7 @@
         {
             Name = "Ancient Processor";
             Active = false;
-            Expense = 0.35f;
+            Expense = 0.42f;
             Unlocked = false;
             Modifier = Modifiers.ResearchSpeed;
             Multiplier = 4f;
@@ -17,7 +17,7 @@
         {
             if (!Unlocked)
             {
-                if (engine.GetMoney() > 100)
+                if (engine.GetMoney() >= 50)
                 {
                     Unlocked = true;
                     engine.GetNextUpgrades();
@@ -32,7 +32,7 @@
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return "Money: " + engine.FormatNumber(engine.GetMoney()) + "/100";
+            return "Money: $" + engine.FormatNumber(engine.GetMoney()) + "/50";
         }
     }
 }

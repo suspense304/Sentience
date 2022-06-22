@@ -12,8 +12,8 @@ namespace Sentience.Models.Jobs
             Active = true;
             Unlocked = true;
             BaseIncome = 0.04f;
-            BaseXP = 120;
-            NextLevel = 120;
+            BaseXP = 40;
+            NextLevel = 40;
             JobType = JobTypes.Basics;
         }
     }

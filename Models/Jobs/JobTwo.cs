@@ -11,9 +11,9 @@ namespace Sentience.Models.Jobs
             Name = "Odd Or Even";
             Active = false;
             Unlocked = false;
-            BaseIncome = .36f;
-            BaseXP = 750;
-            NextLevel = 750;
+            BaseIncome = .35f;
+            BaseXP = 250;
+            NextLevel = 250;
             JobType = JobTypes.Basics;
         }
         public bool CanUnlock(GameEngine engine)

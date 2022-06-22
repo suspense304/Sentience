@@ -1,4 +1,8 @@
-﻿body {
+﻿* {
+    font-family: 'Raleway', sans-serif;
+}
+
+body {
     padding: 25px;
     background-color: #191919;
     color: #fff;
@@ -6,7 +10,7 @@
 
 .jobs-table {
     border-collapse: collapse;
-    margin: 20px 0;
+    margin-top: 5px;
     font-size: 0.9em;
     font-family: sans-serif;
     width: 100%;
@@ -20,12 +24,16 @@
 
     .jobs-table th, 
     .jobs-table td {
-        padding: 12px 15px;
+        padding: 8px 15px;
     }
 
     .jobs-table td{
         font-size: 1.1em;
         width: 100px;
+    }
+
+    .jobs-table tr {
+        border-bottom: 2px double #adabab30;
     }
 
 .job-active {
@@ -40,7 +48,7 @@
 
 .research-table {
     border-collapse: collapse;
-    margin: 20px 0;
+    margin-top: 5px;
     font-size: 0.9em;
     font-family: sans-serif;
     width: 100%;
@@ -55,7 +63,7 @@
 
     .research-table th,
     .research-table td {
-        padding: 12px 15px;
+        padding: 8px 15px;
     }
 
     .research-table td {
@@ -76,7 +84,7 @@
 
 .upgrade-table {
     border-collapse: collapse;
-    margin: 20px 0;
+    margin-top: 5px;
     font-size: 0.9em;
     font-family: sans-serif;
     width: 100%;
@@ -92,7 +100,7 @@
 
     .upgrade-table th,
     .upgrade-table td {
-        padding: 12px 15px;
+        padding: 8px 15px;
     }
 
     .upgrade-table td {
@@ -114,8 +122,6 @@
 
 .next-upgrade {
     height: 24px;
-    padding-left: 20px;
-    font-size: 1.05em;
     font-size: 1.05em;
     color: #706f6f;
 }
@@ -149,8 +155,8 @@
     }
 
 .content-area {
-    padding: 20px;
-    margin-top: 20px;
+    padding: 8px 0px 5px 15px;
+    margin-top: 10px;
     background-color: #232222;
 }
 
@@ -167,11 +173,14 @@
 }
 
 /*PROGRESS BARS*/
-.progress-bar {
+
+.progress-bar
+{
     position: relative;
     cursor: pointer;
-    width: 200px;
+    width: 250px;
     border: 1px black solid;
+    background-color: #1808a5;
 }
 
 .progress-text {
@@ -186,6 +195,18 @@
 .progress-fill {
     height: 30px;
     background-color: #d9af25;
+}
+
+.job-active .progress-bar .progress-fill,
+.research-active .progress-bar .progress-fill {
+    height: 30px;
+    background-color: #d9af25;
+}
+
+.job-inactive .progress-bar .progress-fill,
+.research-inactive .progress-bar .progress-fill{
+    height: 30px;
+    background-color: #43435a;
 }
 
 .active-resource {
@@ -230,12 +251,27 @@
     color: #e80d0d;
 }
 
+.time-data{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2px;
+    margin-bottom: 20px;
+}
+.age {
+    display: inline-block;
+    font-size: 1.5em;
+}
+.obsoletion {
+    display: block;
+    font-size: 1.05em;
+    color: #706f6f;
+}
 
 /*JOB TYPE STYLING*/
 .Basics tr,
 .Fundamentals tr,
-.Scrapyard tr
-{
+.Scrapyard tr {
     background-color: #419f2a;
     color: #fff;
     font-size: 1.08em;

@@ -9,9 +9,9 @@ namespace Sentience.Models.Jobs
             Name = "Pong";
             Active = false;
             Unlocked = false;
-            BaseIncome = 251f;
-            BaseXP = 7175805;
-            NextLevel = 7175805;
+            BaseIncome = 94.13f;
+            BaseXP = 382354;
+            NextLevel = 382354;
             JobType = JobTypes.Basics;
         }
         public bool CanUnlock(GameEngine engine)

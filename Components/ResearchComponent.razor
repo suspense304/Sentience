@@ -26,7 +26,7 @@
                 </div>
         </td>
         <td>@Research.Level</td>
-        <td style="width: 250px;">x@_engine.GetResearchModifier(@Research) @Research.Modifier.GetDisplayName()</td>
+        <td style="width: 250px;">@Research.GetModifierAmount(_engine) @Research.Modifier.GetDisplayName()</td>
         <td>@_engine.FormatNumber((_engine.GetResearchXPGain()))</td>
         <td>@_engine.FormatNumber(Research.XPRemaining(Research.CurrentXP))</td>
     </tr> 
