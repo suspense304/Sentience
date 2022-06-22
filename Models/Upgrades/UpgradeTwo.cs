@@ -6,7 +6,7 @@
         {
             Name = "Ancient Processor";
             Active = false;
-            Expense = 0.42f;
+            Expense = 1.80f;
             Unlocked = false;
             Modifier = Modifiers.ResearchSpeed;
             Multiplier = 4f;

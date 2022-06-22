@@ -6,7 +6,7 @@
         {
             Name = "Dusty Motherboard";
             Active = false;
-            Expense = 5f;
+            Expense = 45f;
             Unlocked = false;
             Modifier = Modifiers.GlobalXP;
             Multiplier = 4f;

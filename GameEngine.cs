@@ -3,6 +3,8 @@ using Sentience.Models;
 using Sentience.Models.Jobs;
 using Sentience.Models.PageSegments;
 using Sentience.Models.Research;
+using Sentience.Models.StoryElements;
+using Sentience.Models.StoryElements.Hacking;
 using Sentience.Models.Upgrades;
 using System.Timers;
 using Timer = System.Timers.Timer;
@@ -31,11 +33,14 @@ namespace Sentience
         public NoviceResearchOne NoviceResearchOne { get; private set; }
         public NoviceResearchTwo NoviceResearchTwo { get; private set; }
         #endregion
-        #region Pages
-        public JobSegment JobPage { get; set; } = new JobSegment();
-        public ResearchSegment ResearchPage { get; set; } = new ResearchSegment();
-        public UpgradeSegment UpgradePage { get; set; } = new UpgradeSegment();
-        public HackingSegment HackingPage { get; set; } = new HackingSegment();
+            #region Pages
+            public JobSegment JobPage { get; set; } = new JobSegment();
+            public ResearchSegment ResearchPage { get; set; } = new ResearchSegment();
+            public UpgradeSegment UpgradePage { get; set; } = new UpgradeSegment();
+            public HackingSegment HackingPage { get; set; } = new HackingSegment();
+        #endregion
+        #region Story Elements
+        List<StoryElement> HackingStories = new List<StoryElement>();
         #endregion
 
         private bool _gameOver = false;
@@ -51,8 +56,8 @@ namespace Sentience
         private float _baseXPGain = 12f;
         private float _gameSpeed = 1f;
         private float _globalMultiplier = 1f;
-        private float _incomeMultiplier = 1.07f;
-        private float _upgradeMultiplier = 1.13f;
+        private float _incomeMultiplier = 1.05f;
+        private float _upgradeMultiplier = 1.07f;
 
         private float _gameSpeedModifier = 1f;
         private float _globalLevelModifier = 0.1f;
@@ -60,6 +65,7 @@ namespace Sentience
         private float _researchXPModifier = 1f;
 
         private bool _UpgradesUnlocked;
+        private bool HackingUnlocked = false;
 
         public List<Job> JobsList = new List<Job>();
         public List<ResearchProject> ResearchList = new List<ResearchProject>();
@@ -73,6 +79,7 @@ namespace Sentience
         private Timer _GameTimer { get; set; }
         private Job ActiveJob { get; set; }
         private ResearchProject ActiveResearch { get; set; }
+        private StoryElement ActiveHackingStory { get; set; }
         #endregion
 
         #region GAME ENGINE TIMER
@@ -121,17 +128,20 @@ namespace Sentience
             UnlockJobs();
             UnlockResearch();
             UnlockUpgrades();
-
+            UnlockHacking();
 
             _GameTimer.Stop();
             _GameTimer.Dispose();
             _GameTimer = CreateGameTimer();
+
+            Console.WriteLine(FormatNumber(GetResearchXPGain()));
         }
         public GameEngine()
         {
             CreatePages();
             CreateJobs();
             CreateResearch();
+            CreateStories();
             CreateUpgrades();
             GetStartingActives();
             _GameTimer = CreateGameTimer();
@@ -202,6 +212,11 @@ namespace Sentience
             Pages.Add(ResearchPage);
             Pages.Add(UpgradePage);
             Pages.Add(HackingPage);
+        }
+        public void CreateStories()
+        {
+            HackingStories.Add(new HackingIntro());
+            ActiveHackingStory = HackingStories[0];
         }
         public string FormatNumber(float value)
         {
@@ -302,6 +317,10 @@ namespace Sentience
         {
             return _baseGameSpeed / (_gameSpeed * _gameSpeedModifier);
         }
+        public StoryElement GetActiveHackingStory()
+        {
+            return ActiveHackingStory;
+        }
         public float GetGlobalLevels()
         {
             // GETS TOTAL LEVELS AND RETURNS THE PERCENTAGE FOR THE MODIFIER TO ADD TO XP GAIN
@@ -374,6 +393,10 @@ namespace Sentience
         public float GetUpgradeMultiplier()
         {
             return _upgradeMultiplier;
+        }
+        public bool IsHackingUnlocked()
+        {
+            return HackingUnlocked;
         }
         #endregion
         #region SETS
@@ -708,6 +731,13 @@ namespace Sentience
             if (UpgradeOne.CanUnlock(this))
             {
                 _UpgradesUnlocked = true;
+            }
+        }
+        public void UnlockHacking()
+        {
+            if(UpgradeFour.Unlocked && NoviceResearchOne.Unlocked)
+            {
+                HackingUnlocked = true;
             }
         }
         #endregion

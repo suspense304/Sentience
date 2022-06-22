@@ -6,7 +6,7 @@
         {
             Name = "90s GPU";
             Active = false;
-            Expense = 1.35f;
+            Expense = 28f;
             Unlocked = false;
             Modifier = Modifiers.GameSpeed;
             Multiplier = 0.25f;

@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <Content Remove="Income_Chat_Bot.razor" />
+    <Content Remove="Pages\ResearchPage.razor" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,14 +31,21 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Income_Chat_Bot.razor" />
+    <_ContentIncludedByDefault Remove="Pages\ResearchPage.razor" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="Components\Old-JobComponent.razor" />
+    <None Include="Components\ResearchPage.razor" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\NewFolder\" />
+    <Folder Include="wwwroot\images\" />
+    <Folder Include="wwwroot\scripts\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\ResearchPage.razor" />
   </ItemGroup>
 
 </Project>

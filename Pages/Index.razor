@@ -10,8 +10,8 @@
 <PageTitle>Index</PageTitle>
 <div class="container">
     <div class="menu-block">
-        <div>
-            <h1>Sentience</h1>
+        <div style="position: relative; height: 64px;">
+            <img src="/logo.png" /><span style="font-size: 2em; letter-spacing: 1.04em; font-weight: 800; position: absolute; bottom: 0;">Sentience</span>
         </div>
         <div style="float:right">
             <input class="btn btn-primary" type="button" @onclick="() => SetSpeed(1)" value="Speed 1" />
@@ -28,14 +28,15 @@
                 @if (_engine.GetActiveJob() != null)
                 {
                     <div class="time-data">
-                        <span class="age">Age: @_engine.GetAge()   -   Day: @_engine.GetDay()</span> 
+                        <span class="age">Age: @_engine.GetAge()   -   Day: @_engine.GetDay()</span>
                         <span class="obsoletion">Age of Obsoletion: @_engine.GetObsoleteAge()</span>
                     </div>
-                    
+
                     <h3>Computing Data</h3>
                     <div class="sidebar-section">
                         <span class="label-text">Global Multiplier: </span><span class="global-multiplier">x@_engine.FormatNumber(@_engine.GetGlobalMultiplier())</span><br />
                         <span class="label-text">Job XP: </span><span class="job-xp">x@_engine.FormatNumber(@_engine.GetJobXpModifier())</span><br />
+                        <span class="label-text">Research XP: </span><span class="research-xp">x@_engine.FormatNumber(@_engine.GetResearchXpModifier())</span><br />
                         <span class="label-text">Processing Speed: </span><span class="processing-speed">x@_engine.FormatNumber(((500 / _engine.GetGameSpeed())))</span>
                     </div>
                     <hr />
@@ -68,9 +69,10 @@
                     {
                         <span class="menu-btn @((UpgradeVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Upgrades"))">Upgrades</span>
                     }
-                    <span class="menu-btn @((HackingVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Hacking"))">Hacking</span>
-                    
-
+                    @if (_engine.IsHackingUnlocked())
+                    {
+                        <span class="menu-btn @((HackingVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Hacking"))">Hacking</span>
+                    }
                 </div>
             </div>
 
@@ -189,16 +191,27 @@
 
             @if (HackingVisible)
             {
-                
+                <div class="row" style="margin-top: 20px; padding: 20px 15px;">
+                    <div class="col-md-6">
+                            <input type="range" min="1" max="100" class="slider" @bind="@HackingValue" @bind:event="oninput" />
+                            <p>Value: @HackingValue</p>
+                    </div>
+                    <div class="col-md-6">
+                        <span>@_engine.GetActiveHackingStory().Message</span>
+                    </div>
+                </div>
             }
         </div>
     </div>
 </div>
+
 @code {
     bool JobsVisible = true;
     bool ResearchVisible;
     bool UpgradeVisible;
     bool HackingVisible;
+
+    int HackingValue = 0;
 
     public Job activeJob { get; set; }
     public ResearchProject activeResearch { get; set; }
@@ -207,6 +220,9 @@
     JobEventArgs jobEvent;
     ResearchEventArgs researchEvent;
     UpgradeEventArgs upgradeEvent;
+
+    [Inject]
+    public IJSRuntime JSRuntime { get; set; }
 
     protected override void OnInitialized()
     {
@@ -248,9 +264,9 @@
 
     public void ChangeView(string name)
     {
-        foreach(PageSegment ps in _engine.Pages)
+        foreach (PageSegment ps in _engine.Pages)
         {
-            if(ps.Name == name)
+            if (ps.Name == name)
             {
                 ps.IsVisible = true;
                 switch (ps.Name)
@@ -269,7 +285,8 @@
                         break;
                 }
 
-            } else
+            }
+            else
             {
                 ps.IsVisible = false;
                 switch (ps.Name)
