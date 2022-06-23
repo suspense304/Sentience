@@ -2,6 +2,27 @@
     font-family: 'Raleway', sans-serif;
 }
 
+/* COLORS 
+
+    ACTIVE RESOURCE #383838ff;
+
+    DARK BLUE: #0a4868;
+    LIGHT BLUE: #2a96a1;
+
+    GOLD: #d9af25;
+
+    DARK GRAY: #232222;
+    GRAY: #706f6f;
+
+    DARK GREEN: #706f6f;
+    LIGHT GREEN: #419f2a;
+
+    LIGHT PURPLE: #780b85;
+
+    RED: #e80d0d;
+
+*/
+
 #blazor-error-ui{
     display: none !important;
 }
@@ -12,6 +33,20 @@ body {
     color: #fff;
 }
 
+.collapse-button {
+    font-size: 2em;
+    text-shadow: 1px 1px 2px #151414;
+    padding-left: 10px;
+}
+
+tr {
+    transition: height 2s linear 1s;
+}
+
+.collapsed {
+    height: 0px;
+}
+
 .jobs-table {
     border-collapse: collapse;
     margin-top: 5px;
@@ -19,27 +54,25 @@ body {
     font-family: sans-serif;
     width: 100%;
     min-width: 400px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     text-align: center;
+    border-top: 2px inset #cbcbcb8c;
+    border-right: 4px inset #535456;
+    border-bottom: 5px outset #00000078;
 }
     .jobs-table thead tr {
         text-align: center;
     }
-
     .jobs-table th, 
     .jobs-table td {
         padding: 8px 15px;
     }
-
     .jobs-table td{
         font-size: 1.1em;
         width: 100px;
     }
-
     .jobs-table tr {
         border-bottom: 2px double #adabab30;
     }
-
 .job-active {
     background-color: #383838ff;
 }
@@ -57,19 +90,21 @@ body {
     font-family: sans-serif;
     width: 100%;
     min-width: 400px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     text-align: center;
+    border-top: 2px inset #cbcbcb8c;
+    border-right: 4px inset #535456;
+    border-bottom: 5px outset #00000078;
 }
-
     .research-table thead tr {
         text-align: center;
     }
-
     .research-table th,
     .research-table td {
         padding: 8px 15px;
     }
-
+    .research-table tr {
+        border-bottom: 2px double #adabab30;
+    }
     .research-table td {
         font-size: 1.1em;
         width: 100px;
@@ -78,10 +113,10 @@ body {
 .research-active {
     background-color: #383838ff;
 }
-
     .research-active td {
         color: #fff;
     }
+
 .research-inactive {
     background-color: #232222;
 }
@@ -93,43 +128,40 @@ body {
     font-family: sans-serif;
     width: 100%;
     min-width: 400px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     text-align: center;
+    border-top: 2px inset #cbcbcb8c;
+    border-right: 4px inset #535456;
+    border-bottom: 5px outset #00000078;
 }
-
     .upgrade-table thead tr {
         text-align: center;
-        background-color: #04920c;
     }
-
     .upgrade-table th,
     .upgrade-table td {
         padding: 8px 15px;
-    }
-
-    .upgrade-table td {
         font-size: 1.1em;
         width: 100px;
     }
+    .upgrade-table tr {
+        border-bottom: 2px double #adabab30;
+    }
 
 .upgrade-active {
-    background-color: #035508;
+    background-color: #383838ff;
 }
-
     .upgrade-active td {
         color: #fff;
     }
-
 .upgrade-inactive {
     background-color: #232222;
 }
+
 
 .next-upgrade {
     height: 24px;
     font-size: 1.05em;
     color: #706f6f;
 }
-
 .menu-block {
     display: flex;
     flex-direction: row;
@@ -137,7 +169,6 @@ body {
     border-bottom: 3px double #706f6fbf;
     padding-bottom: 10px;
 }
-
 .menu-items{
     flex: auto;
 }
@@ -154,15 +185,35 @@ body {
     .menu-btn:hover {
         background-color: #232222;
     }
-    .menu-btn-active {
-        background-color: #706f6fbf;
-    }
+.menu-btn-active {
+    background-color: #706f6f4a;
+}
 
 .content-area {
-    padding: 8px 0px 5px 15px;
+    padding: 8px 15px 5px 15px;
     margin-top: 10px;
     background-color: #232222;
 }
+
+.regular-btn {
+    padding: 10px;
+    font-size: 1.05em;
+    background-color: #0a4868;
+    color: white;
+}
+    .regular-btn:hover {
+        background-color: #2a96a1;
+    }
+.error-btn {
+    padding: 10px;
+    font-size: 1.05em;
+    background-color: #e80d0d;
+    color: white;
+}
+
+    .error-btn:hover {
+        background-color: #820a0a;
+    }
 
 .sidebar {
     padding: 20px;
@@ -184,7 +235,7 @@ body {
     cursor: pointer;
     width: 250px;
     border: 1px black solid;
-    background-color: #1808a5;
+    background-color: #0a4868;
 }
 
 .progress-text {
@@ -210,7 +261,7 @@ body {
 .job-inactive .progress-bar .progress-fill,
 .research-inactive .progress-bar .progress-fill{
     height: 30px;
-    background-color: #43435a;
+    background-color: #2a96a1;
 }
 
 .active-resource {
@@ -228,17 +279,17 @@ body {
 
 .global-multiplier {
     font-size: 1.05em;
-    color: #00eef6;
+    color: #2a96a1;
 }
 
 .job-xp {
     font-size: 1.05em;
-    color: #fcff00;
+    color: #d9af25;
 }
 
 .research-xp {
     font-size: 1.05em;
-    color: #ed04ff;
+    color: #780b85;
 }
 
 .processing-speed {
@@ -253,7 +304,7 @@ body {
 
 .income {
     font-size: 1.05em;
-    color: #00eef6;
+    color: #2a96a1;
 }
 
 .expenses {
@@ -281,7 +332,7 @@ body {
 .Basics tr,
 .Fundamentals tr,
 .Scrapyard tr {
-    background-color: #419f2a;
+    background-color: #1c5f3a;
     color: #fff;
     font-size: 1.08em;
     margin-bottom: 5px;
@@ -294,7 +345,6 @@ body {
     font-size: 1.08em;
     margin-bottom: 5px;
 }
-
 
 
 

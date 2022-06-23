@@ -6,6 +6,7 @@ using Sentience.Models.Upgrades;
 using Blazored.Toast.Services;
 using System.Timers;
 using Timer = System.Timers.Timer;
+using Sentience.Models.StoryElements.Hacking;
 
 namespace Sentience
 {
@@ -64,7 +65,6 @@ namespace Sentience
         {
             return GameData.JobsList.FirstOrDefault(j => j.Active) ?? new Job();
         }
-
         public ResearchProject LoadActiveResearch()
         {
             return GameData.ResearchList.FirstOrDefault(j => j.Active) ?? new ResearchProject();
@@ -84,12 +84,11 @@ namespace Sentience
             GameData = new GameData(_localStorage);
             GameData = await GameData.GetGameData(_localStorage);
 
-            CreatePages();
+            
             if(GameData.JobsList.Count == 0)
             {
                 CreateJobs(false);
                 CreateResearch(false);
-                CreateStories();
                 CreateUpgrades(false);
             } else
             {
@@ -97,6 +96,10 @@ namespace Sentience
                 CreateResearch(true);
                 CreateUpgrades(true);
             }
+
+            CreatePages();
+            CreateStories();
+
             UnlockUpgrades();
             GetStartingActives();
 
@@ -141,7 +144,6 @@ namespace Sentience
             LoadGame();
         }
         #endregion
-
         #region FUNCTIONS
         public void ApplyModifiers()
         {
@@ -215,6 +217,7 @@ namespace Sentience
         }
         public void CreatePages()
         {
+            GameData.Pages.Clear();
             GameData.Pages.Add(GameData.JobPage);
             GameData.Pages.Add(GameData.ResearchPage);
             GameData.Pages.Add(GameData.UpgradePage);
@@ -223,8 +226,9 @@ namespace Sentience
         }
         public void CreateStories()
         {
-            //GameData.HackingStories.Add(new HackingIntro());
-            //GameData.ActiveHackingStory = GameData.HackingStories[0];
+            GameData.HackingStories.Clear();
+            GameData.HackingStories.Add(new HackingIntro());
+            GameData.ActiveHackingStory = GameData.HackingStories[0];
         }
         public string FormatNumber(float value)
         {
@@ -328,7 +332,7 @@ namespace Sentience
         }
         public StoryElement GetActiveHackingStory()
         {
-            return null;
+            return GameData.ActiveHackingStory;
         }
         public float GetGlobalLevels()
         {
@@ -336,11 +340,11 @@ namespace Sentience
             int levels = 0;
             foreach (Job job in GameData.JobsList)
             {
-                levels += job.Level;
+                levels += job.Level * 10;
             }
             foreach (ResearchProject research in GameData.ResearchList)
             {
-                levels += research.Level;
+                levels += research.Level * 10;
             }
             return (float)(levels * GameData.GlobalLevelModifier);
         }
@@ -572,7 +576,6 @@ namespace Sentience
         }
         #endregion
         #endregion
-
         #region Research
         #region CREATE
         //public ResearchProject CreateResearch(ResearchProject research)
@@ -666,7 +669,6 @@ namespace Sentience
         }
         #endregion
         #endregion
-
         #region Upgrades
         #region CREATE
         private void CreateUpgrades(bool isSavedGame)

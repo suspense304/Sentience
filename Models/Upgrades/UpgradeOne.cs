@@ -33,7 +33,7 @@ namespace Sentience.Models.Upgrades
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return "Money: $" + engine.FormatNumber(engine.GetMoney()) + "/10";
+            return (!Unlocked) ? $"Money: " + engine.FormatNumber(engine.GetMoney()) + "/10" : "";
         }
     }
 }

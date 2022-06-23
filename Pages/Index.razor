@@ -18,10 +18,10 @@
                 <img src="/logo.png" /><span style="font-size: 2em; letter-spacing: 1.04em; font-weight: 800; position: absolute; bottom: 0;">Sentience</span>
             </div>
             <div style="float:right">
-                <input class="btn" style="background-color: #1808a5; color: white;" type="button" @onclick="() => SetSpeed(1)" value="Speed 1" />
-                <input class="btn" style="background-color: #1808a5; color: white;" type="button" @onclick="() => SetSpeed(2)" value="Speed 2" />
-                <input class="btn" style="background-color: #1808a5; color: white;" type="button" @onclick="() => SetSpeed(3)" value="Speed 3" />
-                <input class="btn" style="background-color: #1808a5; color: white;" type="button" @onclick="() => SetSpeed(4)" value="Speed 4" />
+                <input class="regular-btn" type="button" @onclick="() => SetSpeed(1)" value="Speed 1" />
+                <input class="regular-btn" type="button" @onclick="() => SetSpeed(2)" value="Speed 2" />
+                <input class="regular-btn" type="button" @onclick="() => SetSpeed(3)" value="Speed 3" />
+                <input class="regular-btn" type="button" @onclick="() => SetSpeed(4)" value="Speed 4" />
             </div>
         </div>
         <br />
@@ -93,7 +93,7 @@
                                 <table class="jobs-table">
                                     <thead class="@type.ToString()">
                                         <tr>
-                                            <th>@type.GetDisplayName()</th>
+                                            <th>@type.GetDisplayName() <span class="collapse-button" type="button" @onclick="OnToggleJobCollapse">@((@isJobCollapsed) ? "+" : "-")</span></th>
                                             <th>Level</th>
                                             <th>Income</th>
                                             <th>XP</th>
@@ -104,7 +104,11 @@
                                     {
                                         if (job.Unlocked)
                                         {
-                                            <JobComponent Job="@job" OnClick="SetActiveJob" />
+                                            if(!isJobCollapsed || job.Active)
+                                            {
+                                                <JobComponent Job="@job" OnClick="SetActiveJob" />
+                                            }
+                                            
                                         }
                                     }
                                     <td style="padding: 8px 15px; text-align: left !important;">
@@ -133,7 +137,7 @@
                                 <table class="research-table">
                                     <thead class="@type.ToString()">
                                         <tr>
-                                            <th>@type.GetDisplayName()</th>
+                                            <th>@type.GetDisplayName() <span class="collapse-button" type="button" @onclick="OnToggleResearchCollapse">@((@isResearchCollapsed) ? "+" : "-")</span></th>
                                             <th>Level</th>
                                             <th>Income</th>
                                             <th>XP</th>
@@ -144,7 +148,10 @@
                                     {
                                         if (researchProject.Unlocked)
                                         {
-                                            <ResearchComponent Research="@researchProject" OnClick="SetActiveResearch" />
+                                            if (!isResearchCollapsed || researchProject.Active)
+                                            {
+                                                <ResearchComponent Research="@researchProject" OnClick="SetActiveResearch" />
+                                            }
                                         }
                                     }
                                 </table>
@@ -170,7 +177,7 @@
                                 <table class="upgrade-table">
                                     <thead class="@type.ToString()">
                                         <tr>
-                                            <th>@type.GetDisplayName()</th>
+                                            <th>@type.GetDisplayName() <span class="collapse-button" type="button" @onclick="OnToggleUpgradeCollapse">@((@isUpgradeCollapsed) ? "+" : "-")</span></th>
                                             <th>Modifier</th>
                                             <th>Expense</th>
                                         </tr>
@@ -179,7 +186,10 @@
                                     {
                                         if (upgrade.Unlocked)
                                         {
-                                            <UpgradeComponent Upgrade="@upgrade" />
+                                            if (!isUpgradeCollapsed || !upgrade.Unlocked)
+                                            {
+                                                <UpgradeComponent Upgrade="@upgrade" />
+                                            }
                                         }
                                     }
                                 </table>
@@ -194,25 +204,15 @@
                         }
                     }
                 }
-
                 @if (HackingVisible)
                 {
-                    <div class="row" style="margin-top: 20px; padding: 20px 15px;">
-                        <div class="col-md-6">
-                            <input type="range" min="1" max="100" class="slider" @bind="@HackingValue" @bind:event="oninput" />
-                            <p>Value: @HackingValue</p>
-                        </div>
-                        <div class="col-md-6">
-                            <span>@_engine.GetActiveHackingStory().Message</span>
-                        </div>
-                    </div>
+                    <HackingComponent />
                 }
-
                 @if (SettingsVisible)
                 {
                     <div class="row" style="margin-top: 20px; padding: 20px 15px;">
                         <div class="col-md-6">
-                            <input class="btn" style="background-color: red; color: white;" type="button" @onclick="_engine.HardReset" value="Hard Reset" />
+                            <input class="error-btn" type="button" @onclick="_engine.HardReset" value="Hard Reset" />
                         </div>
                     </div>
                 }
@@ -229,7 +229,9 @@
     bool UpgradeVisible;
     bool HackingVisible;
 
-    int HackingValue = 0;
+    bool isJobCollapsed = false;
+    bool isResearchCollapsed = false;
+    bool isUpgradeCollapsed = false;
 
     GameLoadedArgs gameLoaded;
     JobEventArgs jobEvent;
@@ -283,6 +285,21 @@
     void SetActiveResearch(ResearchProject research)
     {
         _engine.SetActiveResearch(research);
+    }
+
+    void OnToggleJobCollapse()
+    {
+        isJobCollapsed = !isJobCollapsed;
+    }
+
+    void OnToggleResearchCollapse()
+    {
+        isResearchCollapsed = !isResearchCollapsed;
+    }
+
+    void OnToggleUpgradeCollapse()
+    {
+        isUpgradeCollapsed = !isUpgradeCollapsed;
     }
 
     public void ChangeView(string name)

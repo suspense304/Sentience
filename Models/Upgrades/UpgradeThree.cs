@@ -8,7 +8,7 @@ namespace Sentience.Models.Upgrades
         {
             Name = "90s GPU";
             Active = false;
-            Expense = 28f;
+            Expense = 7.5f;
             Unlocked = false;
             Modifier = Modifiers.GameSpeed;
             Multiplier = 0.25f;
@@ -35,7 +35,7 @@ namespace Sentience.Models.Upgrades
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return $"Money: " + engine.FormatNumber(engine.GetMoney()) + "/500";
+            return (!Unlocked) ? $"Money: " + engine.FormatNumber(engine.GetMoney()) + "/500" : "";
         }
     }
 }

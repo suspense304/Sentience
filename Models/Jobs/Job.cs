@@ -28,6 +28,7 @@ namespace Sentience.Models.Jobs
         public void LevelUp(GameEngine engine)
         {
             Level++;
+            if (Level == 1) Income = BaseIncome * 1.5f;
             NextLevel = GetNextUpdateAmount(NextLevel, engine);
             engine.GetIncomeMultiplier();
             Income = UpdateIncome(engine);

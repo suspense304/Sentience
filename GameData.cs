@@ -78,6 +78,7 @@ namespace Sentience
         public StoryElement ActiveHackingStory { get; set; }
         #endregion
 
+        public List<StoryElement> HackingStories { get; set; } = new List<StoryElement>();
         public List<Job> JobsList { get; set; } = new List<Job>();
         public List<ResearchProject> ResearchList { get; set; } = new List<ResearchProject>();
         public List<Upgrade> UpgradeList { get; set; } = new List<Upgrade>();

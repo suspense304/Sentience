@@ -1,0 +1,17 @@
+@inject GameEngine _engine
+
+<div class="row" style="margin-top: 20px; padding: 20px 15px;">
+    <div class="col-md-6">
+        <input type="range" min="1" max="100" class="slider" @bind="@HackingValue" @bind:event="oninput" />
+        <p>Value: @HackingValue</p>
+    </div>
+    <div class="col-md-6">
+        <span>@_engine.GetActiveHackingStory().Message</span>
+    </div>
+</div>
+
+@code{
+
+    int HackingValue = 0;
+
+}
