@@ -12,11 +12,11 @@
         }
         public bool CanUnlock(GameEngine engine)
         {
-            return (engine.ResearchTwo.Level > 19) ? true : false;
+            return (engine.GameData.ResearchTwo.Level > 19) ? true : false;
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return engine.ResearchTwo.Name + ": " + engine.ResearchTwo.Level + "/20";
+            return engine.GameData.ResearchTwo.Name + ": " + engine.GameData.ResearchTwo.Level + "/20";
         }
     }
 }

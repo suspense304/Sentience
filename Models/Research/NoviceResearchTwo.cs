@@ -12,12 +12,12 @@
         }
         public bool CanUnlock(GameEngine engine)
         {
-            return (engine.NoviceResearchOne.Level > 24) ? true : false;
+            return (engine.GameData.NoviceResearchOne.Level > 24) ? true : false;
         }
 
         public override string UpgradeMessage(GameEngine engine)
         {
-            return engine.NoviceResearchOne.Name + ": " + engine.NoviceResearchOne.Level + "/25";
+            return engine.GameData.NoviceResearchOne.Name + ": " + engine.GameData.NoviceResearchOne.Level + "/25";
         }
     }
 }

@@ -15,13 +15,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Components\Old-JobComponent.razor" />
+    <Content Remove="Components\Old-ResearchComponent.razor" />
+    <Content Remove="Components\Old-UpgradeComponent.razor" />
     <Content Remove="Income_Chat_Bot.razor" />
+    <Content Remove="Pages\Old-Index.razor" />
     <Content Remove="Pages\ResearchPage.razor" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazored.LocalStorage" Version="4.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.2" PrivateAssets="all" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="PublishSPAforGitHubPages.Build" Version="1.3.6" />
   </ItemGroup>
 
@@ -35,7 +41,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Components\Old-JobComponent.razor" />
     <None Include="Components\ResearchPage.razor" />
   </ItemGroup>
 

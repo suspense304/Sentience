@@ -12,11 +12,11 @@
         }
         public bool CanUnlock(GameEngine engine)
         {
-            return (engine.ResearchTwo.Level > 49 && engine.JobThree.Level > 49) ? true : false;
+            return (engine.GameData.ResearchTwo.Level > 49 && engine.GameData.JobThree.Level > 49) ? true : false;
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return engine.ResearchTwo.Name + ": " + engine.ResearchTwo.Level + "/50   " + engine.JobThree.Name + ": " + engine.JobThree.Level + "/50";
+            return engine.GameData.ResearchTwo.Name + ": " + engine.GameData.ResearchTwo.Level + "/50   " + engine.GameData.JobThree.Name + ": " + engine.GameData.JobThree.Level + "/50";
         }
     }
 }

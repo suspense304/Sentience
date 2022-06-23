@@ -5,7 +5,7 @@ using System.Timers;
 
 namespace Sentience.Models.Jobs
 {
-    public abstract class Job
+    public class Job
     {
         public bool Active;
         public bool Unlocked;

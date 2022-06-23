@@ -1,6 +1,6 @@
 ﻿namespace Sentience.Models.Research
 {
-    public abstract class ResearchProject
+    public class ResearchProject
     {
         public bool Active;
         public bool Unlocked;

@@ -8,7 +8,10 @@
 @inject GameEngine _engine
 
 <PageTitle>Index</PageTitle>
-<div class="container">
+
+@if(_engine.IsLoaded)
+{
+    <div class="container">
     <div class="menu-block">
         <div style="position: relative; height: 64px;">
             <img src="/logo.png" /><span style="font-size: 2em; letter-spacing: 1.04em; font-weight: 800; position: absolute; bottom: 0;">Sentience</span>
@@ -44,17 +47,17 @@
                     <div class="sidebar-section">
                         <span class="label-text">Money: </span><span class="money">$@_engine.FormatNumber(@_engine.GetMoney())</span><br /><br />
                         <span class="label-text">Net: </span><span class="income">$@_engine.FormatNumber(@_engine.GetIncome())</span><br />
-                        <span class="label-text">Income: </span><span class="daily-income">$@_engine.FormatNumber(@activeJob.Income)</span><br />
+                        <span class="label-text">Income: </span><span class="daily-income">$@_engine.FormatNumber(@_engine.GameData.ActiveJob.Income)</span><br />
                         <span class="label-text">Expenses: </span><span class="expenses">$@_engine.FormatNumber(@_engine.GetExpenses())</span>
                     </div>
                     <hr />
                     <span class="active-resource">Active Job</span>
-                    <JobComponent Job="@activeJob" SideBar="true" />
+                    <JobComponent Job="@_engine.GameData.ActiveJob" SideBar="true" />
                 }
                 @if (_engine.GetActiveResearch() != null)
                 {
                     <span class="active-resource">Active Research</span>
-                    <ResearchComponent Research="@activeResearch" SideBar="true" />
+                    <ResearchComponent Research="@_engine.GameData.ActiveResearch" SideBar="true" />
                 }
             </div>
         </div>
@@ -65,7 +68,7 @@
                     <span class="menu-btn @((JobsVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Jobs"))">Jobs</span>
                     <span class="menu-btn @((ResearchVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Research"))">Research</span>
 
-                    @if (_engine.UpgradeOne.CanUnlock(_engine))
+                    @if (_engine.GameData.UpgradeOne.CanUnlock(_engine))
                     {
                         <span class="menu-btn @((UpgradeVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Upgrades"))">Upgrades</span>
                     }
@@ -80,7 +83,7 @@
             {
                 @foreach (JobTypes type in (JobTypes[])Enum.GetValues(typeof(JobTypes)))
                 {
-                    List<Job> jobs = _engine.JobsList.Where(w => w.Unlocked == true && w.JobType == type).ToList();
+                    List<Job> jobs = _engine.GameData.JobsList.Where(w => w.Unlocked == true && w.JobType == type).ToList();
                     @if (jobs.Count > 0)
                     {
                         <div class="content-area">
@@ -103,9 +106,9 @@
                                 }
                                 <td style="padding: 8px 15px; text-align: left !important;">
                                     <span class="next-upgrade">
-                                        @if (_engine._NextJobUpgrade != null)
+                                        @if (_engine.GameData.NextJobUpgrade != null)
                                         {
-                                            <span>@_engine._NextJobUpgrade.UpgradeMessage(_engine)</span>
+                                            <span>@_engine.GameData.NextJobUpgrade.UpgradeMessage(_engine)</span>
                                         }
                                     </span>
                                 </td>
@@ -120,7 +123,7 @@
             {
                 @foreach (ResearchTypes type in (ResearchTypes[])Enum.GetValues(typeof(ResearchTypes)))
                 {
-                    List<ResearchProject> researchProjects = _engine.ResearchList.Where(w => w.Unlocked == true && w.ResearchType == type).ToList();
+                    List<ResearchProject> researchProjects = _engine.GameData.ResearchList.Where(w => w.Unlocked == true && w.ResearchType == type).ToList();
                     @if (researchProjects.Count > 0)
                     {
                         <div class="content-area">
@@ -157,7 +160,7 @@
             {
                 @foreach (UpgradeTypes type in (UpgradeTypes[])Enum.GetValues(typeof(UpgradeTypes)))
                 {
-                    List<Upgrade> upgrades = _engine.UpgradeList.Where(w => w.Unlocked == true && w.UpgradeType == type).ToList();
+                    List<Upgrade> upgrades = _engine.GameData.UpgradeList.Where(w => w.Unlocked == true && w.UpgradeType == type).ToList();
                     @if (upgrades.Count > 0)
                     {
                         <div class="content-area">
@@ -169,7 +172,7 @@
                                         <th>Expense</th>
                                     </tr>
                                 </thead>
-                                @foreach (Upgrade upgrade in _engine.UpgradeList)
+                                @foreach (Upgrade upgrade in _engine.GameData.UpgradeList)
                                 {
                                     if (upgrade.Unlocked)
                                     {
@@ -204,6 +207,8 @@
         </div>
     </div>
 </div>
+}
+
 
 @code {
     bool JobsVisible = true;
@@ -213,10 +218,7 @@
 
     int HackingValue = 0;
 
-    public Job activeJob { get; set; }
-    public ResearchProject activeResearch { get; set; }
-    public Upgrade activeUpgrade { get; set; }
-
+    GameLoadedArgs gameLoaded;
     JobEventArgs jobEvent;
     ResearchEventArgs researchEvent;
     UpgradeEventArgs upgradeEvent;
@@ -224,10 +226,13 @@
     [Inject]
     public IJSRuntime JSRuntime { get; set; }
 
-    protected override void OnInitialized()
+    protected async override void OnInitialized()
     {
-        activeJob = _engine.GetActiveJob();
-        activeResearch = _engine.GetActiveResearch();
+        GameLoaded += (o, args) =>
+        {
+            gameLoaded = args;
+            StateHasChanged();
+        };
         JobUpdated += (o, args) =>
         {
             jobEvent = args;
@@ -252,13 +257,11 @@
 
     void SetActiveJob(Job job)
     {
-        activeJob = job;
         _engine.SetActiveJob(job);
     }
 
     void SetActiveResearch(ResearchProject research)
     {
-        activeResearch = research;
         _engine.SetActiveResearch(research);
     }
 

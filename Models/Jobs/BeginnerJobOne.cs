@@ -14,11 +14,11 @@
         }
         public bool CanUnlock(GameEngine engine)
         {
-            return (engine.ResearchOne.Level > 49 && engine.ResearchTwo.Level > 49 && engine.ResearchThree.Level > 49) ? true : false;
+            return (engine.GameData.ResearchOne.Level > 49 && engine.GameData.ResearchTwo.Level > 49 && engine.GameData.ResearchThree.Level > 49) ? true : false;
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return engine.ResearchOne.Name + ": " + engine.ResearchOne.Level + "/50  " + engine.ResearchTwo.Name + ": " + engine.ResearchTwo.Level + "/50  " + engine.ResearchThree.Name + ": " + engine.ResearchThree.Level + "/50";
+            return engine.GameData.ResearchOne.Name + ": " + engine.GameData.ResearchOne.Level + "/50  " + engine.GameData.ResearchTwo.Name + ": " + engine.GameData.ResearchTwo.Level + "/50  " + engine.GameData.ResearchThree.Name + ": " + engine.GameData.ResearchThree.Level + "/50";
         }
     }
 }

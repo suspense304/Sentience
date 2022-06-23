@@ -17,11 +17,11 @@ namespace Sentience.Models.Research
 
         public bool CanUnlock(GameEngine engine)
         {
-            return (engine.ResearchOne.Level > 9) ? true : false;
+            return (engine.GameData.ResearchOne.Level > 9) ? true : false;
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return engine.ResearchOne.Name + ": " + engine.ResearchOne.Level + "/10";
+            return engine.GameData.ResearchOne.Name + ": " + engine.GameData.ResearchOne.Level + "/10";
         }
     }
 }

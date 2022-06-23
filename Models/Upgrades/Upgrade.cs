@@ -1,6 +1,6 @@
 ﻿namespace Sentience.Models.Upgrades
 {
-    public abstract class Upgrade
+    public class Upgrade
     {
         public bool Active;
         public bool Unlocked;

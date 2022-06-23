@@ -14,11 +14,11 @@
         }
         public bool CanUnlock(GameEngine engine)
         {
-            return (engine.BeginnerJobOne.Level > 9) ? true : false;
+            return (engine.GameData.BeginnerJobOne.Level > 9) ? true : false;
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return engine.BeginnerJobOne.Name + ": " + engine.BeginnerJobOne.Level + "/10";
+            return engine.GameData.BeginnerJobOne.Name + ": " + engine.GameData.BeginnerJobOne.Level + "/10";
         }
     }
 }

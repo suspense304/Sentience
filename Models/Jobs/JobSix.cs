@@ -16,11 +16,11 @@ namespace Sentience.Models.Jobs
         }
         public bool CanUnlock(GameEngine engine)
         {
-            return (engine.JobFive.Level > 99 && engine.ResearchTwo.Level > 199) ? true : false;
+            return (engine.GameData.JobFive.Level > 99 && engine.GameData.ResearchTwo.Level > 199) ? true : false;
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return engine.JobFive.Name + ": " + engine.JobFive.Level + "/100   " + engine.ResearchTwo.Name + ": " + engine.ResearchTwo.Level + "/200";
+            return engine.GameData.JobFive.Name + ": " + engine.GameData.JobFive.Level + "/100   " + engine.GameData.ResearchTwo.Name + ": " + engine.GameData.ResearchTwo.Level + "/200";
         }
     }
 }
