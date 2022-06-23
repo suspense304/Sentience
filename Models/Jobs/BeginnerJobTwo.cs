@@ -1,4 +1,6 @@
-﻿namespace Sentience.Models.Jobs
+﻿using Blazored.Toast.Services;
+
+namespace Sentience.Models.Jobs
 {
     public class BeginnerJobTwo: Job
     {
@@ -14,7 +16,16 @@
         }
         public bool CanUnlock(GameEngine engine)
         {
-            return (engine.GameData.BeginnerJobOne.Level > 9) ? true : false;
+            if (engine.GameData.BeginnerJobOne.Level > 9)
+            {
+                if (!Unlocked)
+                {
+                    Unlocked = true;
+                    engine.ShowToast(this.Name + " has been unlocked!", "Job Unlocked", ToastLevel.Success);
+                }
+                return true;
+            }
+            return false;
         }
         public override string UpgradeMessage(GameEngine engine)
         {

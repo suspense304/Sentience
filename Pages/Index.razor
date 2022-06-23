@@ -6,213 +6,226 @@
 @using Components
 
 @inject GameEngine _engine
+@inject IToastService toastService
 
 <PageTitle>Index</PageTitle>
 
-@if(_engine.IsLoaded)
+@if (_engine.IsLoaded)
 {
     <div class="container">
-    <div class="menu-block">
-        <div style="position: relative; height: 64px;">
-            <img src="/logo.png" /><span style="font-size: 2em; letter-spacing: 1.04em; font-weight: 800; position: absolute; bottom: 0;">Sentience</span>
-        </div>
-        <div style="float:right">
-            <input class="btn" style="background-color: #1808a5; color: white;" type="button" @onclick="() => SetSpeed(1)" value="Speed 1" />
-            <input class="btn" style="background-color: #1808a5; color: white;" type="button" @onclick="() => SetSpeed(2)" value="Speed 2" />
-            <input class="btn" style="background-color: #1808a5; color: white;" type="button" @onclick="() => SetSpeed(3)" value="Speed 3" />
-            <input class="btn" style="background-color: #1808a5; color: white;" type="button" @onclick="() => SetSpeed(4)" value="Speed 4" />
-        </div>
-    </div>
-    <br />
-    <div class="row">
-
-        <div class="col-sm-12 col-md-4">
-            <div class=sidebar>
-                @if (_engine.GetActiveJob() != null)
-                {
-                    <div class="time-data">
-                        <span class="age">Age: @_engine.GetAge()   -   Day: @_engine.GetDay()</span>
-                        <span class="obsoletion">Age of Obsoletion: @_engine.GetObsoleteAge()</span>
-                    </div>
-
-                    <h3>Computing Data</h3>
-                    <div class="sidebar-section">
-                        <span class="label-text">Global Multiplier: </span><span class="global-multiplier">x@_engine.FormatNumber(@_engine.GetGlobalMultiplier())</span><br />
-                        <span class="label-text">Job XP: </span><span class="job-xp">x@_engine.FormatNumber(@_engine.GetJobXpModifier())</span><br />
-                        <span class="label-text">Research XP: </span><span class="research-xp">x@_engine.FormatNumber(@_engine.GetResearchXpModifier())</span><br />
-                        <span class="label-text">Processing Speed: </span><span class="processing-speed">x@_engine.FormatNumber(((500 / _engine.GetGameSpeed())))</span>
-                    </div>
-                    <hr />
-                    <h3>Financial Data</h3>
-                    <div class="sidebar-section">
-                        <span class="label-text">Money: </span><span class="money">$@_engine.FormatNumber(@_engine.GetMoney())</span><br /><br />
-                        <span class="label-text">Net: </span><span class="income">$@_engine.FormatNumber(@_engine.GetIncome())</span><br />
-                        <span class="label-text">Income: </span><span class="daily-income">$@_engine.FormatNumber(@_engine.GameData.ActiveJob.Income)</span><br />
-                        <span class="label-text">Expenses: </span><span class="expenses">$@_engine.FormatNumber(@_engine.GetExpenses())</span>
-                    </div>
-                    <hr />
-                    <span class="active-resource">Active Job</span>
-                    <JobComponent Job="@_engine.GameData.ActiveJob" SideBar="true" />
-                }
-                @if (_engine.GetActiveResearch() != null)
-                {
-                    <span class="active-resource">Active Research</span>
-                    <ResearchComponent Research="@_engine.GameData.ActiveResearch" SideBar="true" />
-                }
+        <div class="menu-block">
+            <div style="position: relative; height: 64px;">
+                <img src="/logo.png" /><span style="font-size: 2em; letter-spacing: 1.04em; font-weight: 800; position: absolute; bottom: 0;">Sentience</span>
+            </div>
+            <div style="float:right">
+                <input class="btn" style="background-color: #1808a5; color: white;" type="button" @onclick="() => SetSpeed(1)" value="Speed 1" />
+                <input class="btn" style="background-color: #1808a5; color: white;" type="button" @onclick="() => SetSpeed(2)" value="Speed 2" />
+                <input class="btn" style="background-color: #1808a5; color: white;" type="button" @onclick="() => SetSpeed(3)" value="Speed 3" />
+                <input class="btn" style="background-color: #1808a5; color: white;" type="button" @onclick="() => SetSpeed(4)" value="Speed 4" />
             </div>
         </div>
+        <br />
+        <div class="row">
 
-        <div class="col-sm-12 col-md-8">
-            <div class="menu-block">
-                <div>
-                    <span class="menu-btn @((JobsVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Jobs"))">Jobs</span>
-                    <span class="menu-btn @((ResearchVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Research"))">Research</span>
-
-                    @if (_engine.GameData.UpgradeOne.CanUnlock(_engine))
+            <div class="col-sm-12 col-md-4">
+                <div class=sidebar>
+                    @if (_engine.GetActiveJob() != null)
                     {
-                        <span class="menu-btn @((UpgradeVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Upgrades"))">Upgrades</span>
+                        <div class="time-data">
+                            <span class="age">Age: @_engine.GetAge()   -   Day: @_engine.GetDay()</span>
+                            <span class="obsoletion">Age of Obsoletion: @_engine.GetObsoleteAge()</span>
+                        </div>
+
+                        <h3>Computing Data</h3>
+                        <div class="sidebar-section">
+                            <span class="label-text">Global Multiplier: </span><span class="global-multiplier">x@_engine.FormatNumber(@_engine.GetGlobalMultiplier())</span><br />
+                            <span class="label-text">Job XP: </span><span class="job-xp">x@_engine.FormatNumber(@_engine.GetJobXpModifier())</span><br />
+                            <span class="label-text">Research XP: </span><span class="research-xp">x@_engine.FormatNumber(@_engine.GetResearchXpModifier())</span><br />
+                            <span class="label-text">Processing Speed: </span><span class="processing-speed">x@_engine.FormatNumber(((500 / _engine.GetGameSpeed())))</span>
+                        </div>
+                        <hr />
+                        <h3>Financial Data</h3>
+                        <div class="sidebar-section">
+                            <span class="label-text">Money: </span><span class="money">$@_engine.FormatNumber(@_engine.GetMoney())</span><br /><br />
+                            <span class="label-text">Net: </span><span class="income">$@_engine.FormatNumber(@_engine.GetIncome())</span><br />
+                            <span class="label-text">Income: </span><span class="daily-income">$@_engine.FormatNumber(@_engine.GameData.ActiveJob.Income)</span><br />
+                            <span class="label-text">Expenses: </span><span class="expenses">$@_engine.FormatNumber(@_engine.GetExpenses())</span>
+                        </div>
+                        <hr />
+                        <span class="active-resource">Active Job</span>
+                        <JobComponent Job="@_engine.GameData.ActiveJob" SideBar="true" />
                     }
-                    @if (_engine.IsHackingUnlocked())
+                    @if (_engine.GetActiveResearch() != null)
                     {
-                        <span class="menu-btn @((HackingVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Hacking"))">Hacking</span>
+                        <span class="active-resource">Active Research</span>
+                        <ResearchComponent Research="@_engine.GameData.ActiveResearch" SideBar="true" />
                     }
                 </div>
             </div>
 
-            @if (JobsVisible)
-            {
-                @foreach (JobTypes type in (JobTypes[])Enum.GetValues(typeof(JobTypes)))
+            <div class="col-sm-12 col-md-8">
+                <div class="menu-block">
+                    <div>
+                        <span class="menu-btn @((JobsVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Jobs"))">Jobs</span>
+                        <span class="menu-btn @((ResearchVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Research"))">Research</span>
+
+                        @if (_engine.GameData.UpgradeOne.CanUnlock(_engine))
+                        {
+                            <span class="menu-btn @((UpgradeVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Upgrades"))">Upgrades</span>
+                        }
+                        @if (_engine.IsHackingUnlocked())
+                        {
+                            <span class="menu-btn @((HackingVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Hacking"))">Hacking</span>
+                        }
+
+                        <span class="menu-btn @((SettingsVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Settings"))">Settings</span>
+                    </div>
+                </div>
+
+                @if (JobsVisible)
                 {
-                    List<Job> jobs = _engine.GameData.JobsList.Where(w => w.Unlocked == true && w.JobType == type).ToList();
-                    @if (jobs.Count > 0)
+                    @foreach (JobTypes type in (JobTypes[])Enum.GetValues(typeof(JobTypes)))
                     {
-                        <div class="content-area">
-                            <table class="jobs-table">
-                                <thead class="@type.ToString()">
-                                    <tr>
-                                        <th>@type.GetDisplayName()</th>
-                                        <th>Level</th>
-                                        <th>Income</th>
-                                        <th>XP</th>
-                                        <th>NextLevel</th>
-                                    </tr>
-                                </thead>
-                                @foreach (Job job in jobs)
-                                {
-                                    if (job.Unlocked)
+                        List<Job> jobs = _engine.GameData.JobsList.Where(w => w.Unlocked == true && w.JobType == type).ToList();
+                        @if (jobs.Count > 0)
+                        {
+                            <div class="content-area">
+                                <table class="jobs-table">
+                                    <thead class="@type.ToString()">
+                                        <tr>
+                                            <th>@type.GetDisplayName()</th>
+                                            <th>Level</th>
+                                            <th>Income</th>
+                                            <th>XP</th>
+                                            <th>NextLevel</th>
+                                        </tr>
+                                    </thead>
+                                    @foreach (Job job in jobs)
                                     {
-                                        <JobComponent Job="@job" OnClick="SetActiveJob" />
-                                    }
-                                }
-                                <td style="padding: 8px 15px; text-align: left !important;">
-                                    <span class="next-upgrade">
-                                        @if (_engine.GameData.NextJobUpgrade != null)
+                                        if (job.Unlocked)
                                         {
-                                            <span>@_engine.GameData.NextJobUpgrade.UpgradeMessage(_engine)</span>
+                                            <JobComponent Job="@job" OnClick="SetActiveJob" />
                                         }
-                                    </span>
-                                </td>
-                            </table>
-
-
-                        </div>
-                    }
-                }
-            }
-            @if (ResearchVisible)
-            {
-                @foreach (ResearchTypes type in (ResearchTypes[])Enum.GetValues(typeof(ResearchTypes)))
-                {
-                    List<ResearchProject> researchProjects = _engine.GameData.ResearchList.Where(w => w.Unlocked == true && w.ResearchType == type).ToList();
-                    @if (researchProjects.Count > 0)
-                    {
-                        <div class="content-area">
-                            <table class="research-table">
-                                <thead class="@type.ToString()">
-                                    <tr>
-                                        <th>@type.GetDisplayName()</th>
-                                        <th>Level</th>
-                                        <th>Income</th>
-                                        <th>XP</th>
-                                        <th>NextLevel</th>
-                                    </tr>
-                                </thead>
-                                @foreach (ResearchProject researchProject in researchProjects)
-                                {
-                                    if (researchProject.Unlocked)
-                                    {
-                                        <ResearchComponent Research="@researchProject" OnClick="SetActiveResearch" />
                                     }
-                                }
-                            </table>
+                                    <td style="padding: 8px 15px; text-align: left !important;">
+                                        <span class="next-upgrade">
+                                            @if (_engine.GameData.NextJobUpgrade != null)
+                                            {
+                                                <span>@_engine.GameData.NextJobUpgrade.UpgradeMessage(_engine)</span>
+                                            }
+                                        </span>
+                                    </td>
+                                </table>
 
-                            <div class="next-upgrade">
-                                @if (_engine.GetNextResearchUpgrade() != null)
-                                {
-                                    <span>@_engine.GetNextResearchUpgrade().UpgradeMessage(_engine)</span>
-                                }
+
                             </div>
-                        </div>
+                        }
                     }
                 }
-            }
-            @if (UpgradeVisible)
-            {
-                @foreach (UpgradeTypes type in (UpgradeTypes[])Enum.GetValues(typeof(UpgradeTypes)))
+                @if (ResearchVisible)
                 {
-                    List<Upgrade> upgrades = _engine.GameData.UpgradeList.Where(w => w.Unlocked == true && w.UpgradeType == type).ToList();
-                    @if (upgrades.Count > 0)
+                    @foreach (ResearchTypes type in (ResearchTypes[])Enum.GetValues(typeof(ResearchTypes)))
                     {
-                        <div class="content-area">
-                            <table class="upgrade-table">
-                                <thead class="@type.ToString()">
-                                    <tr>
-                                        <th>@type.GetDisplayName()</th>
-                                        <th>Modifier</th>
-                                        <th>Expense</th>
-                                    </tr>
-                                </thead>
-                                @foreach (Upgrade upgrade in _engine.GameData.UpgradeList)
-                                {
-                                    if (upgrade.Unlocked)
+                        List<ResearchProject> researchProjects = _engine.GameData.ResearchList.Where(w => w.Unlocked == true && w.ResearchType == type).ToList();
+                        @if (researchProjects.Count > 0)
+                        {
+                            <div class="content-area">
+                                <table class="research-table">
+                                    <thead class="@type.ToString()">
+                                        <tr>
+                                            <th>@type.GetDisplayName()</th>
+                                            <th>Level</th>
+                                            <th>Income</th>
+                                            <th>XP</th>
+                                            <th>NextLevel</th>
+                                        </tr>
+                                    </thead>
+                                    @foreach (ResearchProject researchProject in researchProjects)
                                     {
-                                        <UpgradeComponent Upgrade="@upgrade" />
+                                        if (researchProject.Unlocked)
+                                        {
+                                            <ResearchComponent Research="@researchProject" OnClick="SetActiveResearch" />
+                                        }
                                     }
-                                }
-                            </table>
+                                </table>
 
-                            <div class="next-upgrade">
-                                @if (_engine.GetNextUpgrade() != null)
-                                {
-                                    <span>@_engine.GetNextUpgrade().UpgradeMessage(_engine)</span>
-                                }
+                                <div class="next-upgrade">
+                                    @if (_engine.GetNextResearchUpgrade() != null)
+                                    {
+                                        <span>@_engine.GetNextResearchUpgrade().UpgradeMessage(_engine)</span>
+                                    }
+                                </div>
                             </div>
-                        </div>
+                        }
                     }
                 }
-            }
+                @if (UpgradeVisible)
+                {
+                    @foreach (UpgradeTypes type in (UpgradeTypes[])Enum.GetValues(typeof(UpgradeTypes)))
+                    {
+                        List<Upgrade> upgrades = _engine.GameData.UpgradeList.Where(w => w.Unlocked == true && w.UpgradeType == type).ToList();
+                        @if (upgrades.Count > 0)
+                        {
+                            <div class="content-area">
+                                <table class="upgrade-table">
+                                    <thead class="@type.ToString()">
+                                        <tr>
+                                            <th>@type.GetDisplayName()</th>
+                                            <th>Modifier</th>
+                                            <th>Expense</th>
+                                        </tr>
+                                    </thead>
+                                    @foreach (Upgrade upgrade in _engine.GameData.UpgradeList)
+                                    {
+                                        if (upgrade.Unlocked)
+                                        {
+                                            <UpgradeComponent Upgrade="@upgrade" />
+                                        }
+                                    }
+                                </table>
 
-            @if (HackingVisible)
-            {
-                <div class="row" style="margin-top: 20px; padding: 20px 15px;">
-                    <div class="col-md-6">
+                                <div class="next-upgrade">
+                                    @if (_engine.GetNextUpgrade() != null)
+                                    {
+                                        <span>@_engine.GetNextUpgrade().UpgradeMessage(_engine)</span>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+
+                @if (HackingVisible)
+                {
+                    <div class="row" style="margin-top: 20px; padding: 20px 15px;">
+                        <div class="col-md-6">
                             <input type="range" min="1" max="100" class="slider" @bind="@HackingValue" @bind:event="oninput" />
                             <p>Value: @HackingValue</p>
+                        </div>
+                        <div class="col-md-6">
+                            <span>@_engine.GetActiveHackingStory().Message</span>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <span>@_engine.GetActiveHackingStory().Message</span>
+                }
+
+                @if (SettingsVisible)
+                {
+                    <div class="row" style="margin-top: 20px; padding: 20px 15px;">
+                        <div class="col-md-6">
+                            <input class="btn" style="background-color: red; color: white;" type="button" @onclick="_engine.HardReset" value="Hard Reset" />
+                        </div>
                     </div>
-                </div>
-            }
+                }
+            </div>
         </div>
     </div>
-</div>
 }
 
 
 @code {
     bool JobsVisible = true;
     bool ResearchVisible;
+    bool SettingsVisible;
     bool UpgradeVisible;
     bool HackingVisible;
 
@@ -221,6 +234,7 @@
     GameLoadedArgs gameLoaded;
     JobEventArgs jobEvent;
     ResearchEventArgs researchEvent;
+    ToastArgs toastEvent;
     UpgradeEventArgs upgradeEvent;
 
     [Inject]
@@ -243,6 +257,12 @@
             researchEvent = args;
             StateHasChanged();
         };
+        ToastUpdated += (o, args) =>
+        {
+            toastEvent = args;
+            toastService.ShowToast(args.ToastLevel,  args.Message, toastEvent.Heading);
+        };
+
         UpgradeUpdated += (o, args) =>
         {
             upgradeEvent = args;
@@ -267,7 +287,7 @@
 
     public void ChangeView(string name)
     {
-        foreach (PageSegment ps in _engine.Pages)
+        foreach (PageSegment ps in _engine.GameData.Pages)
         {
             if (ps.Name == name)
             {
@@ -286,8 +306,13 @@
                     case "Hacking":
                         HackingVisible = true;
                         break;
+                    case "Settings":
+                        SettingsVisible = true;
+                        break;
+                    default:
+                        JobsVisible = true;
+                        break;
                 }
-
             }
             else
             {
@@ -305,6 +330,9 @@
                         break;
                     case "Hacking":
                         HackingVisible = false;
+                        break;
+                    case "Settings":
+                        SettingsVisible = false;
                         break;
                 }
             }

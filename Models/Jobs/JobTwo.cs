@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Blazored.Toast.Services;
+using Microsoft.AspNetCore.Components;
 using System.Timers;
 using Timer = System.Timers.Timer;
 
@@ -18,7 +19,16 @@ namespace Sentience.Models.Jobs
         }
         public bool CanUnlock(GameEngine engine)
         {
-            return (engine.GameData.JobOne.Level > 9) ? true : false;
+            if (engine.GameData.JobOne.Level > 9)
+            {
+                if (!Unlocked)
+                {
+                    Unlocked = true;
+                    engine.ShowToast(this.Name + " has been unlocked!", "Job Unlocked", ToastLevel.Success);
+                }
+                return true;
+            }
+            return false;
         }
         public override string UpgradeMessage(GameEngine engine)
         {

@@ -1,4 +1,6 @@
-﻿namespace Sentience.Models.Research
+﻿using Blazored.Toast.Services;
+
+namespace Sentience.Models.Research
 {
     public class NoviceResearchOne: ResearchProject
     {
@@ -12,7 +14,17 @@
         }
         public bool CanUnlock(GameEngine engine)
         {
-            return (engine.GameData.ResearchTwo.Level > 49 && engine.GameData.JobThree.Level > 49) ? true : false;
+            if (engine.GameData.ResearchTwo.Level > 49 && engine.GameData.JobThree.Level > 49)
+            {
+                if (!Unlocked)
+                {
+                    Unlocked = true;
+                    engine.ShowToast(this.Name + " has been unlocked!", "Research Unlocked", ToastLevel.Warning);
+                }
+                
+                return true;
+            }
+            return false;
         }
         public override string UpgradeMessage(GameEngine engine)
         {

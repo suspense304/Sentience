@@ -1,12 +1,9 @@
 ﻿using Blazored.LocalStorage;
-using Sentience.Components;
-using Sentience.Models;
 using Sentience.Models.Jobs;
-using Sentience.Models.PageSegments;
 using Sentience.Models.Research;
 using Sentience.Models.StoryElements;
-using Sentience.Models.StoryElements.Hacking;
 using Sentience.Models.Upgrades;
+using Blazored.Toast.Services;
 using System.Timers;
 using Timer = System.Timers.Timer;
 
@@ -20,12 +17,11 @@ namespace Sentience
         public bool IsLoaded = false;
 
         public GameData GameData;
-        
-        public List<PageSegment> Pages = new List<PageSegment>();
         private Timer _GameTimer { get; set; }
         #endregion
 
         #region GAME ENGINE TIMER
+        
         private Timer CreateGameTimer()
         {
             float gameSpeed = GetGameSpeed();
@@ -58,7 +54,12 @@ namespace Sentience
         {
             return _GameTimer;
         }
-
+        public async void HardReset()
+        {
+            await _localStorage.RemoveItemAsync("GameData");
+            TriggerToast("Game has been hard reset!", "Game Reset", ToastLevel.Error);
+            LoadGame();
+        }
         public Job LoadActiveJob()
         {
             return GameData.JobsList.FirstOrDefault(j => j.Active) ?? new Job();
@@ -80,24 +81,32 @@ namespace Sentience
         }
         public async void LoadGame()
         {
-            //await _localStorage.RemoveItemAsync("GameData");
             GameData = new GameData(_localStorage);
             GameData = await GameData.GetGameData(_localStorage);
 
             CreatePages();
             if(GameData.JobsList.Count == 0)
             {
-                CreateJobs();
-                CreateResearch();
+                CreateJobs(false);
+                CreateResearch(false);
                 CreateStories();
-                CreateUpgrades();
+                CreateUpgrades(false);
+            } else
+            {
+                CreateJobs(true);
+                CreateResearch(true);
+                CreateUpgrades(true);
             }
-            
+            UnlockUpgrades();
             GetStartingActives();
 
             GameData.ActiveJob = LoadActiveJob();
             GameData.ActiveResearch = LoadActiveResearch();
             LoadActiveUpgrades();
+
+            GetNextJobUpgrade();
+            GetNextResearchUpgrade();
+            GetNextUpgrades();
 
             _GameTimer = CreateGameTimer();
             IsLoaded = true;
@@ -130,7 +139,6 @@ namespace Sentience
         {
             _localStorage = localStorage;
             LoadGame();
-            
         }
         #endregion
 
@@ -207,10 +215,11 @@ namespace Sentience
         }
         public void CreatePages()
         {
-            Pages.Add(GameData.JobPage);
-            Pages.Add(GameData.ResearchPage);
-            Pages.Add(GameData.UpgradePage);
-            Pages.Add(GameData.HackingPage);
+            GameData.Pages.Add(GameData.JobPage);
+            GameData.Pages.Add(GameData.ResearchPage);
+            GameData.Pages.Add(GameData.UpgradePage);
+            GameData.Pages.Add(GameData.HackingPage);
+            GameData.Pages.Add(GameData.SettingPage);
         }
         public void CreateStories()
         {
@@ -476,39 +485,54 @@ namespace Sentience
 
         #region Jobs
         #region CREATE
-        private void CreateJobs()
+        private void CreateJobs(bool isSavedGame)
         {
-            GameData.JobOne = new JobOne(this);
-            GameData.JobOne.Income = GameData.JobOne.BaseIncome;
-            GameData.JobsList.Add(GameData.JobOne);
+            if(isSavedGame)
+            {
+                GameData.JobsList.Clear();
+                GameData.JobsList.Add(GameData.JobOne);
+                GameData.JobsList.Add(GameData.JobTwo);
+                GameData.JobsList.Add(GameData.JobThree);
+                GameData.JobsList.Add(GameData.JobFour);
+                GameData.JobsList.Add(GameData.JobFive);
+                GameData.JobsList.Add(GameData.JobSix);
+                GameData.JobsList.Add(GameData.BeginnerJobOne);
+                GameData.JobsList.Add(GameData.BeginnerJobTwo);
+            } else
+            {
+                GameData.JobOne = new JobOne(this);
+                GameData.JobOne.Income = GameData.JobOne.BaseIncome;
+                GameData.JobsList.Add(GameData.JobOne);
 
-            GameData.JobTwo = new JobTwo(this);
-            GameData.JobTwo.Income = GameData.JobTwo.BaseIncome;
-            GameData.JobsList.Add(GameData.JobTwo);
+                GameData.JobTwo = new JobTwo(this);
+                GameData.JobTwo.Income = GameData.JobTwo.BaseIncome;
+                GameData.JobsList.Add(GameData.JobTwo);
 
-            GameData.JobThree = new JobThree(this);
-            GameData.JobThree.Income = GameData.JobThree.BaseIncome;
-            GameData.JobsList.Add(GameData.JobThree);
+                GameData.JobThree = new JobThree(this);
+                GameData.JobThree.Income = GameData.JobThree.BaseIncome;
+                GameData.JobsList.Add(GameData.JobThree);
 
-            GameData.JobFour = new JobFour(this);
-            GameData.JobFour.Income = GameData.JobFour.BaseIncome;
-            GameData.JobsList.Add(GameData.JobFour);
+                GameData.JobFour = new JobFour(this);
+                GameData.JobFour.Income = GameData.JobFour.BaseIncome;
+                GameData.JobsList.Add(GameData.JobFour);
 
-            GameData.JobFive = new JobFive(this);
-            GameData.JobFive.Income = GameData.JobFive.BaseIncome;
-            GameData.JobsList.Add(GameData.JobFive);
+                GameData.JobFive = new JobFive(this);
+                GameData.JobFive.Income = GameData.JobFive.BaseIncome;
+                GameData.JobsList.Add(GameData.JobFive);
 
-            GameData.JobSix = new JobSix(this);
-            GameData.JobSix.Income = GameData.JobSix.BaseIncome;
-            GameData.JobsList.Add(GameData.JobSix);
+                GameData.JobSix = new JobSix(this);
+                GameData.JobSix.Income = GameData.JobSix.BaseIncome;
+                GameData.JobsList.Add(GameData.JobSix);
 
-            GameData.BeginnerJobOne = new BeginnerJobOne(this);
-            GameData.BeginnerJobOne.Income = GameData.BeginnerJobOne.BaseIncome;
-            GameData.JobsList.Add(GameData.BeginnerJobOne);
+                GameData.BeginnerJobOne = new BeginnerJobOne(this);
+                GameData.BeginnerJobOne.Income = GameData.BeginnerJobOne.BaseIncome;
+                GameData.JobsList.Add(GameData.BeginnerJobOne);
 
-            GameData.BeginnerJobTwo = new BeginnerJobTwo(this);
-            GameData.BeginnerJobTwo.Income = GameData.BeginnerJobTwo.BaseIncome;
-            GameData.JobsList.Add(GameData.BeginnerJobTwo);
+                GameData.BeginnerJobTwo = new BeginnerJobTwo(this);
+                GameData.BeginnerJobTwo.Income = GameData.BeginnerJobTwo.BaseIncome;
+                GameData.JobsList.Add(GameData.BeginnerJobTwo);
+            }
+            
         }
         #endregion
         #region GETS
@@ -555,22 +579,35 @@ namespace Sentience
         //{
         //    return research.Create();
         //}
-        private void CreateResearch()
+        private void CreateResearch(bool isSavedGame)
         {
-            GameData.ResearchOne = new ResearchOne(this);
-            GameData.ResearchList.Add(GameData.ResearchOne);
+            if (isSavedGame)
+            {
+                GameData.ResearchList.Clear();
+                GameData.ResearchList.Add(GameData.ResearchOne);
+                GameData.ResearchList.Add(GameData.ResearchTwo);
+                GameData.ResearchList.Add(GameData.ResearchThree);
+                GameData.ResearchList.Add(GameData.NoviceResearchOne);
+                GameData.ResearchList.Add(GameData.NoviceResearchTwo);
+            }
+            else
+            {
+                GameData.ResearchOne = new ResearchOne(this);
+                GameData.ResearchList.Add(GameData.ResearchOne);
 
-            GameData.ResearchTwo = new ResearchTwo(this);
-            GameData.ResearchList.Add(GameData.ResearchTwo);
+                GameData.ResearchTwo = new ResearchTwo(this);
+                GameData.ResearchList.Add(GameData.ResearchTwo);
 
-            GameData.ResearchThree = new ResearchThree(this);
-            GameData.ResearchList.Add(GameData.ResearchThree);
+                GameData.ResearchThree = new ResearchThree(this);
+                GameData.ResearchList.Add(GameData.ResearchThree);
 
-            GameData.NoviceResearchOne = new NoviceResearchOne(this);
-            GameData.ResearchList.Add(GameData.NoviceResearchOne);
+                GameData.NoviceResearchOne = new NoviceResearchOne(this);
+                GameData.ResearchList.Add(GameData.NoviceResearchOne);
 
-            GameData.NoviceResearchTwo = new NoviceResearchTwo(this);
-            GameData.ResearchList.Add(GameData.NoviceResearchTwo);
+                GameData.NoviceResearchTwo = new NoviceResearchTwo(this);
+                GameData.ResearchList.Add(GameData.NoviceResearchTwo);
+            }
+            
         }
         #endregion
         #region GETS
@@ -632,19 +669,29 @@ namespace Sentience
 
         #region Upgrades
         #region CREATE
-        private void CreateUpgrades()
+        private void CreateUpgrades(bool isSavedGame)
         {
-            GameData.UpgradeOne = new UpgradeOne(this);
-            GameData.UpgradeList.Add(GameData.UpgradeOne);
+            if (isSavedGame)
+            {
+                GameData.UpgradeList.Clear();
+                GameData.UpgradeList.Add(GameData.UpgradeOne);
+                GameData.UpgradeList.Add(GameData.UpgradeTwo);
+                GameData.UpgradeList.Add(GameData.UpgradeThree);
+                GameData.UpgradeList.Add(GameData.UpgradeFour);
+            } else
+            {
+                GameData.UpgradeOne = new UpgradeOne(this);
+                GameData.UpgradeList.Add(GameData.UpgradeOne);
 
-            GameData.UpgradeTwo = new UpgradeTwo(this);
-            GameData.UpgradeList.Add(GameData.UpgradeTwo);
+                GameData.UpgradeTwo = new UpgradeTwo(this);
+                GameData.UpgradeList.Add(GameData.UpgradeTwo);
 
-            GameData.UpgradeThree = new UpgradeThree(this);
-            GameData.UpgradeList.Add(GameData.UpgradeThree);
+                GameData.UpgradeThree = new UpgradeThree(this);
+                GameData.UpgradeList.Add(GameData.UpgradeThree);
 
-            GameData.UpgradeFour = new UpgradeFour(this);
-            GameData.UpgradeList.Add(GameData.UpgradeFour);
+                GameData.UpgradeFour = new UpgradeFour(this);
+                GameData.UpgradeList.Add(GameData.UpgradeFour);
+            }
         }
         #endregion
         #region GETS
@@ -671,6 +718,10 @@ namespace Sentience
         #endregion
 
         #region Unlock Requirements
+        public void ShowToast(string message, string heading, ToastLevel toastLevel)
+        {
+            TriggerToast(message, heading, toastLevel);
+        }
         public void UnlockJobs()
         {
             GameData.JobTwo.Unlocked = GameData.JobTwo.CanUnlock(this);
@@ -696,14 +747,12 @@ namespace Sentience
         }
         public void UnlockUpgrades()
         {
-            GameData.UpgradeOne.Unlocked = GameData.UpgradeOne.CanUnlock(this);
-            GameData.UpgradeTwo.Unlocked = GameData.UpgradeTwo.CanUnlock(this);
-            GameData.UpgradeThree.Unlocked = GameData.UpgradeThree.CanUnlock(this);
-            GameData.UpgradeFour.Unlocked = GameData.UpgradeFour.CanUnlock(this);
-
-            if (GameData.UpgradeOne.CanUnlock(this))
+            foreach(Upgrade upgrade in GameData.UpgradeList)
             {
-                GameData.UpgradesUnlocked = true;
+                if(!upgrade.Unlocked)
+                {
+                    upgrade.Unlocked = upgrade.CanUnlock(this);
+                }
             }
         }
         public void UnlockHacking()

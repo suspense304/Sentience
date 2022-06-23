@@ -72,6 +72,7 @@ namespace Sentience
         public ResearchSegment ResearchPage { get; set; } = new ResearchSegment();
         public UpgradeSegment UpgradePage { get; set; } = new UpgradeSegment();
         public HackingSegment HackingPage { get; set; } = new HackingSegment();
+        public SettingsSegment SettingPage { get; set; } = new SettingsSegment();
         #endregion
         #region Story Elements
         public StoryElement ActiveHackingStory { get; set; }
@@ -80,6 +81,8 @@ namespace Sentience
         public List<Job> JobsList { get; set; } = new List<Job>();
         public List<ResearchProject> ResearchList { get; set; } = new List<ResearchProject>();
         public List<Upgrade> UpgradeList { get; set; } = new List<Upgrade>();
+
+        public List<PageSegment> Pages = new List<PageSegment>();
 
         public GameData(ILocalStorageService localStorage)
         {

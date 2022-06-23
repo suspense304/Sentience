@@ -17,6 +17,10 @@
         {
             return "";
         }
+        public virtual bool CanUnlock(GameEngine engine)
+        {
+            return Unlocked;
+        }
     }
     
 }

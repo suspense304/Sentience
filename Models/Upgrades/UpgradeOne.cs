@@ -1,4 +1,6 @@
-﻿namespace Sentience.Models.Upgrades
+﻿using Blazored.Toast.Services;
+
+namespace Sentience.Models.Upgrades
 {
     public class UpgradeOne : Upgrade
     {
@@ -12,13 +14,14 @@
             Multiplier = 2f;
             UpgradeType = UpgradeTypes.Scrapyard;
         }
-        public bool CanUnlock(GameEngine engine)
+        public override bool CanUnlock(GameEngine engine)
         {
             if (!Unlocked)
             {
                 if(engine.GetMoney() >= 10)
                 {
                     Unlocked = true;
+                    engine.ShowToast(this.Name + " has been unlocked!", "Upgrade Unlocked", ToastLevel.Info);
                     engine.GetNextUpgrades();
                     return true;
                 } else

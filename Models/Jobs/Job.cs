@@ -2,6 +2,7 @@
 using Sentience.Models.Research;
 using Sentience.Models.Upgrades;
 using System.Timers;
+using Blazored.Toast.Services;
 
 namespace Sentience.Models.Jobs
 {

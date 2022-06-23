@@ -1,6 +1,6 @@
 ﻿namespace Sentience.Events
 {
-    public class GameLoadedArgs: EventBase
+    public class GameLoadedArgs: EventArgs
     {
         public string Message { get; set; }
     }

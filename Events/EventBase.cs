@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Sentience.Events;
+using Blazored.Toast.Services;
 
 namespace Sentience
 {
@@ -8,7 +9,9 @@ namespace Sentience
         public static event EventHandler<GameLoadedArgs> GameLoaded;
         public static event EventHandler<JobEventArgs> JobUpdated;
         public static event EventHandler<ResearchEventArgs> ResearchUpdated;
+        public static event EventHandler<ToastArgs> ToastUpdated;
         public static event EventHandler<UpgradeEventArgs> UpgradeUpdated;
+        
 
         public void TriggerGameLoaded()
         {
@@ -22,6 +25,12 @@ namespace Sentience
         public void TriggerResearchUpdate(string message)
         {
             ResearchUpdated?.Invoke(this, new ResearchEventArgs { Message = "Research Updated" });
+        }
+
+        public void TriggerToast(string message, string heading, ToastLevel toastLevel)
+        {
+            
+            ToastUpdated?.Invoke(this, new ToastArgs { Message = message, Heading = heading, ToastLevel = toastLevel });
         }
 
         public void TriggerUpgradeUpdate(string message)
