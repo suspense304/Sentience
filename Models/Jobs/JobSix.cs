@@ -10,14 +10,14 @@ namespace Sentience.Models.Jobs
             Name = "Pong";
             Active = false;
             Unlocked = false;
-            BaseIncome = 94.13f;
-            BaseXP = 382354;
-            NextLevel = 382354;
+            BaseIncome = 21.81f;
+            BaseXP = 104175;
+            NextLevel = 104175;
             JobType = JobTypes.Basics;
         }
         public bool CanUnlock(GameEngine engine)
         {
-            if (engine.GameData.JobFive.Level > 99 && engine.GameData.ResearchTwo.Level > 199)
+            if (engine.GameData.JobFive.Level > 49 && engine.GameData.ResearchTwo.Level > 99)
             {
                 if (!Unlocked)
                 {
@@ -30,7 +30,7 @@ namespace Sentience.Models.Jobs
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return engine.GameData.JobFive.Name + ": " + engine.GameData.JobFive.Level + "/100   " + engine.GameData.ResearchTwo.Name + ": " + engine.GameData.ResearchTwo.Level + "/200";
+            return engine.GameData.JobFive.Name + ": " + engine.GameData.JobFive.Level + "/50   " + engine.GameData.ResearchOne.Name + ": " + engine.GameData.ResearchOne.Level + "/100";
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Sentience.Models.Upgrades
         {
             if (!Unlocked)
             {
-                if (engine.GetMoney() >= 5000)
+                if (engine.GetMoney() > 2499)
                 {
                     Unlocked = true;
                     engine.ShowToast(this.Name + " has been unlocked!", "Upgrade Unlocked", ToastLevel.Info);
@@ -35,7 +35,7 @@ namespace Sentience.Models.Upgrades
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return (!Unlocked) ? $"Money: " + engine.FormatNumber(engine.GetMoney()) + "/5000" : "";
+            return (!Unlocked) ? $"Money: " + engine.FormatNumber(engine.GetMoney()) + "/2500" : "";
         }
     }
 }

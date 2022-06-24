@@ -10,9 +10,9 @@ namespace Sentience.Models.Jobs
             Name = "Random Number Generator";
             Active = false;
             Unlocked = false;
-            BaseIncome = 6.21f;
-            BaseXP = 9775;
-            NextLevel = 9775;
+            BaseIncome = 2.97f;
+            BaseXP = 6957;
+            NextLevel = 6957;
             JobType = JobTypes.Basics;
         }
         public bool CanUnlock(GameEngine engine)

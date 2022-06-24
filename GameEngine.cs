@@ -7,10 +7,11 @@ using Blazored.Toast.Services;
 using System.Timers;
 using Timer = System.Timers.Timer;
 using Sentience.Models.StoryElements.Hacking;
+using Sentience.Models.Hacks;
 
 namespace Sentience
 {
-    public class GameEngine: EventBase
+    public class GameEngine : EventBase
     {
         private readonly ILocalStorageService _localStorage;
 
@@ -19,10 +20,12 @@ namespace Sentience
 
         public GameData GameData;
         private Timer _GameTimer { get; set; }
+
+        public bool AutoLevelJobs = false;
+        public bool AutoLevelResearch = false;
         #endregion
 
         #region GAME ENGINE TIMER
-        
         private Timer CreateGameTimer()
         {
             float gameSpeed = GetGameSpeed();
@@ -71,7 +74,7 @@ namespace Sentience
         }
         public void LoadActiveUpgrades()
         {
-            foreach(ResearchProject research in GameData.ResearchList)
+            foreach (ResearchProject research in GameData.ResearchList)
             {
                 if (research.Active)
                 {
@@ -84,14 +87,16 @@ namespace Sentience
             GameData = new GameData(_localStorage);
             GameData = await GameData.GetGameData(_localStorage);
 
-            
-            if(GameData.JobsList.Count == 0)
+            if (GameData.JobsList.Count == 0)
             {
+                CreateHacks(false);
                 CreateJobs(false);
                 CreateResearch(false);
                 CreateUpgrades(false);
-            } else
+            }
+            else
             {
+                CreateHacks(true);
                 CreateJobs(true);
                 CreateResearch(true);
                 CreateUpgrades(true);
@@ -131,12 +136,27 @@ namespace Sentience
             UnlockUpgrades();
             UnlockHacking();
 
-            //GameData.SetGameData(this);
+            if (GameData.HackingUnlocked)
+            {
+                UpdateHackData();
+            }
+
+            SaveAutoLevelers();
+
             GameData.SaveGame();
 
-            _GameTimer.Stop();
-            _GameTimer.Dispose();
-            _GameTimer = CreateGameTimer();
+            if (GetAge() >= GetObsoleteAge())
+            {
+                GameOver();
+            }
+            else
+            {
+                _GameTimer.Stop();
+                _GameTimer.Dispose();
+                _GameTimer = CreateGameTimer();
+            }
+
+
         }
         public GameEngine(ILocalStorageService localStorage)
         {
@@ -204,9 +224,9 @@ namespace Sentience
         }
         public void CheckBankruptcy()
         {
-            if(GameData.Money <= 0)
+            if (GameData.Money <= 0)
             {
-                foreach(Upgrade upgrade in GameData.UpgradeList)
+                foreach (Upgrade upgrade in GameData.UpgradeList)
                 {
                     upgrade.Active = false;
                 }
@@ -252,21 +272,37 @@ namespace Sentience
                 if (value > 99999)
                 {
                     newValue = Math.Round(value / (double)n, 2);
-                }else
+                }
+                else
                 {
                     newValue = Math.Round(value / (double)n, 1);
                 }
-                
+
                 formattedValue = String.Format("{0}{1}", newValue, dict[n]);
             }
             return formattedValue;
         }
+        public ResearchProject GetNextResearchToLevel()
+        {
+            Dictionary<ResearchProject, int> dict = new Dictionary<ResearchProject, int>();
+            foreach(ResearchProject research in GameData.ResearchList.Where(w => w.Unlocked).ToList())
+            {
+                int nextLevel = research.NextLevel / GetResearchXPGain();
+                if(research.Unlocked)
+                {
+                    dict.Add(research, nextLevel);
+                }
+            }
+            return dict.OrderBy(o => o.Value).First().Key;
+        }
         public void GetNextUpgrades()
         {
-            Job nextUnlockedJob = GameData.JobsList.Where(w => w.Unlocked == false).FirstOrDefault();
-            ResearchProject nextUnlockedResearch = GameData.ResearchList.Where(w => w.Unlocked == false).FirstOrDefault();
-            Upgrade nextUnlockedUpgrade = GameData.UpgradeList.Where(w => w.Unlocked == false).FirstOrDefault();
+            Hack nextUnlockedHack = GameData.HacksList.FirstOrDefault(w => w.Unlocked == false);
+            Job nextUnlockedJob = GameData.JobsList.FirstOrDefault(w => w.Unlocked == false);
+            ResearchProject nextUnlockedResearch = GameData.ResearchList.FirstOrDefault(w => w.Unlocked == false);
+            Upgrade nextUnlockedUpgrade = GameData.UpgradeList.FirstOrDefault(w => w.Unlocked == false);
 
+            if (nextUnlockedHack != null) SetNextHackUpgrade(nextUnlockedHack);
             if (nextUnlockedJob != null) SetNextJobUpgrade(nextUnlockedJob);
             if (nextUnlockedResearch != null) SetNextResearchUpgrade(nextUnlockedResearch);
             if (nextUnlockedUpgrade != null) SetNextUpgrade(nextUnlockedUpgrade);
@@ -276,13 +312,18 @@ namespace Sentience
             GameData.ActiveJob = GameData.JobsList.Where(w => w.Active).FirstOrDefault();
             GameData.ActiveResearch = GameData.ResearchList.Where(w => w.Active).FirstOrDefault();
         }
+        public void SaveAutoLevelers()
+        {
+            GameData.AutoLevelJobs = AutoLevelJobs;
+            GameData.AutoLevelResearch = AutoLevelResearch;
+        }
         private void UpdateDate()
         {
             GameData.CurrentDay++;
-            if(GameData.CurrentDay > 365)
+            if (GameData.CurrentDay > 365)
             {
                 GameData.CurrentAge++;
-                if(GameData.CurrentAge >= GameData.ObsoleteAge)
+                if (GameData.CurrentAge >= GameData.ObsoleteAge)
                 {
                     GameOver();
                 }
@@ -314,7 +355,6 @@ namespace Sentience
             TriggerResearchUpdate("Research Updated");
         }
         #endregion
-
         #region Game Engine Variables
         #region GETS
         public float GetBaseXPGain()
@@ -389,7 +429,7 @@ namespace Sentience
             float newXp = 1f;
             foreach (ResearchProject research in GameData.ResearchList)
             {
-                if (research.Modifier == Modifiers.ResearchSpeed)
+                if (research.Modifier == Modifiers.ResearchSpeed && research.Unlocked)
                 {
                     newXp += research.ModifierValue;
                 }
@@ -486,12 +526,11 @@ namespace Sentience
         }
         #endregion
         #endregion
-
         #region Jobs
         #region CREATE
         private void CreateJobs(bool isSavedGame)
         {
-            if(isSavedGame)
+            if (isSavedGame)
             {
                 GameData.JobsList.Clear();
                 GameData.JobsList.Add(GameData.JobOne);
@@ -502,7 +541,8 @@ namespace Sentience
                 GameData.JobsList.Add(GameData.JobSix);
                 GameData.JobsList.Add(GameData.BeginnerJobOne);
                 GameData.JobsList.Add(GameData.BeginnerJobTwo);
-            } else
+            }
+            else
             {
                 GameData.JobOne = new JobOne(this);
                 GameData.JobOne.Income = GameData.JobOne.BaseIncome;
@@ -536,7 +576,7 @@ namespace Sentience
                 GameData.BeginnerJobTwo.Income = GameData.BeginnerJobTwo.BaseIncome;
                 GameData.JobsList.Add(GameData.BeginnerJobTwo);
             }
-            
+
         }
         #endregion
         #region GETS
@@ -610,7 +650,7 @@ namespace Sentience
                 GameData.NoviceResearchTwo = new NoviceResearchTwo(this);
                 GameData.ResearchList.Add(GameData.NoviceResearchTwo);
             }
-            
+
         }
         #endregion
         #region GETS
@@ -644,7 +684,9 @@ namespace Sentience
         }
         public int GetResearchXPGain()
         {
-            return (int)((GetBaseXPGain() + GetGlobalLevels()) * GetResearchXpModifier() * GameData.GlobalMultiplier);
+            float HackingPercentage = 100 - GameData.HackingPercentage;
+            float finalPercentage = HackingPercentage / 100;
+            return (int)((GetBaseXPGain() + GetGlobalLevels()) * GetResearchXpModifier() * GameData.GlobalMultiplier * finalPercentage);
         }
         #endregion
         #region UPDATES
@@ -676,11 +718,57 @@ namespace Sentience
             if (isSavedGame)
             {
                 GameData.UpgradeList.Clear();
-                GameData.UpgradeList.Add(GameData.UpgradeOne);
-                GameData.UpgradeList.Add(GameData.UpgradeTwo);
-                GameData.UpgradeList.Add(GameData.UpgradeThree);
-                GameData.UpgradeList.Add(GameData.UpgradeFour);
-            } else
+                if (GameData.UpgradeOne != null)
+                {
+                    GameData.UpgradeList.Add(GameData.UpgradeOne);
+                }
+
+                if (GameData.UpgradeTwo != null)
+                {
+                    GameData.UpgradeList.Add(GameData.UpgradeTwo);
+                }
+
+                if (GameData.UpgradeThree != null)
+                {
+                    GameData.UpgradeList.Add(GameData.UpgradeThree);
+                }
+
+                if (GameData.UpgradeFour != null)
+                {
+                    GameData.UpgradeList.Add(GameData.UpgradeFour);
+                }
+
+                if (GameData.UpgradeFive != null)
+                {
+                    GameData.UpgradeList.Add(GameData.UpgradeFive);
+                }
+
+                if (GameData.UpgradeSix != null)
+                {
+                    GameData.UpgradeList.Add(GameData.UpgradeSix);
+                }
+
+                if (GameData.UpgradeSeven != null)
+                {
+                    GameData.UpgradeList.Add(GameData.UpgradeSeven);
+                }
+
+                if (GameData.UpgradeEight != null)
+                {
+                    GameData.UpgradeList.Add(GameData.UpgradeEight);
+                }
+
+                if (GameData.UpgradeNine != null)
+                {
+                    GameData.UpgradeList.Add(GameData.UpgradeNine);
+                }
+
+                if (GameData.UpgradeTen != null)
+                {
+                    GameData.UpgradeList.Add(GameData.UpgradeTen);
+                }
+            }
+            else
             {
                 GameData.UpgradeOne = new UpgradeOne(this);
                 GameData.UpgradeList.Add(GameData.UpgradeOne);
@@ -693,6 +781,24 @@ namespace Sentience
 
                 GameData.UpgradeFour = new UpgradeFour(this);
                 GameData.UpgradeList.Add(GameData.UpgradeFour);
+
+                GameData.UpgradeFive = new UpgradeFive(this);
+                GameData.UpgradeList.Add(GameData.UpgradeFive);
+
+                GameData.UpgradeSix = new UpgradeSix(this);
+                GameData.UpgradeList.Add(GameData.UpgradeSix);
+
+                GameData.UpgradeSeven = new UpgradeSeven(this);
+                GameData.UpgradeList.Add(GameData.UpgradeSeven);
+
+                GameData.UpgradeEight = new UpgradeEight(this);
+                GameData.UpgradeList.Add(GameData.UpgradeEight);
+
+                GameData.UpgradeNine = new UpgradeNine(this);
+                GameData.UpgradeList.Add(GameData.UpgradeNine);
+
+                GameData.UpgradeTen = new UpgradeTen(this);
+                GameData.UpgradeList.Add(GameData.UpgradeTen);
             }
         }
         #endregion
@@ -718,7 +824,66 @@ namespace Sentience
         }
         #endregion
         #endregion
+        #region Hacks
+        public void CreateHacks(bool isSavedGame)
+        {
+            if (isSavedGame)
+            {
+                GameData.HacksList.Clear();
+                if (GameData.HackOne != null)
+                {
+                    GameData.HacksList.Add(GameData.HackOne);
+                }
+                else
+                {
+                    GameData.HackOne = new HackOne(this);
+                    GameData.HacksList.Add(GameData.HackOne);
+                }
+            }
+            else
+            {
+                GameData.HackOne = new HackOne(this);
+                GameData.HacksList.Add(GameData.HackOne);
+            }
+        }
 
+        public int GetHackingHPGain()
+        {
+            float HackingPercentage = (float)GameData.HackingPercentage / 100;
+            return (int)((GetBaseXPGain() + GetGlobalLevels()) * GetResearchXpModifier() * GameData.GlobalMultiplier * HackingPercentage);
+        }
+        public Hack GetNextHackUpgrade()
+        {
+            return GameData.NextHackUpgrade;
+        }
+
+        public void SetHackingPercentage(int value)
+        {
+            GameData.HackingPercentage = value;
+        }
+        public void SetNextHackUpgrade(Hack hack)
+        {
+            GameData.NextHackUpgrade = hack;
+        }
+        private void UpdateHackData()
+        {
+            Hack activeHack = GameData.HacksList.FirstOrDefault(w => w.Unlocked && !w.Active);
+            if (activeHack != null)
+            {
+                activeHack.CurrentXp += GetHackingHPGain();
+                if (activeHack.CurrentXp >= activeHack.XpNeeded)
+                {
+                    activeHack.LevelUp(this);
+                }
+            }
+            else
+            {
+                GameData.HackingXp += GetHackingHPGain();
+            }
+            TriggerHackUpdate("Hack Updated");
+        }
+
+        #endregion
         #region Unlock Requirements
         public void ShowToast(string message, string heading, ToastLevel toastLevel)
         {
@@ -749,9 +914,9 @@ namespace Sentience
         }
         public void UnlockUpgrades()
         {
-            foreach(Upgrade upgrade in GameData.UpgradeList)
+            foreach (Upgrade upgrade in GameData.UpgradeList)
             {
-                if(!upgrade.Unlocked)
+                if (!upgrade.Unlocked)
                 {
                     upgrade.Unlocked = upgrade.CanUnlock(this);
                 }
@@ -759,7 +924,7 @@ namespace Sentience
         }
         public void UnlockHacking()
         {
-            if(GameData.UpgradeFour.Unlocked && GameData.NoviceResearchOne.Unlocked)
+            if (GameData.UpgradeFour.Unlocked && GameData.NoviceResearchOne.Unlocked)
             {
                 GameData.HackingUnlocked = true;
             }

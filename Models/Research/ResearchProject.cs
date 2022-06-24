@@ -4,8 +4,8 @@
     {
         public bool Active;
         public bool Unlocked;
-        public int BaseXP { get; set; } = 25;
-        public int NextLevel { get; set; } = 25;
+        public int BaseXP { get; set; } = 80;
+        public int NextLevel { get; set; } = 80;
         public float CurrentXP { get; set; } = 0;
         public bool GenerateXP { get; set; } = true;
         public int Level { get; set; } = 0;
@@ -32,6 +32,11 @@
             UpdateModifier(engine);
             engine.UnlockResearch();
             engine.SetGlobalMulitplier();
+
+            if (engine.AutoLevelResearch)
+            {
+                engine.SetActiveResearch(engine.GetNextResearchToLevel());
+            }
         }
         public void UpdateModifier(GameEngine engine)
         {

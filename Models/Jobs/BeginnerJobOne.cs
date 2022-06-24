@@ -9,14 +9,14 @@ namespace Sentience.Models.Jobs
             Name = "Cookie Clicker";
             Active = false;
             Unlocked = false;
-            BaseIncome = 1.73f;
-            BaseXP = 7649;
-            NextLevel = 7649;
+            BaseIncome = 86.44f;
+            BaseXP = 793007;
+            NextLevel = 793007;
             JobType = JobTypes.Beginner;
         }
         public bool CanUnlock(GameEngine engine)
         {
-            if (engine.GameData.ResearchOne.Level > 49 && engine.GameData.ResearchTwo.Level > 49 && engine.GameData.ResearchThree.Level > 49)
+            if (engine.GameData.ResearchOne.Level > 149 && engine.GameData.ResearchTwo.Level > 149 && engine.GameData.ResearchThree.Level > 149)
             {
                 if (!Unlocked)
                 {
@@ -29,7 +29,7 @@ namespace Sentience.Models.Jobs
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return engine.GameData.ResearchOne.Name + ": " + engine.GameData.ResearchOne.Level + "/50  " + engine.GameData.ResearchTwo.Name + ": " + engine.GameData.ResearchTwo.Level + "/50  " + engine.GameData.ResearchThree.Name + ": " + engine.GameData.ResearchThree.Level + "/50";
+            return engine.GameData.ResearchOne.Name + ": " + engine.GameData.ResearchThree.Level + "/150  " + engine.GameData.ResearchTwo.Name + ": " + engine.GameData.ResearchTwo.Level + "/150  " + engine.GameData.ResearchThree.Name + ": " + engine.GameData.ResearchThree.Level + "/150";
         }
     }
 }

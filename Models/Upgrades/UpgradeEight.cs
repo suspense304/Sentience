@@ -2,29 +2,31 @@
 
 namespace Sentience.Models.Upgrades
 {
-    public class UpgradeOne : Upgrade
+    public class UpgradeEight: Upgrade
     {
-        public UpgradeOne(GameEngine engine)
+        public UpgradeEight(GameEngine engine)
         {
-            Name = "Cheap VM";
+            Name = "Zip Drive";
             Active = false;
-            Expense = 0.37f;
+            Expense = 2000f;
             Unlocked = false;
-            Modifier = Modifiers.JobXP;
-            Multiplier = 4f;
-            UpgradeType = UpgradeTypes.Scrapyard;
+            Modifier = Modifiers.GlobalXP;
+            Multiplier = 8f;
+            UpgradeType = UpgradeTypes.Refurbished;
         }
+
         public override bool CanUnlock(GameEngine engine)
         {
             if (!Unlocked)
             {
-                if(engine.GetMoney() >= 10)
+                if (engine.GetMoney() >= 100000000)
                 {
                     Unlocked = true;
                     engine.ShowToast(this.Name + " has been unlocked!", "Upgrade Unlocked", ToastLevel.Info);
                     engine.GetNextUpgrades();
                     return true;
-                } else
+                }
+                else
                 {
                     return false;
                 }
@@ -33,7 +35,7 @@ namespace Sentience.Models.Upgrades
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return (!Unlocked) ? $"Money: " + engine.FormatNumber(engine.GetMoney()) + "/10" : "";
+            return (!Unlocked) ? $"Money: " + engine.FormatNumber(engine.GetMoney()) + "/100m" : "";
         }
     }
 }

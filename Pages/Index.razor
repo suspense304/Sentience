@@ -19,9 +19,9 @@
             </div>
             <div style="float:right">
                 <input class="regular-btn" type="button" @onclick="() => SetSpeed(1)" value="Speed 1" />
-                <input class="regular-btn" type="button" @onclick="() => SetSpeed(2)" value="Speed 2" />
-                <input class="regular-btn" type="button" @onclick="() => SetSpeed(3)" value="Speed 3" />
                 <input class="regular-btn" type="button" @onclick="() => SetSpeed(4)" value="Speed 4" />
+                <input class="regular-btn" type="button" @onclick="() => SetSpeed(8)" value="Speed 8" />
+                <input class="regular-btn" type="button" @onclick="() => SetSpeed(16)" value="Speed 16" />
             </div>
         </div>
         <br />
@@ -35,6 +35,17 @@
                             <span class="age">Age: @_engine.GetAge()   -   Day: @_engine.GetDay()</span>
                             <span class="obsoletion">Age of Obsoletion: @_engine.GetObsoleteAge()</span>
                         </div>
+
+                        <div>
+
+                            <span class="active-resource">Auto Level Research</span>
+                            <input style="margin-left: auto;" type="checkbox" @onclick="() => SetAutoResearch()" @bind="@_engine.AutoLevelResearch" />
+                        
+
+                        </div>
+
+
+                            
 
                         <h3>Computing Data</h3>
                         <div class="sidebar-section">
@@ -65,21 +76,21 @@
 
             <div class="col-sm-12 col-md-8">
                 <div class="menu-block">
-                    <div>
-                        <span class="menu-btn @((JobsVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Jobs"))">Jobs</span>
-                        <span class="menu-btn @((ResearchVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Research"))">Research</span>
 
-                        @if (_engine.GameData.UpgradeOne.CanUnlock(_engine))
-                        {
-                            <span class="menu-btn @((UpgradeVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Upgrades"))">Upgrades</span>
-                        }
-                        @if (_engine.IsHackingUnlocked())
-                        {
-                            <span class="menu-btn @((HackingVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Hacking"))">Hacking</span>
-                        }
+                    <span class="menu-btn @((JobsVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Jobs"))">Jobs</span>
+                    <span class="menu-btn @((ResearchVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Research"))">Research</span>
 
-                        <span class="menu-btn @((SettingsVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Settings"))">Settings</span>
-                    </div>
+                    @if (_engine.GameData.UpgradeOne.CanUnlock(_engine))
+                    {
+                        <span class="menu-btn @((UpgradeVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Upgrades"))">Upgrades</span>
+                    }
+                    @if (_engine.IsHackingUnlocked())
+                    {
+                        <span class="menu-btn @((HackingVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Hacking"))">Hacking</span>
+                    }
+
+                    <span style="margin-left: auto;" class="menu-btn @((SettingsVisible) ? "menu-btn-active" : "")" @onclick="@(() => ChangeView("Settings"))">Settings</span>
+
                 </div>
 
                 @if (JobsVisible)
@@ -104,23 +115,20 @@
                                     {
                                         if (job.Unlocked)
                                         {
-                                            if(!isJobCollapsed || job.Active)
+                                            if (!isJobCollapsed || job.Active)
                                             {
                                                 <JobComponent Job="@job" OnClick="SetActiveJob" />
                                             }
-                                            
+
                                         }
                                     }
-                                    <td style="padding: 8px 15px; text-align: left !important;">
-                                        <span class="next-upgrade">
-                                            @if (_engine.GameData.NextJobUpgrade != null)
-                                            {
-                                                <span>@_engine.GameData.NextJobUpgrade.UpgradeMessage(_engine)</span>
-                                            }
-                                        </span>
-                                    </td>
                                 </table>
-
+                                <div class="next-upgrade">
+                                    @if (_engine.NextJobUpgrade() != null)
+                                    {
+                                        <span>@_engine.NextJobUpgrade().UpgradeMessage(_engine)</span>
+                                    }
+                                </div>
 
                             </div>
                         }
@@ -137,9 +145,11 @@
                                 <table class="research-table">
                                     <thead class="@type.ToString()">
                                         <tr>
-                                            <th>@type.GetDisplayName() <span class="collapse-button" type="button" @onclick="OnToggleResearchCollapse">@((@isResearchCollapsed) ? "+" : "-")</span></th>
+                                            <th>@type.GetDisplayName() 
+                                                <span class="collapse-button" type="button" @onclick="OnToggleResearchCollapse">@((@isResearchCollapsed) ? "+" : "-")</span>
+                                                </th>
                                             <th>Level</th>
-                                            <th>Income</th>
+                                            <th>Modifier</th>
                                             <th>XP</th>
                                             <th>NextLevel</th>
                                         </tr>
@@ -182,7 +192,7 @@
                                             <th>Expense</th>
                                         </tr>
                                     </thead>
-                                    @foreach (Upgrade upgrade in _engine.GameData.UpgradeList)
+                                    @foreach (Upgrade upgrade in upgrades)
                                     {
                                         if (upgrade.Unlocked)
                                         {
@@ -234,6 +244,7 @@
     bool isUpgradeCollapsed = false;
 
     GameLoadedArgs gameLoaded;
+    HackEventArgs hackEvent;
     JobEventArgs jobEvent;
     ResearchEventArgs researchEvent;
     ToastArgs toastEvent;
@@ -249,6 +260,11 @@
             gameLoaded = args;
             StateHasChanged();
         };
+        HackUpdated += (o, args) =>
+        {
+            hackEvent = args;
+            StateHasChanged();
+        };
         JobUpdated += (o, args) =>
         {
             jobEvent = args;
@@ -262,7 +278,7 @@
         ToastUpdated += (o, args) =>
         {
             toastEvent = args;
-            toastService.ShowToast(args.ToastLevel,  args.Message, toastEvent.Heading);
+            toastService.ShowToast(args.ToastLevel, args.Message, toastEvent.Heading);
         };
 
         UpgradeUpdated += (o, args) =>
@@ -270,6 +286,11 @@
             upgradeEvent = args;
             StateHasChanged();
         };
+    }
+
+    void SetAutoResearch()
+    {
+        _engine.AutoLevelResearch = !_engine.AutoLevelResearch;
     }
 
     void SetSpeed(int value)

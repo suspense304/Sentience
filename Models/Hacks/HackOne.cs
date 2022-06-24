@@ -1,30 +1,30 @@
 ﻿using Blazored.Toast.Services;
 
-namespace Sentience.Models.Upgrades
+namespace Sentience.Models.Hacks
 {
-    public class UpgradeOne : Upgrade
+    public class HackOne: Hack
     {
-        public UpgradeOne(GameEngine engine)
+        public HackOne(GameEngine engine)
         {
-            Name = "Cheap VM";
+            Name = @"Hack ""Girlfriend's"" Facebook";
             Active = false;
-            Expense = 0.37f;
             Unlocked = false;
             Modifier = Modifiers.JobXP;
-            Multiplier = 4f;
-            UpgradeType = UpgradeTypes.Scrapyard;
+            Multiplier = 16f;
         }
         public override bool CanUnlock(GameEngine engine)
         {
             if (!Unlocked)
             {
-                if(engine.GetMoney() >= 10)
+                if (engine.GameData.HackingXp >= 1000000000)
                 {
                     Unlocked = true;
-                    engine.ShowToast(this.Name + " has been unlocked!", "Upgrade Unlocked", ToastLevel.Info);
+                    engine.ShowToast(this.Name + " has been unlocked!", "Hack Successful", ToastLevel.Success);
                     engine.GetNextUpgrades();
+                    engine.GameData.ActiveHack = this;
                     return true;
-                } else
+                }
+                else
                 {
                     return false;
                 }
@@ -33,7 +33,7 @@ namespace Sentience.Models.Upgrades
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return (!Unlocked) ? $"Money: " + engine.FormatNumber(engine.GetMoney()) + "/10" : "";
+            return (!Unlocked) ? "Hacking Xp: " + engine.FormatNumber(engine.GameData.HackingXp) + "/" + engine.FormatNumber(1000000000)  : "";
         }
     }
 }

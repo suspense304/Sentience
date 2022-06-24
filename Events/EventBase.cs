@@ -7,6 +7,7 @@ namespace Sentience
     public class EventBase: ComponentBase
     {
         public static event EventHandler<GameLoadedArgs> GameLoaded;
+        public static event EventHandler<HackEventArgs> HackUpdated;
         public static event EventHandler<JobEventArgs> JobUpdated;
         public static event EventHandler<ResearchEventArgs> ResearchUpdated;
         public static event EventHandler<ToastArgs> ToastUpdated;
@@ -16,6 +17,11 @@ namespace Sentience
         public void TriggerGameLoaded()
         {
             GameLoaded?.Invoke(this, new GameLoadedArgs {  Message = "Game Loaded"});
+        }
+
+        public void TriggerHackUpdate(string message)
+        {
+            HackUpdated?.Invoke(this, new HackEventArgs { Message = "Hack Updated" });
         }
         public void TriggerJobUpdate(string message)
         {

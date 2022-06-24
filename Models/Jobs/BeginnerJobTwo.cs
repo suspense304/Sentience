@@ -9,14 +9,14 @@ namespace Sentience.Models.Jobs
             Name = "Chess";
             Active = false;
             Unlocked = false;
-            BaseIncome = 1.73f;
-            BaseXP = 7649;
-            NextLevel = 7649;
+            BaseIncome = 225f;
+            BaseXP = 3068689;
+            NextLevel = 3068689;
             JobType = JobTypes.Beginner;
         }
         public bool CanUnlock(GameEngine engine)
         {
-            if (engine.GameData.BeginnerJobOne.Level > 9)
+            if (engine.GameData.BeginnerJobOne.Level > 24)
             {
                 if (!Unlocked)
                 {
@@ -29,7 +29,7 @@ namespace Sentience.Models.Jobs
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return engine.GameData.BeginnerJobOne.Name + ": " + engine.GameData.BeginnerJobOne.Level + "/10";
+            return engine.GameData.BeginnerJobOne.Name + ": " + engine.GameData.BeginnerJobOne.Level + "/25";
         }
     }
 }

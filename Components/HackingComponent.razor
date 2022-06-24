@@ -1,17 +1,96 @@
+@using Sentience.Models.Hacks
 @inject GameEngine _engine
 
 <div class="row" style="margin-top: 20px; padding: 20px 15px;">
     <div class="col-md-6">
-        <input type="range" min="1" max="100" class="slider" @bind="@HackingValue" @bind:event="oninput" />
-        <p>Value: @HackingValue</p>
+        <input type="range" min="0" max="100" class="slider" @bind-value="HackingPercentage" @oninput="@GetValue" />
+        <p>Hacking Percentage: @HackingPercentage</p>
+        <p>Research XP Gain: @ResearchXP</p>
+        <p>Hacking XP Gain: @HackingXP</p>
     </div>
     <div class="col-md-6">
         <span>@_engine.GetActiveHackingStory().Message</span>
     </div>
 </div>
 
-@code{
+<div class="row" style="margin-top: 20px; padding: 20px 15px;">
+    <div class="content-area">
+        @if (_engine.GameData.ActiveHack != null)
+        {
+        <table class="hacking-table">
+            <thead class="">
+                <tr>
+                    <th>Potential Hacks <span class="collapse-button" type="button" @onclick="OnToggleCollapse">@((@isCollapsed) ? "+" : "-")</span></th>
+                    <th>Modifier</th>
+                    <th>XP</th>
+                    <th>Xp Left</th>
+                </tr>
+            </thead>
+            @foreach (Hack hack in _engine.GameData.HacksList)
+            {
+                if (hack.Unlocked)
+                {
+                    if (!isCollapsed || !hack.Unlocked)
+                    {
+                        <tr class="@((hack.Active) ? "hack-active" : "hack-inactive")">
+                            <td>@hack.Name</td>
+                            <td>@hack.GetModifierAmount(_engine) @hack.Modifier.GetDisplayName()</td>
+                            <td>@hack.CurrentXp</td>
+                            <td>(@hack.CurrentXp - @hack.XpNeeded)</td>
+                        </tr>
+                    }
+                }
+            }
+        </table>
+        }
+         @if (_engine.GameData.HackingUnlocked)
+        {
+            <div class="next-upgrade">
+                @if (_engine.GetNextHackUpgrade() != null)
+                {
+                    <span>@_engine.GetNextHackUpgrade().UpgradeMessage(_engine)</span>
+                }
+            </div>
+        }
 
-    int HackingValue = 0;
+    </div>
+</div>
 
+@code {
+    int HackingPercentage;
+    string ResearchXP = "0";
+    string HackingXP = "0";
+
+    bool isCollapsed = false;
+
+    HackEventArgs hackEvent;
+
+    [Parameter] public EventCallback<ChangeEventArgs> GetValues { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        HackingPercentage = _engine.GameData.HackingPercentage;
+        ResearchXP = _engine.FormatNumber(_engine.GetResearchXPGain());
+        HackingXP = _engine.FormatNumber(_engine.GetHackingHPGain());
+
+        HackUpdated += (o, args) =>
+        {
+            hackEvent = args;
+            StateHasChanged();
+        };
+    }
+
+    private void GetValue(ChangeEventArgs e)
+    {
+        HackingPercentage = Convert.ToInt32(e.Value);
+        _engine.SetHackingPercentage(HackingPercentage);
+        ResearchXP = _engine.FormatNumber(_engine.GetResearchXPGain());
+        HackingXP = _engine.FormatNumber(_engine.GetHackingHPGain());
+    }
+
+    void OnToggleCollapse()
+    {
+        isCollapsed = !isCollapsed;
+    }
 }

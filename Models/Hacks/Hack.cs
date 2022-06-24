@@ -1,14 +1,14 @@
-﻿namespace Sentience.Models.Upgrades
+﻿namespace Sentience.Models.Hacks
 {
-    public class Upgrade
+    public class Hack
     {
         public bool Active;
         public bool Unlocked;
         public float Multiplier { get; set; }
-        public float Expense { get; set; }
         public Modifiers Modifier { get; set; }
+        public int CurrentXp { get; set; }
+        public int XpNeeded { get; set; }
         public string Name { get; set; } = "";
-        public UpgradeTypes UpgradeType { get; set; }
         public string GetModifierAmount(GameEngine engine)
         {
             return "+ x" + engine.FormatNumber(Multiplier);
@@ -17,10 +17,13 @@
         {
             return "";
         }
+        public void LevelUp(GameEngine engine)
+        {
+            Active = true;
+        }
         public virtual bool CanUnlock(GameEngine engine)
         {
             return Unlocked;
         }
     }
-    
 }

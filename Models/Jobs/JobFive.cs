@@ -10,14 +10,14 @@ namespace Sentience.Models.Jobs
             Name = "Tic-Tac-Toe";
             Active = false;
             Unlocked = false;
-            BaseIncome = 24.28f;
-            BaseXP = 61135;
-            NextLevel = 61135;
+            BaseIncome = 8.10f;
+            BaseXP = 26921;
+            NextLevel = 26921;
             JobType = JobTypes.Basics;
         }
         public bool CanUnlock(GameEngine engine)
         {
-            if (engine.GameData.JobFour.Level > 49 && engine.GameData.ResearchTwo.Level > 99)
+            if (engine.GameData.JobFour.Level > 24 && engine.GameData.ResearchTwo.Level > 49)
             {
                 if (!Unlocked)
                 {
@@ -30,7 +30,7 @@ namespace Sentience.Models.Jobs
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return engine.GameData.JobFour.Name + ": " + engine.GameData.JobFour.Level + "/50   " + engine.GameData.ResearchTwo.Name + ": " + engine.GameData.ResearchTwo.Level + "/100";
+            return engine.GameData.JobFour.Name + ": " + engine.GameData.JobFour.Level + "/25   " + engine.GameData.ResearchTwo.Name + ": " + engine.GameData.ResearchTwo.Level + "/50";
         }
     }
 }
