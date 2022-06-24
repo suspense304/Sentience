@@ -590,7 +590,6 @@ namespace Sentience
         }
         public Job GetNextJobUpgrade()
         {
-            TriggerJobUpdate("Job Updated");
             return GameData.NextJobUpgrade;
         }
         #endregion
