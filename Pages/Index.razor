@@ -124,9 +124,9 @@
                                     }
                                 </table>
                                 <div class="next-upgrade">
-                                    @if (_engine.NextJobUpgrade() != null)
+                                    @if (_engine.GetNextJobUpgrade() != null)
                                     {
-                                        <span>@_engine.NextJobUpgrade().UpgradeMessage(_engine)</span>
+                                        <span>@_engine.GetNextJobUpgrade().UpgradeMessage(_engine)</span>
                                     }
                                 </div>
 
