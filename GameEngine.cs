@@ -158,6 +158,17 @@ namespace Sentience
 
         private void RunPeriodicTimers(object source, ElapsedEventArgs e)
         {
+            SaveAutoLevelers();
+
+            GameData.SaveGame();
+        }
+        private void RunDailyActions(object source, ElapsedEventArgs e)
+        {
+            UpdateDate();
+            CheckBankruptcy();
+            UpdateJobData();
+            UpdateResearchData();
+
             GetNextJobUpgrade();
             GetNextUpgrades();
             UnlockJobs();
@@ -169,17 +180,6 @@ namespace Sentience
             {
                 UpdateHackData();
             }
-
-            SaveAutoLevelers();
-
-            GameData.SaveGame();
-        }
-        private void RunDailyActions(object source, ElapsedEventArgs e)
-        {
-            UpdateDate();
-            CheckBankruptcy();
-            UpdateJobData();
-            UpdateResearchData();
 
             if (GameData.HackingUnlocked)
             {
@@ -983,6 +983,10 @@ namespace Sentience
             GameData.JobFive.Unlocked = GameData.JobFive.CanUnlock(this);
 
             GameData.JobSix.Unlocked = GameData.JobSix.CanUnlock(this);
+
+            GameData.BeginnerJobOne.Unlocked = GameData.BeginnerJobOne.CanUnlock(this);
+
+            GameData.BeginnerJobTwo.Unlocked = GameData.BeginnerJobTwo.CanUnlock(this);
         }
         public void UnlockResearch()
         {

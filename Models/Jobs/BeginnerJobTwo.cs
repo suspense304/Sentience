@@ -9,9 +9,9 @@ namespace Sentience.Models.Jobs
             Name = "Chess";
             Active = false;
             Unlocked = false;
-            BaseIncome = 326M;
-            BaseXP = 3068689;
-            NextLevel = 3068689;
+            BaseIncome = 1326M;
+            BaseXP = 30686890;
+            NextLevel = 30686890;
             JobType = JobTypes.Beginner;
         }
         public bool CanUnlock(GameEngine engine)
