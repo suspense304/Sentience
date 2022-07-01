@@ -8,10 +8,10 @@ namespace Sentience.Models.Upgrades
         {
             Name = "Dusty Motherboard";
             Active = false;
-            Expense = 45f;
+            Expense = 45M;
             Unlocked = false;
             Modifier = Modifiers.GlobalXP;
-            Multiplier = 4f;
+            Multiplier = 4M;
             UpgradeType = UpgradeTypes.Scrapyard;
         }
 

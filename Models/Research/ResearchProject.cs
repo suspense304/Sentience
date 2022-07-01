@@ -1,25 +1,29 @@
-﻿namespace Sentience.Models.Research
+﻿
+
+using DecimalMath;
+
+namespace Sentience.Models.Research
 {
     public class ResearchProject
     {
         public bool Active;
         public bool Unlocked;
-        public int BaseXP { get; set; } = 80;
-        public int NextLevel { get; set; } = 80;
-        public float CurrentXP { get; set; } = 0;
+        public decimal BaseXP { get; set; } = 80;
+        public decimal NextLevel { get; set; } = 80;
+        public decimal CurrentXP { get; set; } = 0;
         public bool GenerateXP { get; set; } = true;
         public int Level { get; set; } = 0;
-        public float Multiplier { get; set; } = 1f;
+        public decimal Multiplier { get; set; } = 1M;
         public string Name { get; set; }
         public Modifiers Modifier { get; set; }
-        public float ModifierValue { get; set; } = 0f;
-        public float ModifierIncrementValue { get; set; } = .01f;
+        public decimal ModifierValue { get; set; } = 0M;
+        public decimal ModifierIncrementValue { get; set; } = .01M;
         public ResearchTypes ResearchType { get; set; }
         public string GetModifierAmount(GameEngine engine)
         {
             return "x" + engine.FormatNumber(ModifierValue);
         }
-        public float XPRemaining(float current)
+        public decimal XPRemaining(decimal current)
         {
             int value = (int)(NextLevel - current);
             return (value <= 0) ? 0 : value;
@@ -41,16 +45,16 @@
         public void UpdateModifier(GameEngine engine)
         {
             ModifierValue += ModifierIncrementValue;
-            ModifierValue = (float)Math.Ceiling(ModifierValue * 100) / 100;
+            ModifierValue = (decimal)Math.Ceiling(ModifierValue * 100) / 100;
             engine.ApplyModifiers();
         }
-        public float UpdateXP(GameEngine engine)
+        public decimal UpdateXP(GameEngine engine)
         {
             return engine.GetResearchXPGain();
         }
-        public int GetNextUpdateAmount(int lastValue, GameEngine engine)
+        public decimal GetNextUpdateAmount(decimal lastValue, GameEngine engine)
         {
-            return (int)(Math.Floor(BaseXP * Math.Pow(engine.GetUpgradeMultiplier(), Level)));
+            return (decimal)(Math.Floor(BaseXP * DecimalEx.Pow(engine.GetUpgradeMultiplier(), Level)));
         }
         public virtual string UpgradeMessage(GameEngine engine)
         {

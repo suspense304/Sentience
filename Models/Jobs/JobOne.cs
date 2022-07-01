@@ -11,7 +11,7 @@ namespace Sentience.Models.Jobs
             Name = "Hello World";
             Active = true;
             Unlocked = true;
-            BaseIncome = 0.04f;
+            BaseIncome = 0.04M;
             BaseXP = 120;
             NextLevel = 120;
             JobType = JobTypes.Basics;

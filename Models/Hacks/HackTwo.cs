@@ -1,29 +1,29 @@
 ﻿using Blazored.Toast.Services;
 
-namespace Sentience.Models.Upgrades
+namespace Sentience.Models.Hacks
 {
-    public class UpgradeTen: Upgrade
+    public class HackTwo: Hack
     {
-        public UpgradeTen(GameEngine engine)
+        public HackTwo(GameEngine engine)
         {
-            Name = "Duron processor";
+            Name = "Create Twitter Troll Bots";
             Active = false;
-            Expense = 50000M;
             Unlocked = false;
-            Modifier = Modifiers.GlobalXP;
+            Modifier = Modifiers.ResearchSpeed;
             Multiplier = 16M;
-            UpgradeType = UpgradeTypes.Refurbished;
+            CurrentXp = 0;
+            XpNeeded = 25000000;
         }
-
         public override bool CanUnlock(GameEngine engine)
         {
             if (!Unlocked)
             {
-                if (engine.GetMoney() >= 1000000000)
+                if (engine.GameData.HackingXp >= XpNeeded)
                 {
                     Unlocked = true;
-                    engine.ShowToast(this.Name + " has been unlocked!", "Upgrade Unlocked", ToastLevel.Info);
+                    engine.ShowToast(this.Name + " has been unlocked!", "Hack Successful", ToastLevel.Success);
                     engine.GetNextUpgrades();
+                    engine.GameData.ActiveHack = this;
                     return true;
                 }
                 else
@@ -35,7 +35,7 @@ namespace Sentience.Models.Upgrades
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return (!Unlocked) ? $"Money: " + engine.FormatNumber(engine.GetMoney()) + "/1b" : "";
+            return (!Unlocked) ? "Hacking Xp: " + engine.FormatNumber(engine.GameData.HackingXp) + "/" + engine.FormatNumber(XpNeeded) : "";
         }
     }
 }

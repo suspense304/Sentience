@@ -2,13 +2,19 @@
 {
     public class Hack
     {
-        public bool Active;
-        public bool Unlocked;
-        public float Multiplier { get; set; }
+        public bool Active = false;
+        public bool Unlocked = false;
+        public decimal  Multiplier { get; set; }
         public Modifiers Modifier { get; set; }
-        public int CurrentXp { get; set; }
-        public int XpNeeded { get; set; }
+        public decimal CurrentXp { get; set; }
+        public decimal XpNeeded { get; set; }
         public string Name { get; set; } = "";
+
+        public decimal XPRemaining(decimal current)
+        {
+            decimal value = XpNeeded - current;
+            return (value <= 0) ? 0 : value;
+        }
         public string GetModifierAmount(GameEngine engine)
         {
             return "+ x" + engine.FormatNumber(Multiplier);

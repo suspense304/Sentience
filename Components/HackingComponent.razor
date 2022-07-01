@@ -35,8 +35,8 @@
                         <tr class="@((hack.Active) ? "hack-active" : "hack-inactive")">
                             <td>@hack.Name</td>
                             <td>@hack.GetModifierAmount(_engine) @hack.Modifier.GetDisplayName()</td>
-                            <td>@hack.CurrentXp</td>
-                            <td>(@hack.CurrentXp - @hack.XpNeeded)</td>
+                            <td>@_engine.FormatNumber(hack.CurrentXp)</td>
+                            <td>@_engine.FormatNumber(hack.XPRemaining(hack.CurrentXp))</td>
                         </tr>
                     }
                 }

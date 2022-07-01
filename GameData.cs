@@ -19,21 +19,21 @@ namespace Sentience
         public int ObsoleteAge { get; set; } = 50;
         public int CurrentDay { get; set; } = 1;
 
-        public float Money = 0;
-        public float DailyIncome = 0;
-        public float Expenses = 0;
+        public decimal Money = 0;
+        public decimal DailyIncome = 0;
+        public decimal Expenses = 0;
 
-        public float BaseGameSpeed = 500f;
-        public float BaseXPGain = 4f;
-        public float GameSpeed = 1f;
-        public float GlobalMultiplier = 1f;
-        public float IncomeMultiplier = 1.04f;
-        public float UpgradeMultiplier = 1.07f;
+        public decimal  BaseGameSpeed = 500M;
+        public decimal  BaseXPGain = 4M;
+        public decimal  GameSpeed = 1M;
+        public decimal  GlobalMultiplier = 1M;
+        public decimal  IncomeMultiplier = 1.03M;
+        public decimal  UpgradeMultiplier = 1.07M;
 
-        public float GameSpeedModifier = 1f;
-        public float GlobalLevelModifier = 0.1f;
-        public float JobXPModifier = 1f;
-        public float ResearchXPModifier = 1f;
+        public decimal  GameSpeedModifier = 1M;
+        public decimal  GlobalLevelModifier = 0.1M;
+        public decimal  JobXPModifier = 1M;
+        public decimal  ResearchXPModifier = 1M;
 
         public int HackingPercentage = 0;
         public int HackingXp = 0;
@@ -91,6 +91,7 @@ namespace Sentience
         #endregion
         #region Hacks
         public HackOne HackOne { get; set; }
+        public HackTwo HackTwo { get; set; }
         #endregion
         #region Story Elements
         public StoryElement ActiveHackingStory { get; set; }

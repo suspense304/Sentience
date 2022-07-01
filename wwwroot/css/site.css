@@ -156,6 +156,49 @@ tr {
     background-color: #232222;
 }
 
+.hacking-table {
+    border-collapse: collapse;
+    margin-top: 5px;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    width: 100%;
+    min-width: 400px;
+    text-align: center;
+    border-top: 2px inset #cbcbcb8c;
+    border-right: 4px inset #535456;
+    border-bottom: 5px outset #00000078;
+}
+
+    .hacking-table thead tr {
+        text-align: center;
+    }
+
+    .hacking-table th,
+    .hacking-table td {
+        padding: 8px 15px;
+    }
+
+    .hacking-table td {
+        font-size: 1.1em;
+        width: 100px;
+    }
+
+    .hacking-table tr {
+        border-bottom: 2px double #adabab30;
+    }
+
+.hack-active {
+    background-color: #0a4868;
+}
+
+    .hack-active td {
+        color: #fff;
+    }
+
+.hacking-inactive {
+    background-color: #232222;
+}
+
 
 .next-upgrade {
     height: 24px;

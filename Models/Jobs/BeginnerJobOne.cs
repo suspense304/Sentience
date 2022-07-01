@@ -9,7 +9,7 @@ namespace Sentience.Models.Jobs
             Name = "Cookie Clicker";
             Active = false;
             Unlocked = false;
-            BaseIncome = 86.44f;
+            BaseIncome = 68.01M;
             BaseXP = 793007;
             NextLevel = 793007;
             JobType = JobTypes.Beginner;

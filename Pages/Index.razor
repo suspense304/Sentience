@@ -291,6 +291,10 @@
     void SetAutoResearch()
     {
         _engine.AutoLevelResearch = !_engine.AutoLevelResearch;
+        if (_engine.AutoLevelResearch)
+        {
+            _engine.SetActiveResearch(_engine.GetNextResearchToLevel());
+        }
     }
 
     void SetSpeed(int value)

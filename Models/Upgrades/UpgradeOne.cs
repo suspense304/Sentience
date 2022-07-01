@@ -8,10 +8,10 @@ namespace Sentience.Models.Upgrades
         {
             Name = "Cheap VM";
             Active = false;
-            Expense = 0.37f;
+            Expense = 0.37M;
             Unlocked = false;
             Modifier = Modifiers.JobXP;
-            Multiplier = 4f;
+            Multiplier = 4M;
             UpgradeType = UpgradeTypes.Scrapyard;
         }
         public override bool CanUnlock(GameEngine engine)

@@ -10,9 +10,9 @@ namespace Sentience.Models.Jobs
             Name = "Mad Libs";
             Active = false;
             Unlocked = false;
-            BaseIncome = 1.04f;
-            BaseXP = 1798;
-            NextLevel = 1798;
+            BaseIncome = 0.90M;
+            BaseXP = 6949;
+            NextLevel = 6949;
             JobType = JobTypes.Basics;
         }
         public bool CanUnlock(GameEngine engine)

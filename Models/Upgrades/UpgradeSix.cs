@@ -8,10 +8,10 @@ namespace Sentience.Models.Upgrades
         {
             Name = "3dfx Voodoo2";
             Active = false;
-            Expense = 2000f;
+            Expense = 2000M;
             Unlocked = false;
             Modifier = Modifiers.ResearchSpeed;
-            Multiplier = 8f;
+            Multiplier = 8M;
             UpgradeType = UpgradeTypes.Refurbished;
         }
 

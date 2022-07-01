@@ -8,10 +8,10 @@ namespace Sentience.Models.Upgrades
         {
             Name = "Zip Drive";
             Active = false;
-            Expense = 2000f;
+            Expense = 2000M;
             Unlocked = false;
             Modifier = Modifiers.GameSpeed;
-            Multiplier = 2f;
+            Multiplier = 2M;
             UpgradeType = UpgradeTypes.Refurbished;
         }
 

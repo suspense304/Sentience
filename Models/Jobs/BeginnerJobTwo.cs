@@ -9,7 +9,7 @@ namespace Sentience.Models.Jobs
             Name = "Chess";
             Active = false;
             Unlocked = false;
-            BaseIncome = 225f;
+            BaseIncome = 326M;
             BaseXP = 3068689;
             NextLevel = 3068689;
             JobType = JobTypes.Beginner;

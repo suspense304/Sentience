@@ -8,10 +8,10 @@ namespace Sentience.Models.Upgrades
         {
             Name = "Pentium Processor";
             Active = false;
-            Expense = 500f;
+            Expense = 500M;
             Unlocked = false;
             Modifier = Modifiers.JobXP;
-            Multiplier = 8f;
+            Multiplier = 8M;
             UpgradeType = UpgradeTypes.Refurbished;
         }
 

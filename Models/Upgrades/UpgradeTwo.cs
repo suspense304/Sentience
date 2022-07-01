@@ -8,10 +8,10 @@ namespace Sentience.Models.Upgrades
         {
             Name = "Ancient Processor";
             Active = false;
-            Expense = 1.80f;
+            Expense = 1.80M;
             Unlocked = false;
             Modifier = Modifiers.ResearchSpeed;
-            Multiplier = 4f;
+            Multiplier = 4M;
             UpgradeType = UpgradeTypes.Scrapyard;
         }
 

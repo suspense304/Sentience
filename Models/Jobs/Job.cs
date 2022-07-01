@@ -3,6 +3,7 @@ using Sentience.Models.Research;
 using Sentience.Models.Upgrades;
 using System.Timers;
 using Blazored.Toast.Services;
+using DecimalMath;
 
 namespace Sentience.Models.Jobs
 {
@@ -10,40 +11,39 @@ namespace Sentience.Models.Jobs
     {
         public bool Active;
         public bool Unlocked;
-        public float BaseIncome { get; set; }
-        public int BaseXP { get; set; }
+        public decimal BaseIncome { get; set; }
+        public decimal BaseXP { get; set; }
         public bool GenerateIncome { get; set; } = false;
-        public int NextLevel { get; set; }
-        public float CurrentXP { get; set; } = 0;
-        public float Income { get; set; } = 0;
+        public decimal NextLevel { get; set; }
+        public decimal CurrentXP { get; set; } = 0;
+        public decimal Income { get; set; } = 0;
         public int Level { get; set; } = 0;
         public int BaseCost { get; set; }
         public string Name { get; set; }
         public JobTypes JobType { get; set; }
-        public float XPRemaining(float current)
+        public decimal XPRemaining(decimal current)
         {
-            int value = (int)(NextLevel - current);
+            decimal value = NextLevel - current;
             return (value <= 0) ? 0 : value;
         }
         public void LevelUp(GameEngine engine)
         {
             Level++;
-            if (Level == 1) Income = BaseIncome * 1.5f;
+            Income = UpdateIncome(engine);
             NextLevel = GetNextUpdateAmount(NextLevel, engine);
             engine.GetIncomeMultiplier();
-            Income = UpdateIncome(engine);
             engine.SetDailyIncome(Income);
             CurrentXP = 0;
             engine.UnlockJobs();
         }
-        public int GetNextUpdateAmount(int lastValue, GameEngine engine)
+        public decimal GetNextUpdateAmount(decimal lastValue, GameEngine engine)
         {
-            return (int)(Math.Floor(BaseXP * Math.Pow(engine.GetUpgradeMultiplier(), Level)));
+            return (decimal)(Math.Floor(BaseXP * DecimalEx.Pow(engine.GetUpgradeMultiplier(), Level)));
         }
-        public float UpdateIncome(GameEngine engine)
+        public decimal UpdateIncome(GameEngine engine)
         {
-            float newIncome = Income * engine.GetIncomeMultiplier();
-            newIncome = (float)(Math.Ceiling(newIncome * 100) / 100);
+            decimal newIncome = Income * (decimal )engine.GetIncomeMultiplier();
+            newIncome = (decimal)(Math.Ceiling(newIncome * 100) / 100);
             if (newIncome >= 100)
             {
                 return (int)newIncome;

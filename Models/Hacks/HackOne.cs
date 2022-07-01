@@ -10,13 +10,15 @@ namespace Sentience.Models.Hacks
             Active = false;
             Unlocked = false;
             Modifier = Modifiers.JobXP;
-            Multiplier = 16f;
+            Multiplier = 16M;
+            CurrentXp = 0;
+            XpNeeded = 10000000;
         }
         public override bool CanUnlock(GameEngine engine)
         {
             if (!Unlocked)
             {
-                if (engine.GameData.HackingXp >= 1000000000)
+                if (engine.GameData.HackingXp >= XpNeeded)
                 {
                     Unlocked = true;
                     engine.ShowToast(this.Name + " has been unlocked!", "Hack Successful", ToastLevel.Success);
@@ -33,7 +35,7 @@ namespace Sentience.Models.Hacks
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return (!Unlocked) ? "Hacking Xp: " + engine.FormatNumber(engine.GameData.HackingXp) + "/" + engine.FormatNumber(1000000000)  : "";
+            return (!Unlocked) ? "Hacking Xp: " + engine.FormatNumber(engine.GameData.HackingXp) + "/" + engine.FormatNumber(XpNeeded)  : "";
         }
     }
 }

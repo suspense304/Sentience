@@ -8,10 +8,10 @@ namespace Sentience.Models.Upgrades
         {
             Name = "90s GPU";
             Active = false;
-            Expense = 7.5f;
+            Expense = 7.5M;
             Unlocked = false;
             Modifier = Modifiers.GameSpeed;
-            Multiplier = 0.25f;
+            Multiplier = 0.25M;
             UpgradeType = UpgradeTypes.Scrapyard;
         }
 

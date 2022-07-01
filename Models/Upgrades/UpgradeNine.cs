@@ -8,10 +8,10 @@ namespace Sentience.Models.Upgrades
         {
             Name = "K7T Pro2";
             Active = false;
-            Expense = 10000f;
+            Expense = 10000M;
             Unlocked = false;
             Modifier = Modifiers.ResearchSpeed;
-            Multiplier = 16f;
+            Multiplier = 16M;
             UpgradeType = UpgradeTypes.Refurbished;
         }
 

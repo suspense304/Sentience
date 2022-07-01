@@ -26,7 +26,7 @@
                 </div>
             </td>
             <td>@Job.Level</td>
-            <td>$@Job.Income</td>
+            <td>$@_engine.FormatNumber(@Job.Income)</td>
             <td>@_engine.FormatNumber((_engine.GetJobXPGain()))</td>
             <td>@_engine.FormatNumber(Job.XPRemaining(Job.CurrentXP))</td>
         </tr>

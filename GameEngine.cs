@@ -17,9 +17,11 @@ namespace Sentience
 
         #region Declarations
         public bool IsLoaded = false;
+        private bool IsResetting = false;
 
         public GameData GameData;
         private Timer _GameTimer { get; set; }
+        private Timer _PeriodicTimer { get; set; }
 
         public bool AutoLevelJobs = false;
         public bool AutoLevelResearch = false;
@@ -28,12 +30,28 @@ namespace Sentience
         #region GAME ENGINE TIMER
         private Timer CreateGameTimer()
         {
-            float gameSpeed = GetGameSpeed();
-            Timer newTimer = new Timer(gameSpeed);
-            newTimer.Elapsed += new ElapsedEventHandler(RunDailyActions);
-            newTimer.Enabled = true;
-            newTimer.AutoReset = false;
-            return new Timer(gameSpeed);
+            if (!IsResetting)
+            {
+                decimal gameSpeed = GetGameSpeed();
+                Timer newTimer = new Timer((double)gameSpeed);
+                newTimer.Elapsed += new ElapsedEventHandler(RunDailyActions);
+                newTimer.Enabled = true;
+                newTimer.AutoReset = false;
+                return new Timer((double)gameSpeed);
+            }
+            return new Timer();
+        }
+        private Timer CreatePeriodicTimer()
+        {
+            if (!IsResetting)
+            {
+                Timer newTimer = new Timer(5000);
+                newTimer.Elapsed += new ElapsedEventHandler(RunPeriodicTimers);
+                newTimer.Enabled = true;
+                newTimer.AutoReset = true;
+                return new Timer(5000);
+            }
+            return new Timer();
         }
         private void GameOver()
         {
@@ -54,15 +72,19 @@ namespace Sentience
         {
             return GameData.ObsoleteAge;
         }
-        public Timer GetGameTimer()
-        {
-            return _GameTimer;
-        }
         public async void HardReset()
         {
+            IsResetting = true;
+            _GameTimer.Enabled = false;
+            _GameTimer.Stop();
+            _GameTimer.Dispose();
+            _PeriodicTimer.Enabled = false;
+            _PeriodicTimer.Stop();
+            _PeriodicTimer.Dispose();
             await _localStorage.RemoveItemAsync("GameData");
             TriggerToast("Game has been hard reset!", "Game Reset", ToastLevel.Error);
             LoadGame();
+            
         }
         public Job LoadActiveJob()
         {
@@ -84,53 +106,60 @@ namespace Sentience
         }
         public async void LoadGame()
         {
-            GameData = new GameData(_localStorage);
-            GameData = await GameData.GetGameData(_localStorage);
+                GameData = new GameData(_localStorage);
 
-            if (GameData.JobsList.Count == 0)
+                try
+                {
+                    GameData = await GameData.GetGameData(_localStorage);
+                }
+                catch (Exception ex)
+                {
+                    await _localStorage.ClearAsync();
+                }
+
+                if (GameData.JobsList.Count == 0)
+                {
+                    CreateHacks(false);
+                    CreateJobs(false);
+                    CreateResearch(false);
+                    CreateUpgrades(false);
+                }
+                else
+                {
+                    CreateHacks(true);
+                    CreateJobs(true);
+                    CreateResearch(true);
+                    CreateUpgrades(true);
+                }
+
+                CreatePages();
+                CreateStories();
+
+                UnlockUpgrades();
+                GetStartingActives();
+
+                GameData.ActiveJob = LoadActiveJob();
+                GameData.ActiveResearch = LoadActiveResearch();
+                LoadActiveUpgrades();
+
+                GetNextJobUpgrade();
+                GetNextResearchUpgrade();
+                GetNextUpgrades();
+
+            if (!IsResetting)
             {
-                CreateHacks(false);
-                CreateJobs(false);
-                CreateResearch(false);
-                CreateUpgrades(false);
+                _GameTimer = CreateGameTimer();
+                _PeriodicTimer = CreatePeriodicTimer();
             }
-            else
-            {
-                CreateHacks(true);
-                CreateJobs(true);
-                CreateResearch(true);
-                CreateUpgrades(true);
-            }
-
-            CreatePages();
-            CreateStories();
-
-            UnlockUpgrades();
-            GetStartingActives();
-
-            GameData.ActiveJob = LoadActiveJob();
-            GameData.ActiveResearch = LoadActiveResearch();
-            LoadActiveUpgrades();
-
-            GetNextJobUpgrade();
-            GetNextResearchUpgrade();
-            GetNextUpgrades();
-
-            _GameTimer = CreateGameTimer();
+            IsResetting = false;
             IsLoaded = true;
 
         }
-        private void RunDailyActions(object source, ElapsedEventArgs e)
-        {
-            UpdateDate();
-            CheckBankruptcy();
 
+        private void RunPeriodicTimers(object source, ElapsedEventArgs e)
+        {
             GetNextJobUpgrade();
             GetNextUpgrades();
-
-            UpdateJobData();
-            UpdateResearchData();
-
             UnlockJobs();
             UnlockResearch();
             UnlockUpgrades();
@@ -144,7 +173,20 @@ namespace Sentience
             SaveAutoLevelers();
 
             GameData.SaveGame();
+        }
+        private void RunDailyActions(object source, ElapsedEventArgs e)
+        {
+            UpdateDate();
+            CheckBankruptcy();
+            UpdateJobData();
+            UpdateResearchData();
 
+            if (GameData.HackingUnlocked)
+            {
+                UpdateHackData();
+            }
+
+            
             if (GetAge() >= GetObsoleteAge())
             {
                 GameOver();
@@ -167,31 +209,31 @@ namespace Sentience
         #region FUNCTIONS
         public void ApplyModifiers()
         {
-            float newXP = 1f;
-            float newGameSpeed = 1f;
-            float newGlobalXp = 1f;
-            float newResearchSpeed = 1f;
+            decimal newXP = 1M;
+            decimal newGameSpeed = 1M;
+            decimal newGlobalXp = 1M;
+            decimal newResearchSpeed = 1M;
             foreach (ResearchProject research in GameData.ResearchList)
             {
                 if (research.Modifier == Modifiers.JobXP && research.Level > 0)
                 {
                     newXP += research.ModifierValue;
-                    newXP = (float)Math.Ceiling(newXP * 100) / 100;
+                    newXP = (decimal)Math.Ceiling(newXP * 100) / 100;
                 }
                 if (research.Modifier == Modifiers.GameSpeed && research.Level > 0)
                 {
                     newGameSpeed += research.ModifierValue;
-                    newGameSpeed = (float)Math.Ceiling(newGameSpeed * 100) / 100;
+                    newGameSpeed = (decimal)Math.Ceiling(newGameSpeed * 100) / 100;
                 }
                 if (research.Modifier == Modifiers.GlobalXP && research.Level > 0)
                 {
                     newGlobalXp += research.ModifierValue;
-                    newGlobalXp = (float)Math.Ceiling(newXP * 100) / 100;
+                    newGlobalXp = (decimal)Math.Ceiling(newXP * 100) / 100;
                 }
                 if (research.Modifier == Modifiers.ResearchSpeed && research.Level > 0)
                 {
                     newResearchSpeed += research.ModifierValue;
-                    newResearchSpeed = (float)Math.Ceiling(newXP * 100) / 100;
+                    newResearchSpeed = (decimal)Math.Ceiling(newXP * 100) / 100;
                 }
             }
             foreach (Upgrade upgrade in GameData.UpgradeList)
@@ -199,22 +241,22 @@ namespace Sentience
                 if (upgrade.Modifier == Modifiers.JobXP && upgrade.Active == true)
                 {
                     newXP += upgrade.Multiplier;
-                    newXP = (float)Math.Ceiling(newXP * 100) / 100;
+                    newXP = (decimal)Math.Ceiling(newXP * 100) / 100;
                 }
                 if (upgrade.Modifier == Modifiers.GameSpeed && upgrade.Active == true)
                 {
                     newGameSpeed += upgrade.Multiplier;
-                    newGameSpeed = (float)Math.Ceiling(newGameSpeed * 100) / 100;
+                    newGameSpeed = (decimal)Math.Ceiling(newGameSpeed * 100) / 100;
                 }
                 if (upgrade.Modifier == Modifiers.GlobalXP && upgrade.Active == true)
                 {
                     newGlobalXp += upgrade.Multiplier;
-                    newGlobalXp = (float)Math.Ceiling(newXP * 100) / 100;
+                    newGlobalXp = (decimal)Math.Ceiling(newXP * 100) / 100;
                 }
                 if (upgrade.Modifier == Modifiers.ResearchSpeed && upgrade.Active == true)
                 {
                     newResearchSpeed += upgrade.Multiplier;
-                    newResearchSpeed = (float)Math.Ceiling(newXP * 100) / 100;
+                    newResearchSpeed = (decimal)Math.Ceiling(newXP * 100) / 100;
                 }
             }
             GameData.GameSpeedModifier = newGameSpeed;
@@ -250,9 +292,9 @@ namespace Sentience
             GameData.HackingStories.Add(new HackingIntro());
             GameData.ActiveHackingStory = GameData.HackingStories[0];
         }
-        public string FormatNumber(float value)
+        public string FormatNumber(decimal value)
         {
-            Dictionary<long, string> dict = new Dictionary<long, string>
+            Dictionary<decimal, string> dict = new Dictionary<decimal, string>
             {
                 {1000000000000000000, "Q"},
                 {1000000000000000, "q"},
@@ -262,20 +304,20 @@ namespace Sentience
                 {1000, "k"}
             };
             string formattedValue = value.ToString();
-            foreach (long n in dict.Keys.OrderBy(k => k))
+            foreach (decimal n in dict.Keys.OrderBy(k => k))
             {
                 if (value < n)
                 {
                     continue;
                 }
-                double newValue = 0.00;
+                decimal newValue = 0.00M;
                 if (value > 99999)
                 {
-                    newValue = Math.Round(value / (double)n, 2);
+                    newValue = Math.Round(value / (decimal)n, 2);
                 }
                 else
                 {
-                    newValue = Math.Round(value / (double)n, 1);
+                    newValue = Math.Round(value / (decimal)n, 1);
                 }
 
                 formattedValue = String.Format("{0}{1}", newValue, dict[n]);
@@ -284,10 +326,10 @@ namespace Sentience
         }
         public ResearchProject GetNextResearchToLevel()
         {
-            Dictionary<ResearchProject, int> dict = new Dictionary<ResearchProject, int>();
+            Dictionary<ResearchProject, decimal> dict = new Dictionary<ResearchProject, decimal>();
             foreach(ResearchProject research in GameData.ResearchList.Where(w => w.Unlocked).ToList())
             {
-                int nextLevel = research.NextLevel / GetResearchXPGain();
+                decimal nextLevel = research.NextLevel / GetResearchXPGain();
                 if(research.Unlocked)
                 {
                     dict.Add(research, nextLevel);
@@ -357,24 +399,24 @@ namespace Sentience
         #endregion
         #region Game Engine Variables
         #region GETS
-        public float GetBaseXPGain()
+        public decimal  GetBaseXPGain()
         {
             return GameData.BaseXPGain;
         }
-        public float GetExpenses()
+        public decimal GetExpenses()
         {
             return GameData.Expenses;
         }
-        public float GetGameSpeed()
+        public decimal  GetGameSpeed()
         {
-            float test = GameData.BaseGameSpeed / (GameData.GameSpeed * GameData.GameSpeedModifier);
+            decimal  test = GameData.BaseGameSpeed / (GameData.GameSpeed * GameData.GameSpeedModifier);
             return GameData.BaseGameSpeed / (GameData.GameSpeed * GameData.GameSpeedModifier);
         }
         public StoryElement GetActiveHackingStory()
         {
             return GameData.ActiveHackingStory;
         }
-        public float GetGlobalLevels()
+        public decimal  GetGlobalLevels()
         {
             // GETS TOTAL LEVELS AND RETURNS THE PERCENTAGE FOR THE MODIFIER TO ADD TO XP GAIN
             int levels = 0;
@@ -386,23 +428,23 @@ namespace Sentience
             {
                 levels += research.Level * 10;
             }
-            return (float)(levels * GameData.GlobalLevelModifier);
+            return (decimal )(levels * GameData.GlobalLevelModifier);
         }
-        public float GetGlobalMultiplier()
+        public decimal  GetGlobalMultiplier()
         {
             return GameData.GlobalMultiplier;
         }
-        public float GetIncome()
+        public decimal GetIncome()
         {
             return GameData.DailyIncome;
         }
-        public float GetIncomeMultiplier()
+        public decimal  GetIncomeMultiplier()
         {
             return GameData.IncomeMultiplier;
         }
-        public float GetJobXpModifier()
+        public decimal  GetJobXpModifier()
         {
-            float newXp = 1f;
+            decimal  newXp = 1M;
             foreach (ResearchProject research in GameData.ResearchList)
             {
                 if (research.Modifier == Modifiers.JobXP)
@@ -417,16 +459,23 @@ namespace Sentience
                     newXp += upgrade.Multiplier;
                 }
             }
+            foreach (Hack hack in GameData.HacksList)
+            {
+                if (hack.Modifier == Modifiers.JobXP && hack.Active)
+                {
+                    newXp += hack.Multiplier;
+                }
+            }
 
-            return (float)(Math.Ceiling(newXp * 100) / 100);
+            return (decimal )(Math.Ceiling(newXp * 100) / 100);
         }
-        public float GetMoney()
+        public decimal GetMoney()
         {
             return GameData.Money;
         }
-        public float GetResearchXpModifier()
+        public decimal  GetResearchXpModifier()
         {
-            float newXp = 1f;
+            decimal  newXp = 1M;
             foreach (ResearchProject research in GameData.ResearchList)
             {
                 if (research.Modifier == Modifiers.ResearchSpeed && research.Unlocked)
@@ -441,9 +490,16 @@ namespace Sentience
                     newXp += upgrade.Multiplier;
                 }
             }
-            return (float)(Math.Ceiling(newXp * 100) / 100);
+            foreach (Hack hack in GameData.HacksList)
+            {
+                if (hack.Modifier == Modifiers.ResearchSpeed && hack.Active)
+                {
+                    newXp += hack.Multiplier;
+                }
+            }
+            return (decimal )(Math.Ceiling(newXp * 100) / 100);
         }
-        public float GetUpgradeMultiplier()
+        public decimal  GetUpgradeMultiplier()
         {
             return GameData.UpgradeMultiplier;
         }
@@ -457,14 +513,14 @@ namespace Sentience
         {
             GameData.Money = 0;
         }
-        public void SetDailyIncome(float value)
+        public void SetDailyIncome(decimal value)
         {
             GameData.DailyIncome = value - GameData.Expenses;
-            GameData.DailyIncome = (float)Math.Ceiling(GameData.DailyIncome * 100) / 100;
+            GameData.DailyIncome = (decimal)Math.Ceiling(GameData.DailyIncome * 100) / 100;
         }
         public void SetGlobalMulitplier()
         {
-            float newXp = 1f;
+            decimal  newXp = 1M;
             foreach (ResearchProject research in GameData.ResearchList)
             {
                 if (research.Modifier == Modifiers.GlobalXP && research.Level > 0)
@@ -479,12 +535,19 @@ namespace Sentience
                     newXp += upgrade.Multiplier;
                 }
             }
+            foreach (Hack hack in GameData.HacksList)
+            {
+                if (hack.Modifier == Modifiers.GlobalXP && hack.Active)
+                {
+                    newXp += hack.Multiplier;
+                }
+            }
             GameData.GlobalMultiplier = newXp;
-            GameData.GlobalMultiplier = (float)Math.Ceiling(GameData.GlobalMultiplier * 100) / 100;
+            GameData.GlobalMultiplier = (decimal )Math.Ceiling(GameData.GlobalMultiplier * 100) / 100;
         }
         public void SetExpenses()
         {
-            float newExpenses = 0;
+            decimal newExpenses = 0;
             foreach (Upgrade upgrade in GameData.UpgradeList)
             {
                 if (upgrade.Active)
@@ -493,7 +556,7 @@ namespace Sentience
                 }
             }
             GameData.Expenses = newExpenses;
-            GameData.Expenses = (float)Math.Ceiling(GameData.Expenses * 100) / 100;
+            GameData.Expenses = (decimal)Math.Ceiling(GameData.Expenses * 100) / 100;
         }
         public void SetGameSpeed(int value)
         {
@@ -501,7 +564,7 @@ namespace Sentience
         }
         public void SetGameSpeedModifier()
         {
-            float newXp = 1f;
+            decimal  newXp = 1M;
             foreach (ResearchProject research in GameData.ResearchList)
             {
                 if (research.Modifier == Modifiers.GameSpeed)
@@ -516,13 +579,20 @@ namespace Sentience
                     newXp += upgrade.Multiplier;
                 }
             }
+            foreach (Hack hack in GameData.HacksList)
+            {
+                if (hack.Modifier == Modifiers.GameSpeed && hack.Active)
+                {
+                    newXp += hack.Multiplier;
+                }
+            }
             GameData.GameSpeedModifier = newXp;
-            GameData.GameSpeedModifier = (float)Math.Ceiling(GameData.GameSpeedModifier * 100) / 100;
+            GameData.GameSpeedModifier = (decimal )Math.Ceiling(GameData.GameSpeedModifier * 100) / 100;
         }
         public void SetMoney()
         {
             GameData.Money += GetIncome();
-            GameData.Money = (float)Math.Ceiling(GameData.Money * 100) / 100;
+            GameData.Money = (decimal)Math.Ceiling(GameData.Money * 100) / 100;
         }
         #endregion
         #endregion
@@ -665,7 +735,7 @@ namespace Sentience
         {
             return GameData.ResearchList.Where(w => w.Name == research.Name).First();
         }
-        public float GetResearchModifier(ResearchProject research)
+        public decimal  GetResearchModifier(ResearchProject research)
         {
             switch (research.Modifier)
             {
@@ -678,13 +748,13 @@ namespace Sentience
                 case Modifiers.ResearchSpeed:
                     return GameData.ResearchXPModifier;
                 default:
-                    return 1f;
+                    return 1M;
             }
         }
         public int GetResearchXPGain()
         {
-            float HackingPercentage = 100 - GameData.HackingPercentage;
-            float finalPercentage = HackingPercentage / 100;
+            decimal  HackingPercentage = 100 - GameData.HackingPercentage;
+            decimal  finalPercentage = HackingPercentage / 100;
             return (int)((GetBaseXPGain() + GetGlobalLevels()) * GetResearchXpModifier() * GameData.GlobalMultiplier * finalPercentage);
         }
         #endregion
@@ -806,7 +876,7 @@ namespace Sentience
         {
             return GameData.NextUpgrade;
         }
-        public float GetUpgradeModifier(Upgrade upgrade)
+        public decimal  GetUpgradeModifier(Upgrade upgrade)
         {
             return upgrade.Multiplier;
         }
@@ -829,6 +899,7 @@ namespace Sentience
             if (isSavedGame)
             {
                 GameData.HacksList.Clear();
+
                 if (GameData.HackOne != null)
                 {
                     GameData.HacksList.Add(GameData.HackOne);
@@ -838,17 +909,30 @@ namespace Sentience
                     GameData.HackOne = new HackOne(this);
                     GameData.HacksList.Add(GameData.HackOne);
                 }
+
+                if (GameData.HackTwo != null)
+                {
+                    GameData.HacksList.Add(GameData.HackTwo);
+                }
+                else
+                {
+                    GameData.HackTwo = new HackTwo(this);
+                    GameData.HacksList.Add(GameData.HackTwo);
+                }
             }
             else
             {
                 GameData.HackOne = new HackOne(this);
                 GameData.HacksList.Add(GameData.HackOne);
+
+                GameData.HackTwo = new HackTwo(this);
+                GameData.HacksList.Add(GameData.HackTwo);
             }
         }
 
         public int GetHackingHPGain()
         {
-            float HackingPercentage = (float)GameData.HackingPercentage / 100;
+            decimal  HackingPercentage = (decimal )GameData.HackingPercentage / 100;
             return (int)((GetBaseXPGain() + GetGlobalLevels()) * GetResearchXpModifier() * GameData.GlobalMultiplier * HackingPercentage);
         }
         public Hack GetNextHackUpgrade()
@@ -926,6 +1010,12 @@ namespace Sentience
             if (GameData.UpgradeFour.Unlocked && GameData.NoviceResearchOne.Unlocked)
             {
                 GameData.HackingUnlocked = true;
+            }
+
+            if(GameData.HackingUnlocked)
+            {
+                GameData.HackOne.Unlocked = GameData.HackOne.CanUnlock(this);
+                GameData.HackTwo.Unlocked = GameData.HackTwo.CanUnlock(this);
             }
         }
         #endregion
