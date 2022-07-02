@@ -8,9 +8,10 @@ namespace Sentience.Models.Upgrades
         {
             Name = "Zip Drive";
             Active = false;
-            Expense = 2000M;
+            Expense = 250000M;
             Unlocked = false;
             Modifier = Modifiers.GlobalXP;
+            MoneyNeeded = 500000000;
             Multiplier = 8M;
             UpgradeType = UpgradeTypes.Refurbished;
         }
@@ -19,7 +20,7 @@ namespace Sentience.Models.Upgrades
         {
             if (!Unlocked)
             {
-                if (engine.GetMoney() >= 100000000)
+                if (engine.GetMoney() >= MoneyNeeded)
                 {
                     Unlocked = true;
                     engine.ShowToast(this.Name + " has been unlocked!", "Upgrade Unlocked", ToastLevel.Info);
@@ -32,10 +33,6 @@ namespace Sentience.Models.Upgrades
                 }
             }
             return true;
-        }
-        public override string UpgradeMessage(GameEngine engine)
-        {
-            return (!Unlocked) ? $"Money: " + engine.FormatNumber(engine.GetMoney()) + "/100m" : "";
         }
     }
 }

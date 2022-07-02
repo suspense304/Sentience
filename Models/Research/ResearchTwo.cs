@@ -18,7 +18,7 @@ namespace Sentience.Models.Research
 
         public bool CanUnlock(GameEngine engine)
         {
-            if (engine.GameData.ResearchOne.Level > 9) 
+            if (engine.GameData.ResearchOne.Level > 24) 
             {
                 if (!Unlocked)
                 {
@@ -31,7 +31,7 @@ namespace Sentience.Models.Research
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return engine.GameData.ResearchOne.Name + ": " + engine.GameData.ResearchOne.Level + "/10";
+            return engine.GameData.ResearchOne.Name + ": " + engine.GameData.ResearchOne.Level + "/25";
         }
     }
 }

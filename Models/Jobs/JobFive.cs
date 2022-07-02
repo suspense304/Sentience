@@ -17,7 +17,7 @@ namespace Sentience.Models.Jobs
         }
         public bool CanUnlock(GameEngine engine)
         {
-            if (engine.GameData.JobFour.Level > 24 && engine.GameData.ResearchTwo.Level > 49)
+            if (engine.GameData.JobFour.Level > 24 && engine.GameData.ResearchTwo.Level > 99)
             {
                 if (!Unlocked)
                 {
@@ -30,7 +30,7 @@ namespace Sentience.Models.Jobs
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return engine.GameData.JobFour.Name + ": " + engine.GameData.JobFour.Level + "/25   " + engine.GameData.ResearchTwo.Name + ": " + engine.GameData.ResearchTwo.Level + "/50";
+            return engine.GameData.JobFour.Name + ": " + engine.GameData.JobFour.Level + "/25   " + engine.GameData.ResearchTwo.Name + ": " + engine.GameData.ResearchTwo.Level + "/100";
         }
     }
 }

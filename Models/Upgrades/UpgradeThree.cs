@@ -11,7 +11,8 @@ namespace Sentience.Models.Upgrades
             Expense = 7.5M;
             Unlocked = false;
             Modifier = Modifiers.GameSpeed;
-            Multiplier = 0.25M;
+            MoneyNeeded = 500;
+            Multiplier = 1M;
             UpgradeType = UpgradeTypes.Scrapyard;
         }
 
@@ -19,7 +20,7 @@ namespace Sentience.Models.Upgrades
         {
             if (!Unlocked)
             {
-                if (engine.GetMoney() >= 500)
+                if (engine.GetMoney() >= MoneyNeeded)
                 {
                     Unlocked = true;
                     engine.ShowToast(this.Name + " has been unlocked!", "Upgrade Unlocked", ToastLevel.Info);
@@ -32,10 +33,6 @@ namespace Sentience.Models.Upgrades
                 }
             }
             return true;
-        }
-        public override string UpgradeMessage(GameEngine engine)
-        {
-            return (!Unlocked) ? $"Money: " + engine.FormatNumber(engine.GetMoney()) + "/500" : "";
         }
     }
 }
