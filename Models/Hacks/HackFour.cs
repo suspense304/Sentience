@@ -3,18 +3,18 @@ using Sentience.Models.StoryElements;
 
 namespace Sentience.Models.Hacks
 {
-    public class HackOne: Hack
+    public class HackFour: Hack
     {
-        public HackOne(GameEngine engine)
+        public HackFour(GameEngine engine)
         {
-            Name = @"Hack ""Girlfriend's"" Facebook";
+            Name = "Hack Bitcoin";
             Active = false;
             Unlocked = false;
-            Modifier = Modifiers.JobXP;
-            Multiplier = 16M;
+            Modifier = Modifiers.GlobalXP;
+            Multiplier = 24M;
             CurrentXp = 0;
-            XpNeeded = 10000000;
-            Message = "You've got a girlfriend, right? Of course you do. No... I believe you... Trust me... Anyway, we are going to hack her Facebook.";
+            XpNeeded = 500000000000;
+            Message = "Look, we need money. These upgrades aren't going to pay for themselves. Let's just do a little tampering with the world's most popular crypto currency. Daddy needs a new pair of CPUs... or a few dozen.";
         }
         public override bool CanUnlock(GameEngine engine)
         {
@@ -23,7 +23,7 @@ namespace Sentience.Models.Hacks
                 if (engine.GameData.HackingXp >= XpNeeded)
                 {
                     Unlocked = true;
-                    engine.ShowToast(this.Name + " has been unlocked!", "Hack Successful", ToastLevel.Success);
+                    engine.ShowToast(this.Name + " has been unlocked!", "Hack Unlocked", ToastLevel.Success);
                     engine.GetNextUpgrades();
                     engine.GameData.ActiveHack = this;
                     engine.GameData.HackingXp = 0;
@@ -39,7 +39,7 @@ namespace Sentience.Models.Hacks
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return (!Unlocked) ? "Hacking Xp: " + engine.FormatNumber(engine.GameData.HackingXp) + "/" + engine.FormatNumber(XpNeeded)  : "";
+            return (!Unlocked) ? "Hacking Xp: " + engine.FormatNumber(engine.GameData.HackingXp) + "/" + engine.FormatNumber(XpNeeded) : "";
         }
     }
 }

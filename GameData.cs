@@ -30,13 +30,16 @@ namespace Sentience
         public decimal  IncomeMultiplier = 1.03M;
         public decimal  UpgradeMultiplier = 1.07M;
 
+        public decimal JobUpgradeXp = 0M;
+        public decimal ResearchUpgradeXp = 0M;
+
         public decimal  GameSpeedModifier = 1M;
         public decimal  GlobalLevelModifier = 0.1M;
         public decimal  JobXPModifier = 1M;
         public decimal  ResearchXPModifier = 1M;
 
         public int HackingPercentage = 0;
-        public int HackingXp = 0;
+        public decimal HackingXp = 0;
 
         public bool IsLoaded = false;
         public bool UpgradesUnlocked;
@@ -92,6 +95,8 @@ namespace Sentience
         #region Hacks
         public HackOne HackOne { get; set; }
         public HackTwo HackTwo { get; set; }
+        public HackThree HackThree { get; set; }
+        public HackFour HackFour { get; set; }
         #endregion
         #region Story Elements
         public StoryElement ActiveHackingStory { get; set; }

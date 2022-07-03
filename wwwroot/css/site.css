@@ -254,6 +254,13 @@ tr {
     color: white;
 }
 
+.primary-btn {
+    padding: 10px;
+    font-size: 1.05em;
+    background-color: #2a96a1;
+    color: white;
+}
+
     .error-btn:hover {
         background-color: #820a0a;
     }

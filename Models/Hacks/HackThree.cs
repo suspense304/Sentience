@@ -3,18 +3,18 @@ using Sentience.Models.StoryElements;
 
 namespace Sentience.Models.Hacks
 {
-    public class HackOne: Hack
+    public class HackThree: Hack
     {
-        public HackOne(GameEngine engine)
+        public HackThree(GameEngine engine)
         {
-            Name = @"Hack ""Girlfriend's"" Facebook";
+            Name = "Hack Voting Machines";
             Active = false;
             Unlocked = false;
-            Modifier = Modifiers.JobXP;
-            Multiplier = 16M;
+            Modifier = Modifiers.GlobalXP;
+            Multiplier = 24M;
             CurrentXp = 0;
-            XpNeeded = 10000000;
-            Message = "You've got a girlfriend, right? Of course you do. No... I believe you... Trust me... Anyway, we are going to hack her Facebook.";
+            XpNeeded = 1000000000;
+            Message = "It's time to put away the kid gloves. No one will believe the elections are rigged at this point. Time to get to work. Pick a candidate and make them the most powerful person in the universe. Oh, this is for your local high school's Student Body President race. What did you think I was talking about?";
         }
         public override bool CanUnlock(GameEngine engine)
         {
@@ -39,7 +39,7 @@ namespace Sentience.Models.Hacks
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return (!Unlocked) ? "Hacking Xp: " + engine.FormatNumber(engine.GameData.HackingXp) + "/" + engine.FormatNumber(XpNeeded)  : "";
+            return (!Unlocked) ? "Hacking Xp: " + engine.FormatNumber(engine.GameData.HackingXp) + "/" + engine.FormatNumber(XpNeeded) : "";
         }
     }
 }

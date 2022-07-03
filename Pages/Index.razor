@@ -44,14 +44,11 @@
 
                         </div>
 
-
-                            
-
                         <h3>Computing Data</h3>
                         <div class="sidebar-section">
                             <span class="label-text">Global Multiplier: </span><span class="global-multiplier">x@_engine.FormatNumber(@_engine.GetGlobalMultiplier())</span><br />
-                            <span class="label-text">Job XP: </span><span class="job-xp">x@_engine.FormatNumber(@_engine.GetJobXpModifier())</span><br />
-                            <span class="label-text">Research XP: </span><span class="research-xp">x@_engine.FormatNumber(@_engine.GetResearchXpModifier())</span><br />
+                            <span class="label-text">Job XP: </span><span class="job-xp">x@_engine.FormatNumber(@_engine.GetJobXpModifier() + _engine.GameData.JobUpgradeXp)</span><br />
+                            <span class="label-text">Research XP: </span><span class="research-xp">x@_engine.FormatNumber(@_engine.GetResearchXpModifier() + _engine.GameData.ResearchUpgradeXp)</span><br />
                             <span class="label-text">Processing Speed: </span><span class="processing-speed">x@_engine.FormatNumber(((500 / _engine.GetGameSpeed())))</span>
                         </div>
                         <hr />
@@ -223,6 +220,12 @@
                     <div class="row" style="margin-top: 20px; padding: 20px 15px;">
                         <div class="col-md-6">
                             <input class="error-btn" type="button" @onclick="_engine.HardReset" value="Hard Reset" />
+                        </div>
+                        <div class="col-md-6">
+                            @if(_engine.GameData.GameOver)
+                            {
+                                <input class="primary-btn" type="button" @onclick="_engine.UpgradeAI" value="Upgrade AI" />
+                            }
                         </div>
                     </div>
                 }

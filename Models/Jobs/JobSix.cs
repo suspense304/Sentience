@@ -30,7 +30,7 @@ namespace Sentience.Models.Jobs
         }
         public override string UpgradeMessage(GameEngine engine)
         {
-            return engine.GameData.JobFive.Name + ": " + engine.GameData.JobFive.Level + "/50   " + engine.GameData.ResearchOne.Name + ": " + engine.GameData.ResearchOne.Level + "/150";
+            return engine.GameData.JobFive.Name + ": " + engine.GameData.JobFive.Level + "/50   " + engine.GameData.ResearchTwo.Name + ": " + engine.GameData.ResearchTwo.Level + "/150";
         }
     }
 }
