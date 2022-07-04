@@ -1,0 +1,437 @@
+﻿* {
+    font-family: 'Raleway', sans-serif;
+}
+
+/* COLORS 
+
+    ACTIVE RESOURCE #383838ff;
+
+    DARK BLUE: #0a4868;
+    LIGHT BLUE: #2a96a1;
+
+    GOLD: #d9af25;
+
+    DARK GRAY: #232222;
+    GRAY: #706f6f;
+
+    DARK GREEN: #706f6f;
+    LIGHT GREEN: #419f2a;
+
+    LIGHT PURPLE: #780b85;
+
+    RED: #e80d0d;
+
+*/
+
+#blazor-error-ui{
+    display: none !important;
+}
+
+body {
+    padding: 25px;
+    background-color: #191919;
+    color: #fff;
+}
+
+.collapse-button {
+    font-size: 2em;
+    text-shadow: 1px 1px 2px #151414;
+    padding-left: 10px;
+}
+
+tr {
+    transition: height 2s linear 1s;
+}
+
+.collapsed {
+    height: 0px;
+}
+
+.jobs-table {
+    border-collapse: collapse;
+    margin-top: 5px;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    width: 100%;
+    min-width: 400px;
+    text-align: center;
+    border-top: 2px inset #cbcbcb8c;
+    border-right: 4px inset #535456;
+    border-bottom: 5px outset #00000078;
+}
+    .jobs-table thead tr {
+        text-align: center;
+    }
+    .jobs-table th, 
+    .jobs-table td {
+        padding: 8px 15px;
+    }
+    .jobs-table td{
+        font-size: 1.1em;
+        width: 100px;
+    }
+    .jobs-table tr {
+        border-bottom: 2px double #adabab30;
+    }
+.job-active {
+    background-color: #383838ff;
+}
+    .job-active td {
+        color: #fff;
+    }
+.job-inactive {
+    background-color: #232222;
+}
+
+.research-table {
+    border-collapse: collapse;
+    margin-top: 5px;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    width: 100%;
+    min-width: 400px;
+    text-align: center;
+    border-top: 2px inset #cbcbcb8c;
+    border-right: 4px inset #535456;
+    border-bottom: 5px outset #00000078;
+}
+    .research-table thead tr {
+        text-align: center;
+    }
+    .research-table th,
+    .research-table td {
+        padding: 8px 15px;
+    }
+    .research-table tr {
+        border-bottom: 2px double #adabab30;
+    }
+    .research-table td {
+        font-size: 1.1em;
+        width: 100px;
+    }
+
+.research-active {
+    background-color: #383838ff;
+}
+    .research-active td {
+        color: #fff;
+    }
+
+.research-inactive {
+    background-color: #232222;
+}
+
+.upgrade-table {
+    border-collapse: collapse;
+    margin-top: 5px;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    width: 100%;
+    min-width: 400px;
+    text-align: center;
+    border-top: 2px inset #cbcbcb8c;
+    border-right: 4px inset #535456;
+    border-bottom: 5px outset #00000078;
+}
+    .upgrade-table thead tr {
+        text-align: center;
+    }
+    .upgrade-table th,
+    .upgrade-table td {
+        padding: 8px 15px;
+        font-size: 1.1em;
+        width: 100px;
+    }
+    .upgrade-table tr {
+        border-bottom: 2px double #adabab30;
+    }
+
+.upgrade-active {
+    background-color: #383838ff;
+}
+    .upgrade-active td {
+        color: #fff;
+    }
+.upgrade-inactive {
+    background-color: #232222;
+}
+
+.hacking-table {
+    border-collapse: collapse;
+    margin-top: 5px;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    width: 100%;
+    min-width: 400px;
+    text-align: center;
+    border-top: 2px inset #cbcbcb8c;
+    border-right: 4px inset #535456;
+    border-bottom: 5px outset #00000078;
+}
+
+    .hacking-table thead tr {
+        text-align: center;
+    }
+
+    .hacking-table th,
+    .hacking-table td {
+        padding: 8px 15px;
+    }
+
+    .hacking-table td {
+        font-size: 1.1em;
+        width: 100px;
+    }
+
+    .hacking-table tr {
+        border-bottom: 2px double #adabab30;
+    }
+
+.hack-active {
+    background-color: #0a4868;
+}
+
+    .hack-active td {
+        color: #fff;
+    }
+
+.hacking-inactive {
+    background-color: #232222;
+}
+
+
+.next-upgrade {
+    height: 24px;
+    font-size: 1.05em;
+    color: #706f6f;
+}
+.menu-block {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-bottom: 3px double #706f6fbf;
+    padding-bottom: 10px;
+}
+.menu-items{
+    flex: auto;
+}
+
+.menu-game-speed {
+    align-items: flex-end; 
+    justify-content: flex-end;
+}
+
+.menu-btn {
+    padding: 10px;
+    cursor: pointer;
+}
+    .menu-btn:hover {
+        background-color: #232222;
+    }
+.menu-btn-active {
+    background-color: #706f6f4a;
+}
+
+.content-area {
+    padding: 8px 15px 5px 15px;
+    margin-top: 10px;
+    background-color: #232222;
+}
+
+.regular-btn {
+    padding: 10px;
+    font-size: 1.05em;
+    background-color: #0a4868;
+    color: white;
+}
+    .regular-btn:hover {
+        background-color: #2a96a1;
+    }
+.error-btn {
+    padding: 10px;
+    font-size: 1.05em;
+    background-color: #e80d0d;
+    color: white;
+}
+
+.primary-btn {
+    padding: 10px;
+    font-size: 1.05em;
+    background-color: #2a96a1;
+    color: white;
+}
+
+    .error-btn:hover {
+        background-color: #820a0a;
+    }
+
+.sidebar {
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #232222;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-section{
+    display: inline-block;
+}
+
+/*PROGRESS BARS*/
+
+.progress-bar
+{
+    position: relative;
+    cursor: pointer;
+    width: 250px;
+    border: 1px black solid;
+    background-color: #0a4868;
+}
+
+.progress-text {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    padding: 5px;
+    color: #fff;
+    text-shadow: 1px 1px 2px #151414;
+}
+
+.progress-fill {
+    height: 30px;
+    background-color: #d9af25;
+}
+
+.job-active .progress-bar .progress-fill,
+.research-active .progress-bar .progress-fill {
+    height: 30px;
+    background-color: #d9af25;
+}
+
+.job-inactive .progress-bar .progress-fill,
+.research-inactive .progress-bar .progress-fill{
+    height: 30px;
+    background-color: #2a96a1;
+}
+
+.active-resource {
+    font-size: 0.85em;
+    padding: 5px;
+    color: #706f6f;
+}
+
+.label-text {
+    display: inline-block;
+    font-size: 1.05em;
+    color: #706f6f;
+    width: 150px;
+}
+
+.global-multiplier {
+    font-size: 1.05em;
+    color: #2a96a1;
+}
+
+.job-xp {
+    font-size: 1.05em;
+    color: #d9af25;
+}
+
+.research-xp {
+    font-size: 1.05em;
+    color: #780b85;
+}
+
+.processing-speed {
+    font-size: 1.05em;
+    color: #419f2a;
+}
+
+.money {
+    font-size: 1.05em;
+    color: #419f2a;
+}
+
+.income {
+    font-size: 1.05em;
+    color: #2a96a1;
+}
+
+.expenses {
+    color: #e80d0d;
+}
+
+.time-data{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2px;
+    margin-bottom: 20px;
+}
+.age {
+    display: inline-block;
+    font-size: 1.5em;
+}
+.obsoletion {
+    display: block;
+    font-size: 1.05em;
+    color: #706f6f;
+}
+
+/*JOB TYPE STYLING*/
+.Basics tr,
+.Fundamentals tr,
+.Scrapyard tr {
+    background-color: #1c5f3a;
+    color: #fff;
+    font-size: 1.08em;
+    margin-bottom: 5px;
+}
+
+.Amatuer tr,
+.Novice tr{
+    background-color: #780b85;
+    color: #fff;
+    font-size: 1.08em;
+    margin-bottom: 5px;
+}
+
+
+
+
+
+/* HACKING SLIDER*/
+input[type=range] {
+    height: 38px;
+    -webkit-appearance: none;
+    margin: 10px 0;
+    width: 100%;
+    background-color: transparent;
+}
+
+    input[type=range]:focus {
+        outline: none;
+    }
+
+    input[type=range]::-webkit-slider-runnable-track {
+        width: 100%;
+        height: 10px;
+        cursor: pointer;
+        animate: 0.2s;
+        box-shadow: 1px 1px 1px #000000;
+        background: #100876;
+        border-radius: 5px;
+        border: 1px solid #000000;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+        box-shadow: 1px 1px 1px #000000;
+        border: 1px solid #000000;
+        height: 30px;
+        width: 15px;
+        border-radius: 6px;
+        background: #d9af25;
+        cursor: pointer;
+        -webkit-appearance: none;
+        margin-top: -11px;
+    }
