@@ -56,7 +56,7 @@
                         <div class="sidebar-section">
                             <span class="label-text">Money: </span><span class="money">$@_engine.FormatNumber(@_engine.GetMoney())</span><br /><br />
                             <span class="label-text">Net: </span><span class="income">$@_engine.FormatNumber(@_engine.GetIncome())</span><br />
-                            <span class="label-text">Income: </span><span class="daily-income">$@_engine.FormatNumber(@_engine.GameData.ActiveJob.Income)</span><br />
+                            <span class="label-text">Income: </span><span class="daily-income">$@_engine.FormatNumber(_engine.GetCurrentIncome(_engine.GameData.ActiveJob))</span><br />
                             <span class="label-text">Expenses: </span><span class="expenses">$@_engine.FormatNumber(@_engine.GetExpenses())</span>
                         </div>
                         <hr />

@@ -149,7 +149,7 @@ namespace Sentience
             }
             if (researchLevels / 100 > GameData.ResearchUpgradeXp)
             {
-                GameData.ResearchUpgradeXp = researchLevels / 100;
+                GameData.ResearchUpgradeXp = researchLevels / 20;
             }
 
             GameData.CurrentAge = 0;
@@ -240,14 +240,12 @@ namespace Sentience
                 GetNextResearchUpgrade();
                 GetNextUpgrades();
 
-            
-            _GameTimer = CreateGameTimer();
-            _PeriodicTimer = CreatePeriodicTimer();
-            
-
             GameData.GameOver = false;
             IsResetting = false;
             IsLoaded = true;
+
+            _GameTimer = CreateGameTimer();
+            _PeriodicTimer = CreatePeriodicTimer();
 
         }
 
@@ -573,6 +571,25 @@ namespace Sentience
         {
             return GameData.Money;
         }
+        public decimal GetMoneyMultiplier()
+        {
+            decimal incomeModifier = 0M;
+            foreach (Upgrade upgrade in GameData.UpgradeList)
+            {
+                if (upgrade.Modifier == Modifiers.Income && upgrade.Active)
+                {
+                    incomeModifier += upgrade.Multiplier;
+                }
+            }
+            foreach (ResearchProject research in GameData.ResearchList)
+            {
+                if (research.Modifier == Modifiers.Income && research.Level > 0)
+                {
+                    incomeModifier += research.ModifierValue;
+                }
+            }
+            return incomeModifier;
+        }
         public decimal  GetResearchXpModifier()
         {
             decimal  newXp = 1M;
@@ -613,9 +630,15 @@ namespace Sentience
         {
             GameData.Money = 0;
         }
+
+        public decimal GetCurrentIncome(Job job)
+        {
+            decimal currentIncome = (job.Income + (job.Income * GetMoneyMultiplier()));
+            return (decimal)Math.Ceiling(currentIncome * 100) / 100;
+        }
         public void SetDailyIncome(decimal value)
         {
-            GameData.DailyIncome = value - GameData.Expenses;
+            GameData.DailyIncome = (value + (value * GetMoneyMultiplier())) - GameData.Expenses;
             GameData.DailyIncome = (decimal)Math.Ceiling(GameData.DailyIncome * 100) / 100;
         }
         public void SetGlobalMulitplier()
@@ -754,13 +777,13 @@ namespace Sentience
         {
             return GameData.ActiveJob;
         }
-        public int GetJobXPGain()
+        public decimal GetJobXPGain()
         {
             if(GameData.JobUpgradeXp > 0)
             {
-                return (int)((GetBaseXPGain() + GetGlobalLevels()) * GetJobXpModifier() * GameData.GlobalMultiplier * (GameData.JobUpgradeXp + 1));
+                return (decimal)((GetBaseXPGain() + GetGlobalLevels()) * GetJobXpModifier() * GameData.GlobalMultiplier * (GameData.JobUpgradeXp + 1));
             }
-            return (int)((GetBaseXPGain() + GetGlobalLevels()) * GetJobXpModifier() * GameData.GlobalMultiplier);
+            return (decimal)((GetBaseXPGain() + GetGlobalLevels()) * GetJobXpModifier() * GameData.GlobalMultiplier);
         }
         public Job GetNextJobUpgrade()
         {
@@ -805,6 +828,7 @@ namespace Sentience
                 GameData.ResearchList.Add(GameData.ResearchThree);
                 GameData.ResearchList.Add(GameData.NoviceResearchOne);
                 GameData.ResearchList.Add(GameData.NoviceResearchTwo);
+                GameData.ResearchList.Add((GameData.NoviceResearchThree != null) ? GameData.NoviceResearchThree : GameData.NoviceResearchThree = new NoviceResearchThree(this));
             }
             else
             {
@@ -822,6 +846,9 @@ namespace Sentience
 
                 GameData.NoviceResearchTwo = new NoviceResearchTwo(this);
                 GameData.ResearchList.Add(GameData.NoviceResearchTwo);
+
+                GameData.NoviceResearchThree = new NoviceResearchThree(this);
+                GameData.ResearchList.Add(GameData.NoviceResearchThree);
             }
 
         }
@@ -855,16 +882,16 @@ namespace Sentience
                     return 1M;
             }
         }
-        public int GetResearchXPGain()
+        public decimal GetResearchXPGain()
         {
             
             decimal  HackingPercentage = 100 - GameData.HackingPercentage;
             decimal  finalPercentage = HackingPercentage / 100;
             if (GameData.ResearchUpgradeXp > 0)
             {
-                return (int)((GetBaseXPGain() + GetGlobalLevels()) * GetResearchXpModifier() * GameData.GlobalMultiplier * finalPercentage * (GameData.ResearchUpgradeXp + 1));
+                return (decimal)((GetBaseXPGain() + GetGlobalLevels()) * GetResearchXpModifier() * GameData.GlobalMultiplier * finalPercentage * (GameData.ResearchUpgradeXp + 1));
             }
-            return (int)((GetBaseXPGain() + GetGlobalLevels()) * GetResearchXpModifier() * GameData.GlobalMultiplier * finalPercentage);
+            return (decimal)((GetBaseXPGain() + GetGlobalLevels()) * GetResearchXpModifier() * GameData.GlobalMultiplier * finalPercentage);
         }
         #endregion
         #region UPDATES
@@ -1137,6 +1164,8 @@ namespace Sentience
             GameData.NoviceResearchOne.Unlocked = GameData.NoviceResearchOne.CanUnlock(this);
 
             GameData.NoviceResearchTwo.Unlocked = GameData.NoviceResearchTwo.CanUnlock(this);
+
+            GameData.NoviceResearchThree.Unlocked = GameData.NoviceResearchThree.CanUnlock(this);
         }
         public void UnlockUpgrades()
         {

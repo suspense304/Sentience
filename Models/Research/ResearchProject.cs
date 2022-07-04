@@ -25,7 +25,7 @@ namespace Sentience.Models.Research
         }
         public decimal XPRemaining(decimal current)
         {
-            int value = (int)(NextLevel - current);
+            decimal value = (decimal)(NextLevel - current);
             return (value <= 0) ? 0 : value;
         }
         public void LevelUp(GameEngine engine)

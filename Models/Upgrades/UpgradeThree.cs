@@ -12,7 +12,7 @@ namespace Sentience.Models.Upgrades
             Unlocked = false;
             Modifier = Modifiers.GameSpeed;
             MoneyNeeded = 500;
-            Multiplier = 1M;
+            Multiplier = 2M;
             UpgradeType = UpgradeTypes.Scrapyard;
         }
 

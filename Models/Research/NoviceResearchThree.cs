@@ -2,19 +2,19 @@
 
 namespace Sentience.Models.Research
 {
-    public class NoviceResearchTwo: ResearchProject
+    public class NoviceResearchThree : ResearchProject
     {
-        public NoviceResearchTwo(GameEngine engine)
+        public NoviceResearchThree(GameEngine engine)
         {
-            Name = "Functions";
+            Name = "Classes and Interfaces";
             Active = true;
             Unlocked = false;
-            Modifier = Modifiers.GameSpeed;
+            Modifier = Modifiers.Income;
             ResearchType = ResearchTypes.Novice;
         }
         public bool CanUnlock(GameEngine engine)
         {
-            if (engine.GameData.NoviceResearchOne.Level > 149 && engine.GameData.JobFive.Level > 49)
+            if (engine.GameData.NoviceResearchTwo.Level > 249 && engine.GameData.JobSix.Level > 49)
             {
                 if (!Unlocked)
                 {
@@ -28,7 +28,7 @@ namespace Sentience.Models.Research
 
         public override string UpgradeMessage(GameEngine engine)
         {
-            return engine.GameData.NoviceResearchOne.Name + ": " + engine.GameData.NoviceResearchOne.Level + "/150   " + engine.GameData.JobFive.Name + ": " + engine.GameData.JobFive.Level + "/50";
+            return engine.GameData.NoviceResearchTwo.Name + ": " + engine.GameData.NoviceResearchTwo.Level + "/250   " + engine.GameData.JobSix.Name + ": " + engine.GameData.JobSix.Level + "/50";
         }
     }
 }

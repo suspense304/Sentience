@@ -72,6 +72,7 @@ namespace Sentience
         public ResearchThree ResearchThree { get; set; }
         public NoviceResearchOne NoviceResearchOne { get; set; }
         public NoviceResearchTwo NoviceResearchTwo { get; set; }
+        public NoviceResearchThree NoviceResearchThree { get; set; }
         #endregion
         #region Upgrades
         public UpgradeOne UpgradeOne { get; set; }

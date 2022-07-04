@@ -10,8 +10,8 @@ namespace Sentience.Models.Hacks
             Name = "Hack Bitcoin";
             Active = false;
             Unlocked = false;
-            Modifier = Modifiers.GlobalXP;
-            Multiplier = 24M;
+            Modifier = Modifiers.Income;
+            Multiplier = 2;
             CurrentXp = 0;
             XpNeeded = 500000000000;
             Message = "Look, we need money. These upgrades aren't going to pay for themselves. Let's just do a little tampering with the world's most popular crypto currency. Daddy needs a new pair of CPUs... or a few dozen.";

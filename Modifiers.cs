@@ -12,5 +12,7 @@ namespace Sentience
         ResearchSpeed,
         [Display(Name = "Global XP")]
         GlobalXP,
+        [Display(Name = "Income")]
+        Income,
     }
 }
